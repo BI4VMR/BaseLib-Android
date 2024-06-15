@@ -1,10 +1,15 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.android.kotlin)
+    id("maven-publish")
 }
 
 val versionMinSDK: Int = Integer.valueOf(agp.versions.minSdk.get())
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
+
+val mvnGroupID: String = "net.bi4vmr.tool.android"
+val mvnArtifactID: String = "common-log-logcat"
+val mvnVersion: String = "1.0.0"
 
 @Suppress("UnstableApiUsage")
 android {
@@ -33,7 +38,63 @@ android {
     }
 }
 
-dependencies {
-    implementation(libs.android.appcompat)
-    implementation(libs.android.corektx)
+// 发布源码包的任务
+val sourcesJar by tasks.creating(Jar::class) {
+    // 为源码包添加后缀与字节码包作区分
+    archiveClassifier.set("sources")
+    // Android工程需要调用"android"模块中的"sourceSets"，直接书写"sourceSets"将会找不到"main"等集合。
+    from(android.sourceSets.getByName("main").java.srcDirs)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            // 产物的基本信息
+            groupId = mvnGroupID
+            artifactId = mvnArtifactID
+            version = mvnVersion
+
+            // 将"bundleReleaseAar"任务产生的字节码包发布
+            afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) }
+            // 发布源码包
+            artifact(sourcesJar)
+
+            // POM信息
+            pom {
+                name.set(mvnArtifactID) // (可选)为工件取一个名字
+                url.set("https://github.com/BI4VMR/BaseLib-Android") // (可选)网站地址
+                developers {
+                    developer {
+                        name.set("BI4VMR")
+                        email.set("bi4vmr@outlook.com")
+                    }
+                }
+            }
+
+            pom.withXml {
+                val dependenciesNode = asNode().appendNode("dependencies")
+                // 获取当前模块的所有"implementation"节点
+                configurations.getByName("implementation").allDependencies.forEach { dependency ->
+                    println("Publishing-Parse dependency item. Info:[$dependency]")
+                    val dependencyNode = dependenciesNode.appendNode("dependency")
+                    dependencyNode.appendNode("groupId", dependency.group)
+                    dependencyNode.appendNode("artifactId", dependency.name)
+                    dependencyNode.appendNode("version", dependency.version)
+                    dependencyNode.appendNode("scope", "implementation")
+                }
+            }
+        }
+
+        repositories {
+            // 私有仓库
+            maven {
+                isAllowInsecureProtocol = true
+                setUrl("http://172.18.5.1:8081/repository/maven-private/")
+                credentials {
+                    username = "uploader"
+                    password = "uploader"
+                }
+            }
+        }
+    }
 }
