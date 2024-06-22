@@ -10,6 +10,7 @@ import android.util.Log
  * @author bi4vmr@outlook.com
  */
 object LogUtil {
+
     // 工具调试专用标签（非用户设置的标签！）。
     private val TAG: String = "BaseLib-${LogUtil::class.java.simpleName}"
 
@@ -119,7 +120,9 @@ object LogUtil {
     }
 
     /**
-     * 输出日志的主要逻辑。
+     * 输出日志。
+     *
+     * 该方法为功能最多的日志输出方法，没有特殊需求时选择其他方法即可。
      *
      * @param[level] 日志级别。
      * @param[msg] 日志内容。
@@ -128,7 +131,7 @@ object LogUtil {
      *
      * 栈首的若干项为本工具类内部调用信息，它们可以被忽略，之后的元素为调用者信息。
      */
-    private fun print(level: Level, msg: String, tag: String? = null, stackOffset: Int = 5) {
+    fun print(level: Level, msg: String, tag: String? = null, stackOffset: Int = 5) {
         // 如果全局输出开关未开启，则不必输出日志。
         if (!LogConfig.enable) {
             return

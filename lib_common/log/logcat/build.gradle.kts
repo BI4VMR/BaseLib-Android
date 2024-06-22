@@ -9,7 +9,7 @@ val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
 val mvnGroupID: String = "net.bi4vmr.tool.android"
 val mvnArtifactID: String = "common-log-logcat"
-val mvnVersion: String = "1.0.0"
+val mvnVersion: String = "1.1.0"
 
 @Suppress("UnstableApiUsage")
 android {
@@ -38,6 +38,10 @@ android {
     }
 }
 
+dependencies {
+    implementation(libs.kotlinx.coroutines)
+}
+
 // 发布源码包的任务
 val sourcesJar by tasks.creating(Jar::class) {
     // 为源码包添加后缀与字节码包作区分
@@ -47,6 +51,18 @@ val sourcesJar by tasks.creating(Jar::class) {
 }
 
 publishing {
+    repositories {
+        // 私有仓库
+        maven {
+            isAllowInsecureProtocol = true
+            setUrl("http://172.18.5.1:8081/repository/maven-private/")
+            credentials {
+                username = "uploader"
+                password = "uploader"
+            }
+        }
+    }
+
     publications {
         create<MavenPublication>("maven") {
             // 产物的基本信息
@@ -81,18 +97,6 @@ publishing {
                     dependencyNode.appendNode("artifactId", dependency.name)
                     dependencyNode.appendNode("version", dependency.version)
                     dependencyNode.appendNode("scope", "implementation")
-                }
-            }
-        }
-
-        repositories {
-            // 私有仓库
-            maven {
-                isAllowInsecureProtocol = true
-                setUrl("http://172.18.5.1:8081/repository/maven-private/")
-                credentials {
-                    username = "uploader"
-                    password = "uploader"
                 }
             }
         }

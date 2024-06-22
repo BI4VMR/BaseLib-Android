@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:paddingStart="20dp"
@@ -202,6 +204,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="输出超长内容"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btnGetTask"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="查询循环输出任务"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btnAddTask"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="新增循环输出任务"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btnRemoveTask"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="移除循环输出任务"
                 android:textAllCaps="false" />
         </LinearLayout>
     </ScrollView>

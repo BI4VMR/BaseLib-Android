@@ -1,6 +1,7 @@
 package net.bi4vmr.tool.logcat;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.RadioButton;
 
@@ -10,6 +11,7 @@ import net.bi4vmr.tool.android.common.log.logcat.Level;
 import net.bi4vmr.tool.android.common.log.logcat.LogConfig;
 import net.bi4vmr.tool.android.common.log.logcat.LogConfigs;
 import net.bi4vmr.tool.android.common.log.logcat.LogUtil;
+import net.bi4vmr.tool.android.common.log.logcat.logger.CycleLogger;
 import net.bi4vmr.tool.databinding.TestuiLogcatBinding;
 
 public class TestUILogcat extends AppCompatActivity {
@@ -85,6 +87,29 @@ public class TestUILogcat extends AppCompatActivity {
             }
             String text = sb.toString();
             LogUtil.d(text);
+        });
+
+        // 查询循环输出任务
+        binding.btnGetTask.setOnClickListener(v -> {
+            String tasks = CycleLogger.getTasks().toString();
+            binding.tvLog.append("循环任务列表：\n");
+            binding.tvLog.append(tasks + "\n");
+            LogUtil.d("循环任务列表：" + tasks);
+        });
+
+        // 新增循环输出任务
+        binding.btnAddTask.setOnClickListener(v -> {
+            // 新增定时任务，输出固定的文本。
+            CycleLogger.addTask("Task1", 2000L, Level.INFO, "Task1", "这是一条定时日志消息。");
+
+            // 新增定时任务，输出代码块返回的文本。
+            CycleLogger.addTask("Task2", 2000L, Level.DEBUG, "Task2", continuation -> "这是一条定时日志消息，开机时长：" + SystemClock.elapsedRealtime());
+        });
+
+        // 移除循环输出任务
+        binding.btnRemoveTask.setOnClickListener(v -> {
+            CycleLogger.removeTask("Task1");
+            CycleLogger.removeTask("Task2");
         });
     }
 
