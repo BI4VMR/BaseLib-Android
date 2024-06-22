@@ -54,6 +54,7 @@ publishing {
     repositories {
         // 私有仓库
         maven {
+            name = "private"
             isAllowInsecureProtocol = true
             setUrl("http://172.18.5.1:8081/repository/maven-private/")
             credentials {
@@ -64,6 +65,7 @@ publishing {
     }
 
     publications {
+        // 创建名为"maven"的发布配置
         create<MavenPublication>("maven") {
             // 产物的基本信息
             groupId = mvnGroupID
@@ -77,8 +79,9 @@ publishing {
 
             // POM信息
             pom {
-                name.set(mvnArtifactID) // (可选)为工件取一个名字
-                url.set("https://github.com/BI4VMR/BaseLib-Android") // (可选)网站地址
+                name.set(mvnArtifactID)
+                url.set("https://github.com/BI4VMR/BaseLib-Android")
+                packaging = "aar"
                 developers {
                     developer {
                         name.set("BI4VMR")
@@ -91,7 +94,7 @@ publishing {
                 val dependenciesNode = asNode().appendNode("dependencies")
                 // 获取当前模块的所有"implementation"节点
                 configurations.getByName("implementation").allDependencies.forEach { dependency ->
-                    println("Publishing-Parse dependency item. Info:[$dependency]")
+                    println("Parse dependency item. Info:[$dependency]")
                     val dependencyNode = dependenciesNode.appendNode("dependency")
                     dependencyNode.appendNode("groupId", dependency.group)
                     dependencyNode.appendNode("artifactId", dependency.name)
