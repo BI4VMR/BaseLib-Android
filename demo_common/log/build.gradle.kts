@@ -69,5 +69,5 @@ dependencies {
     implementation(libs.bundles.android.coreWithKT)
 
     implementation(project(":lib_common:log:logcat"))
-    // implementation("net.bi4vmr.tool.android:common-log-logcat:1.0.0")
+    // implementation("net.bi4vmr.tool.android:common-log-logcat:1.1.0")
 }

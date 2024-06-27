@@ -1,53 +1,14 @@
-val versionMinSDK: Int = Integer.valueOf(agp.versions.minSdk.get())
-val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
-
 val mvnGroupID: String = "net.bi4vmr.tool.android"
-val mvnArtifactID: String = "common-log-logcat"
-val mvnVersion: String = "1.1.0"
+val mvnArtifactID: String = "all"
+val mvnVersion: String = "1.0.0"
 
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.android.kotlin)
+    id("java-library")
     id("maven-publish")
 }
 
-@Suppress("UnstableApiUsage")
-android {
-    namespace = "net.bi4vmr.tool.android.common.log.logcat"
-    compileSdk = versionCompileSDK
-
-    defaultConfig {
-        minSdk = versionMinSDK
-    }
-
-    sourceSets {
-        getByName("main") {
-            java {
-                java.srcDirs("src/main/kotlin")
-            }
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
-
 dependencies {
-    implementation(libs.kotlinx.coroutines)
-}
-
-// 发布源码包的任务
-val sourceJar by tasks.creating(Jar::class) {
-    // 为源码包添加后缀与字节码包作区分
-    archiveClassifier.set("source")
-    // Android工程需要调用"android"模块中的"sourceSets"，直接书写"sourceSets"将会找不到"main"等集合。
-    from(android.sourceSets.getByName("main").java.srcDirs)
+    implementation("net.bi4vmr.tool.android:common-log-logcat:1.1.0")
 }
 
 publishing {
@@ -72,16 +33,11 @@ publishing {
             artifactId = mvnArtifactID
             version = mvnVersion
 
-            // 将"bundleReleaseAar"任务产生的字节码包发布
-            afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) }
-            // 发布源码包
-            artifact(sourceJar)
-
             // POM信息
             pom {
                 name.set(mvnArtifactID)
-                url.set("https://github.com/BI4VMR/BaseLib-Android")
-                packaging = "aar"
+                url.set("https://github.com/BI4VMR/BaseLib-Java")
+                packaging = "pom"
                 developers {
                     developer {
                         name.set("BI4VMR")
@@ -111,4 +67,9 @@ publishing {
             }
         }
     }
+}
+
+tasks.withType<Test> {
+    // 连接Gradle测试任务与JUnit工具
+    useJUnitPlatform()
 }

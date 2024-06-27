@@ -65,16 +65,21 @@ dependencyResolutionManagement {
 // 主工程名称
 rootProject.name = "BaseLib-Android"
 
-// ----- 工具库 -----
 
+// ----- 工具库 -----
 // 公共组件
 include(":lib_common:log:logcat")
 
 // 界面组件
+include(":lib_ui")
 
 // 数据存储
+include(":lib_storage")
+
+// 依赖传递
+include(":lib_all")
+
 
 // ----- 示例程序 -----
-
-// 示例程序：公共组件
+// 示例程序：公共组件 - 日志
 include(":demo_common:log")
