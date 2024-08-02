@@ -8,12 +8,13 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 dependencies {
-    implementation("net.bi4vmr.tool.android:common-log-logcat:1.0.0")
+    implementation(baselibs.android.common.logcat)
+    implementation(baselibs.android.ability.privacymonitor)
 }
 
 publishing {
