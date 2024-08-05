@@ -47,6 +47,10 @@ android {
     }
 }
 
+dependencies {
+    implementation(libs.kotlinx.coroutines)
+}
+
 publishing {
     repositories {
         // 私有仓库
