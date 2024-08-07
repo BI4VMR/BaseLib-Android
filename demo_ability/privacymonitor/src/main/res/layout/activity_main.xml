@@ -24,7 +24,7 @@
             android:id="@+id/btnLogcat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Logcat工具"
+            android:text="敏感权限监控工具"
             android:textAllCaps="false" />
 
         <TextView
@@ -38,7 +38,7 @@
             android:id="@+id/btnLogcatKT"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Logcat工具"
+            android:text="敏感权限监控工具"
             android:textAllCaps="false" />
     </LinearLayout>
 </ScrollView>

@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
@@ -56,7 +58,9 @@ class AppInfoHelper private constructor(private val mContext: Context) {
      * @return 图标。若查询失败，则返回空值。
      */
     fun getIcon(packageName: String): Drawable? {
+        Log.e(TAG, "getIcon appinfo:[${getApplicationInfo(packageName)}]")
         val drawable: Drawable? = getApplicationInfo(packageName)?.loadIcon(packageManager)
+        Log.e(TAG, "getIcon drawable:[${drawable}]")
         return drawable
     }
 

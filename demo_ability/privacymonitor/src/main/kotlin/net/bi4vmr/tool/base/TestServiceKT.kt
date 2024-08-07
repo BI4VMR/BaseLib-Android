@@ -11,7 +11,7 @@ import net.bi4vmr.tool.android.ability.privacy.appops.AppOpsManagerExt
  * 示例服务：隐私权限使用状况。
  *
  * ```text
- * am start-service "net.bi4vmr.study.system.ability.permission/net.bi4vmr.study.privacy.TestServicePrivacy"
+ * am start-service "net.bi4vmr.tool/.base.TestServiceKT"
  * ```
  *
  * @author bi4vmr@outlook.com

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="ExportedService">
 
     <application
         android:allowBackup="true"
@@ -27,5 +29,10 @@
         <activity
             android:name=".base.TestUIBaseKT"
             android:exported="false" />
+
+        <!-- 示例服务：AppOps接口测试 -->
+        <service
+            android:name=".base.TestServiceKT"
+            android:exported="true" />
     </application>
 </manifest>

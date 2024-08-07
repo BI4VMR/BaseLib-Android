@@ -14,7 +14,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="敏感权限监控"
+        android:text="敏感权限监控工具"
         android:textColor="@color/black"
         android:textSize="20sp" />
 
@@ -42,10 +42,24 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/btnGet"
+                android:id="@+id/btnLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="功能按钮"
+                android:text="定位权限"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btnMIC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="录音权限"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btnCamera"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="录像权限"
                 android:textAllCaps="false" />
         </LinearLayout>
     </ScrollView>

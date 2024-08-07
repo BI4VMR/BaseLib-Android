@@ -69,7 +69,7 @@ dependencies {
     implementation(libs.bundles.android.coreWithKT)
 
     // 本地依赖
-    // implementation(project(":lib_ability:privacymonitor"))
+    implementation(project(":lib_ability:privacymonitor"))
     // 远程依赖
-    implementation(baselibs.android.ability.privacymonitor)
+    // implementation(baselibs.android.ability.privacymonitor)
 }

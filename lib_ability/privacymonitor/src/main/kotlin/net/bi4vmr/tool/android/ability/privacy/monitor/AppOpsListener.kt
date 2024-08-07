@@ -1,4 +1,4 @@
-package net.bi4vmr.tool.android.ability.privacy
+package net.bi4vmr.tool.android.ability.privacy.monitor
 
 import net.bi4vmr.tool.android.ability.privacy.appops.OpEntity
 
@@ -7,7 +7,7 @@ import net.bi4vmr.tool.android.ability.privacy.appops.OpEntity
  *
  * @author bi4vmr@outlook.com
  */
-interface AppOpsListener {
+fun interface AppOpsListener {
 
     /**
      * OP列表改变事件。

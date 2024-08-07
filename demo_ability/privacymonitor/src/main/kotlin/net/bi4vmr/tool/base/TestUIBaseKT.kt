@@ -1,9 +1,13 @@
 package net.bi4vmr.tool.base
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import net.bi4vmr.tool.android.ability.privacy.appops.AppOpsManagerExt
+import net.bi4vmr.tool.android.ability.privacy.CameraPrivacyMonitor
+import net.bi4vmr.tool.android.ability.privacy.LocationPrivacyMonitor
+import net.bi4vmr.tool.android.ability.privacy.MICPrivacyMonitor
 import net.bi4vmr.tool.android.ability.privacy.tool.AppInfoHelper
 import net.bi4vmr.tool.base.list.ListAdapterKT
 import net.bi4vmr.tool.base.list.PrivacyVO
@@ -15,7 +19,9 @@ class TestUIBaseKT : AppCompatActivity() {
         private val TAG: String = "TestApp-${TestUIBaseKT::class.java.simpleName}"
     }
 
-    private val appOpsManager: AppOpsManagerExt by lazy { AppOpsManagerExt.getInstance(applicationContext) }
+    private val locationMonitor: LocationPrivacyMonitor by lazy { LocationPrivacyMonitor(applicationContext) }
+    private val micMonitor: MICPrivacyMonitor by lazy { MICPrivacyMonitor(applicationContext) }
+    private val cameraMonitor: CameraPrivacyMonitor by lazy { CameraPrivacyMonitor(applicationContext) }
     private val appHelper: AppInfoHelper by lazy { AppInfoHelper.getInstance(applicationContext) }
 
     private val binding: TestuiBaseBinding by lazy {
@@ -30,26 +36,96 @@ class TestUIBaseKT : AppCompatActivity() {
         with(binding) {
             list.adapter = adapter
 
-            btnGet.setOnClickListener { test() }
+            btnLocation.setOnClickListener { testLocation() }
+            btnMIC.setOnClickListener { testMic() }
+            btnCamera.setOnClickListener { testCamera() }
         }
     }
 
-    // 功能模块
-    private fun test() {
-        Log.i(TAG, "--- 功能模块 ---")
-        binding.tvLog.append("\n--- 功能模块 ---\n")
+    // 开始监听位置权限
+    private fun testLocation() {
+        Log.i(TAG, "--- 开始监听位置权限 ---")
+        binding.tvLog.append("\n--- 开始监听位置权限 ---\n")
 
-        val datas: MutableList<PrivacyVO> = mutableListOf()
-        appOpsManager.getPackagesOps(null).forEach {
-            Log.i(TAG, "$it")
-            binding.tvLog.append("$it")
-            val vo = PrivacyVO(
-                appHelper.getLabel(it.packageName) ?: "-",
-                appHelper.getIcon(it.packageName),
-                it
-            )
-            datas.add(vo)
+        locationMonitor.needDistinctResult = true
+        locationMonitor.registerAppOpsListener { list ->
+            Handler(Looper.getMainLooper()).post {
+                Log.i(TAG, "$list")
+                binding.tvLog.append("$list")
+            }
+
+            val datas: MutableList<PrivacyVO> = mutableListOf()
+            list.forEach {
+                val vo = PrivacyVO(
+                    appHelper.getLabel(it.packageName) ?: "-",
+                    appHelper.getIcon(it.packageName),
+                    it
+                )
+                datas.add(vo)
+            }
+
+            Handler(Looper.getMainLooper()).post {
+                adapter.updateData(datas)
+            }
         }
-        adapter.updateData(datas)
+        locationMonitor.startWatchOps()
+    }
+
+    // 开始监听录音权限
+    private fun testMic() {
+        Log.i(TAG, "--- 开始监听录音权限 ---")
+        binding.tvLog.append("\n--- 开始监听录音权限 ---\n")
+
+        micMonitor.needDistinctResult = true
+        micMonitor.registerAppOpsListener { list ->
+            Handler(Looper.getMainLooper()).post {
+                Log.i(TAG, "$list")
+                binding.tvLog.append("$list")
+            }
+
+            val datas: MutableList<PrivacyVO> = mutableListOf()
+            list.forEach {
+                val vo = PrivacyVO(
+                    appHelper.getLabel(it.packageName) ?: "-",
+                    appHelper.getIcon(it.packageName),
+                    it
+                )
+                datas.add(vo)
+            }
+
+            Handler(Looper.getMainLooper()).post {
+                adapter.updateData(datas)
+            }
+        }
+        micMonitor.startWatchOps()
+    }
+
+    // 开始监听录像权限
+    private fun testCamera() {
+        Log.i(TAG, "--- 开始监听录像权限 ---")
+        binding.tvLog.append("\n--- 开始监听录像权限 ---\n")
+
+        cameraMonitor.needDistinctResult = true
+        cameraMonitor.registerAppOpsListener { list ->
+            Handler(Looper.getMainLooper()).post {
+                Log.i(TAG, "$list")
+                binding.tvLog.append("$list")
+            }
+
+            val datas: MutableList<PrivacyVO> = mutableListOf()
+            list.forEach {
+                val vo = PrivacyVO(
+                    appHelper.getLabel(it.packageName) ?: "-",
+                    appHelper.getIcon(it.packageName),
+                    it
+                )
+                datas.add(vo)
+            }
+
+            Handler(Looper.getMainLooper()).post {
+                adapter.updateData(datas)
+            }
+        }
+        cameraMonitor.startWatchOps()
     }
 }
