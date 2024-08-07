@@ -51,8 +51,8 @@ class AppOpsManagerExt private constructor(mContext: Context) {
         try {
             val method: Method = opsManagerClass.getMethod("getPackagesForOps", IntArray::class.java)
             // 获取应用程序的近期操作，返回值类型为List<AppOpsManager.PackageOps>，AppOpsManager.PackageOps是隐藏API。
-            val packageOPList: List<*> = method.invoke(opsManager, ops) as List<*>
-            packageOPList.forEach { pkgOP ->
+            val packageOPList: List<*>? = method.invoke(opsManager, ops) as? List<*>
+            packageOPList?.forEach { pkgOP ->
                 if (pkgOP != null) {
                     // 获取包名
                     val methodGetPkgName = pkgOP.javaClass.getMethod("getPackageName")

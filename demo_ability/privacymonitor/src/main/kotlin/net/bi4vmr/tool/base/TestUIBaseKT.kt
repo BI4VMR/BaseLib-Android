@@ -28,6 +28,7 @@ class TestUIBaseKT : AppCompatActivity() {
         TestuiBaseBinding.inflate(layoutInflater)
     }
     private val adapter: ListAdapterKT by lazy { ListAdapterKT(applicationContext) }
+    private val floatWindow: PrivacyListWindowKT by lazy { PrivacyListWindowKT(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +48,7 @@ class TestUIBaseKT : AppCompatActivity() {
         Log.i(TAG, "--- 开始监听位置权限 ---")
         binding.tvLog.append("\n--- 开始监听位置权限 ---\n")
 
-        locationMonitor.needDistinctResult = true
+        // locationMonitor.needDistinctResult = true
         locationMonitor.registerAppOpsListener { list ->
             Handler(Looper.getMainLooper()).post {
                 Log.i(TAG, "$list")
@@ -64,11 +65,11 @@ class TestUIBaseKT : AppCompatActivity() {
                 datas.add(vo)
             }
 
-            Handler(Looper.getMainLooper()).post {
-                adapter.updateData(datas)
-            }
+            floatWindow.updateData(datas)
         }
         locationMonitor.startWatchOps()
+        locationMonitor.getAppOps()
+        floatWindow.show()
     }
 
     // 开始监听录音权限
@@ -76,7 +77,7 @@ class TestUIBaseKT : AppCompatActivity() {
         Log.i(TAG, "--- 开始监听录音权限 ---")
         binding.tvLog.append("\n--- 开始监听录音权限 ---\n")
 
-        micMonitor.needDistinctResult = true
+        // micMonitor.needDistinctResult = true
         micMonitor.registerAppOpsListener { list ->
             Handler(Looper.getMainLooper()).post {
                 Log.i(TAG, "$list")
@@ -105,7 +106,7 @@ class TestUIBaseKT : AppCompatActivity() {
         Log.i(TAG, "--- 开始监听录像权限 ---")
         binding.tvLog.append("\n--- 开始监听录像权限 ---\n")
 
-        cameraMonitor.needDistinctResult = true
+        // cameraMonitor.needDistinctResult = true
         cameraMonitor.registerAppOpsListener { list ->
             Handler(Looper.getMainLooper()).post {
                 Log.i(TAG, "$list")

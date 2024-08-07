@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
@@ -15,7 +13,7 @@ import android.util.Log
  *
  * @author bi4vmr@outlook.com
  */
-class AppInfoHelper private constructor(private val mContext: Context) {
+class AppInfoHelper private constructor(mContext: Context) {
 
     companion object {
         // 本实例的生命周期跟随整个进程，不会导致内存泄露，因此可以忽略警告。
@@ -58,9 +56,7 @@ class AppInfoHelper private constructor(private val mContext: Context) {
      * @return 图标。若查询失败，则返回空值。
      */
     fun getIcon(packageName: String): Drawable? {
-        Log.e(TAG, "getIcon appinfo:[${getApplicationInfo(packageName)}]")
         val drawable: Drawable? = getApplicationInfo(packageName)?.loadIcon(packageManager)
-        Log.e(TAG, "getIcon drawable:[${drawable}]")
         return drawable
     }
 
@@ -79,6 +75,7 @@ class AppInfoHelper private constructor(private val mContext: Context) {
             }
         } catch (e: Exception) {
             Log.e(TAG, "Get application info failed! Reason:[${e.message}]")
+            e.printStackTrace()
             null
         }
     }
