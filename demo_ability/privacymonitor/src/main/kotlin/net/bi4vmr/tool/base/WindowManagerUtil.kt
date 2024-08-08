@@ -1,12 +1,14 @@
 package net.bi4vmr.tool.base
 
+import android.util.Log
 import android.view.WindowManager
 import java.lang.reflect.Field
 
 /**
  * WindowManager相关工具。
  *
- * @author 詹屹罡
+ * @since 1.0.0
+ * @author bi4vmr@outlook.com
  */
 object WindowManagerUtil {
 
@@ -43,7 +45,7 @@ object WindowManagerUtil {
             val field: Field = WindowManager.LayoutParams::class.java.getField("privateFlags")
             flags = field.getInt(lp)
         } catch (e: Exception) {
-            // LOGE(TAG, "Reflect operate failed! Reason:[${e.message}]")
+            Log.e(TAG, "Reflect operate failed! Reason:[${e.message}]")
             e.printStackTrace()
         }
 
@@ -55,7 +57,7 @@ object WindowManagerUtil {
             val field: Field = WindowManager.LayoutParams::class.java.getField("privateFlags")
             field.setInt(lp, flags)
         } catch (e: Exception) {
-            // LOGE(TAG, "Reflect operate failed! Reason:[${e.message}]")
+            Log.e(TAG, "Reflect operate failed! Reason:[${e.message}]")
             e.printStackTrace()
         }
     }

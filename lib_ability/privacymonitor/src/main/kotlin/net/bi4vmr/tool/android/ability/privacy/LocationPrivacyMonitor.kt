@@ -4,21 +4,21 @@ import android.content.Context
 import net.bi4vmr.tool.android.ability.privacy.appops.AppOps
 import net.bi4vmr.tool.android.ability.privacy.appops.OpEntity
 import net.bi4vmr.tool.android.ability.privacy.monitor.AppOpsFilterCallback
-import net.bi4vmr.tool.android.ability.privacy.monitor.AppOpsMonitor
 
 /**
- * 定位权限使用状况监视器。
+ * 位置权限使用状况监视器。
  *
+ * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
-class LocationPrivacyMonitor(mContext: Context) : AppOpsMonitor(mContext, OPS_LOCATION) {
+class LocationPrivacyMonitor(mContext: Context) : PrivacyMonitor(mContext, OPS_LOCATION) {
 
     companion object {
 
         /**
-         * 定位权限OP列表
+         * 位置权限列表。
          *
-         * AOSP SystemUI源码中权限监控模块包含“粗略位置”与精确位置，但它们是瞬态的，没有持续状态，根据通用需求此处只监控正在使用“高精度
+         * AOSP SystemUI源码中权限监控模块包含“粗略位置”与“精确位置”，但它们是瞬态的，没有持续状态，根据通用需求此处只监控正在使用“高精度
          * 定位”权限的应用即可。
          */
         private val OPS_LOCATION: IntArray = intArrayOf(

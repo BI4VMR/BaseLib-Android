@@ -14,8 +14,7 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <!-- VPADialog -->
-    <style name="Theme.VPADialog" parent="android:style/Theme.Dialog">
+    <style name="Theme.FloatDialog" parent="Theme.AppCompat.Dialog">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFrame">@null</item>
         <item name="android:windowIsFloating">true</item>

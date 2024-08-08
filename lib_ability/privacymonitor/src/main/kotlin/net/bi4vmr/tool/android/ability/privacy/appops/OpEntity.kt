@@ -1,10 +1,11 @@
 package net.bi4vmr.tool.android.ability.privacy.appops
 
 /**
- * AppOP实体。
+ * 实体类：AppOP。
  *
  * 对应AppOpsManager中的PackageOps类。
  *
+ * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
 data class OpEntity(

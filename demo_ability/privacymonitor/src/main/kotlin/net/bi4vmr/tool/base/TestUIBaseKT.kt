@@ -1,16 +1,13 @@
 package net.bi4vmr.tool.base
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import net.bi4vmr.tool.android.ability.privacy.CameraPrivacyMonitor
 import net.bi4vmr.tool.android.ability.privacy.LocationPrivacyMonitor
 import net.bi4vmr.tool.android.ability.privacy.MICPrivacyMonitor
-import net.bi4vmr.tool.android.ability.privacy.tool.AppInfoHelper
-import net.bi4vmr.tool.base.list.ListAdapterKT
-import net.bi4vmr.tool.base.list.PrivacyVO
+import net.bi4vmr.tool.android.ability.privacy.PrivacyItem
+import net.bi4vmr.tool.android.ability.privacy.PrivacyMonitor
 import net.bi4vmr.tool.databinding.TestuiBaseBinding
 
 class TestUIBaseKT : AppCompatActivity() {
@@ -20,14 +17,15 @@ class TestUIBaseKT : AppCompatActivity() {
     }
 
     private val locationMonitor: LocationPrivacyMonitor by lazy { LocationPrivacyMonitor(applicationContext) }
+    private val locationAppListener: PrivacyAppListener by lazy { PrivacyAppListener() }
     private val micMonitor: MICPrivacyMonitor by lazy { MICPrivacyMonitor(applicationContext) }
+    private val micAppListener: PrivacyAppListener by lazy { PrivacyAppListener() }
     private val cameraMonitor: CameraPrivacyMonitor by lazy { CameraPrivacyMonitor(applicationContext) }
-    private val appHelper: AppInfoHelper by lazy { AppInfoHelper.getInstance(applicationContext) }
+    private val cameraAppListener: PrivacyAppListener by lazy { PrivacyAppListener() }
 
     private val binding: TestuiBaseBinding by lazy {
         TestuiBaseBinding.inflate(layoutInflater)
     }
-    private val adapter: ListAdapterKT by lazy { ListAdapterKT(applicationContext) }
     private val floatWindow: PrivacyListWindowKT by lazy { PrivacyListWindowKT(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,11 +33,10 @@ class TestUIBaseKT : AppCompatActivity() {
         setContentView(binding.root)
 
         with(binding) {
-            list.adapter = adapter
-
             btnLocation.setOnClickListener { testLocation() }
             btnMIC.setOnClickListener { testMic() }
             btnCamera.setOnClickListener { testCamera() }
+            btnReset.setOnClickListener { testReset() }
         }
     }
 
@@ -48,28 +45,13 @@ class TestUIBaseKT : AppCompatActivity() {
         Log.i(TAG, "--- 开始监听位置权限 ---")
         binding.tvLog.append("\n--- 开始监听位置权限 ---\n")
 
-        // locationMonitor.needDistinctResult = true
-        locationMonitor.registerAppOpsListener { list ->
-            Handler(Looper.getMainLooper()).post {
-                Log.i(TAG, "$list")
-                binding.tvLog.append("$list")
-            }
-
-            val datas: MutableList<PrivacyVO> = mutableListOf()
-            list.forEach {
-                val vo = PrivacyVO(
-                    appHelper.getLabel(it.packageName) ?: "-",
-                    appHelper.getIcon(it.packageName),
-                    it
-                )
-                datas.add(vo)
-            }
-
-            floatWindow.updateData(datas)
-        }
-        locationMonitor.startWatchOps()
-        locationMonitor.getAppOps()
+        floatWindow.clearData()
         floatWindow.show()
+
+        locationMonitor.registerPrivacyItemListener(locationAppListener)
+        val initList: List<PrivacyItem> = locationMonitor.getPrivacyItems()
+        Log.i(TAG, "LocationPrivacyListInit. List:$initList")
+        floatWindow.updateData(locationMonitor.getPrivacyItems())
     }
 
     // 开始监听录音权限
@@ -77,28 +59,13 @@ class TestUIBaseKT : AppCompatActivity() {
         Log.i(TAG, "--- 开始监听录音权限 ---")
         binding.tvLog.append("\n--- 开始监听录音权限 ---\n")
 
-        // micMonitor.needDistinctResult = true
-        micMonitor.registerAppOpsListener { list ->
-            Handler(Looper.getMainLooper()).post {
-                Log.i(TAG, "$list")
-                binding.tvLog.append("$list")
-            }
+        floatWindow.clearData()
+        floatWindow.show()
 
-            val datas: MutableList<PrivacyVO> = mutableListOf()
-            list.forEach {
-                val vo = PrivacyVO(
-                    appHelper.getLabel(it.packageName) ?: "-",
-                    appHelper.getIcon(it.packageName),
-                    it
-                )
-                datas.add(vo)
-            }
-
-            Handler(Looper.getMainLooper()).post {
-                adapter.updateData(datas)
-            }
-        }
-        micMonitor.startWatchOps()
+        micMonitor.registerPrivacyItemListener(locationAppListener)
+        val initList: List<PrivacyItem> = micMonitor.getPrivacyItems()
+        Log.i(TAG, "MicPrivacyListInit. List:$initList")
+        floatWindow.updateData(initList)
     }
 
     // 开始监听录像权限
@@ -106,27 +73,34 @@ class TestUIBaseKT : AppCompatActivity() {
         Log.i(TAG, "--- 开始监听录像权限 ---")
         binding.tvLog.append("\n--- 开始监听录像权限 ---\n")
 
-        // cameraMonitor.needDistinctResult = true
-        cameraMonitor.registerAppOpsListener { list ->
-            Handler(Looper.getMainLooper()).post {
-                Log.i(TAG, "$list")
-                binding.tvLog.append("$list")
-            }
+        floatWindow.clearData()
+        floatWindow.show()
 
-            val datas: MutableList<PrivacyVO> = mutableListOf()
-            list.forEach {
-                val vo = PrivacyVO(
-                    appHelper.getLabel(it.packageName) ?: "-",
-                    appHelper.getIcon(it.packageName),
-                    it
-                )
-                datas.add(vo)
-            }
+        cameraMonitor.registerPrivacyItemListener(cameraAppListener)
+        val initList: List<PrivacyItem> = cameraMonitor.getPrivacyItems()
+        Log.i(TAG, "CameraPrivacyListInit. List:$initList")
+        floatWindow.updateData(cameraMonitor.getPrivacyItems())
+    }
 
-            Handler(Looper.getMainLooper()).post {
-                adapter.updateData(datas)
-            }
+    // 重置悬浮窗
+    private fun testReset() {
+        Log.i(TAG, "--- 重置悬浮窗 ---")
+        binding.tvLog.append("\n--- 重置悬浮窗 ---\n")
+
+        floatWindow.dismiss()
+
+        locationMonitor.unregisterPrivacyItemListener(locationAppListener)
+        micMonitor.unregisterPrivacyItemListener(micAppListener)
+        cameraMonitor.unregisterPrivacyItemListener(cameraAppListener)
+    }
+
+    /**
+     * 隐私权限应用监听器实现。
+     */
+    private inner class PrivacyAppListener : PrivacyMonitor.PrivacyItemListener() {
+        override fun onListChange(items: List<PrivacyItem>) {
+            Log.i(TAG, "PrivacyItemListener-OnChange. List:$items")
+            floatWindow.updateData(items)
         }
-        cameraMonitor.startWatchOps()
     }
 }

@@ -5,9 +5,11 @@ package net.bi4vmr.tool.android.ability.privacy.appops
  *
  * 本类的内容来自AOSP的"android/app/AppProtoEnums.java"。
  *
+ * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
 enum class AppOps(
+
     /**
      * OP代码
      */

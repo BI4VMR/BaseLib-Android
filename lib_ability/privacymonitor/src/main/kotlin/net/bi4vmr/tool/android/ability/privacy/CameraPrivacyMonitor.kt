@@ -2,20 +2,40 @@ package net.bi4vmr.tool.android.ability.privacy
 
 import android.content.Context
 import net.bi4vmr.tool.android.ability.privacy.appops.AppOps
-import net.bi4vmr.tool.android.ability.privacy.monitor.AppOpsMonitor
+import net.bi4vmr.tool.android.ability.privacy.appops.OpEntity
+import net.bi4vmr.tool.android.ability.privacy.monitor.AppOpsFilterCallback
 
 /**
- * 位置权限使用状况监视器。
+ * 录像权限使用状况监视器。
  *
  * @author bi4vmr@outlook.com
  */
-class CameraPrivacyMonitor(mContext: Context) : AppOpsMonitor(mContext, OPS_CAMERA) {
+class CameraPrivacyMonitor(mContext: Context) : PrivacyMonitor(mContext, OPS_CAMERA) {
 
     companion object {
-        // 录像权限
+
+        /**
+         * 录像权限列表。
+         */
         val OPS_CAMERA: IntArray = intArrayOf(
             AppOps.CAMERA.code,
             AppOps.PHONE_CALL_CAMERA.code
         )
+    }
+
+    init {
+        setAppOpsFilter(Filter())
+    }
+
+    /**
+     * OP筛选器。
+     */
+    private inner class Filter : AppOpsFilterCallback {
+
+        override fun test(item: OpEntity): Boolean {
+            val isInCalling: Boolean = (item.opCode == AppOps.PHONE_CALL_CAMERA.code) && item.isRunning
+            val isInRecording: Boolean = (item.opCode == AppOps.CAMERA.code) && item.isRunning
+            return isInCalling || isInRecording
+        }
     }
 }

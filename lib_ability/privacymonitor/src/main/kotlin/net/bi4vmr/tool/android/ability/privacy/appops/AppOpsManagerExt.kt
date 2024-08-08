@@ -9,6 +9,7 @@ import java.lang.reflect.Method
 /**
  * AppOpsManager功能扩展。
  *
+ * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
 class AppOpsManagerExt private constructor(mContext: Context) {

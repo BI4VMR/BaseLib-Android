@@ -8,8 +8,8 @@ import net.bi4vmr.tool.android.ability.privacy.appops.OpEntity
  *
  * [AppOpsMonitor]从[AppOpsManager]中获取到应用权限使用记录列表时，将会回调该接口中的方法，判断是否将表项加入结果列表。
  *
- * @author bi4vmr@outlook.com
  * @since 1.0.0
+ * @author bi4vmr@outlook.com
  */
 fun interface AppOpsFilterCallback {
 

@@ -5,6 +5,7 @@ import net.bi4vmr.tool.android.ability.privacy.appops.OpEntity
 /**
  * OP列表监听器。
  *
+ * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
 fun interface AppOpsListener {
