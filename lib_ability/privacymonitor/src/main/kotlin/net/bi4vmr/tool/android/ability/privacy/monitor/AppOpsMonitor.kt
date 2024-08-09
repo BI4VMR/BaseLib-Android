@@ -13,13 +13,22 @@ import java.util.concurrent.CopyOnWriteArraySet
 /**
  * 应用权限使用状况监视器。
  *
+ * 本类实现了对AppOps列表的轮询监控，每当OP列表发生变化时，将会通过回调通知调用者，并且增加了黑名单等过滤机制。
+ *
  * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
 open class AppOpsMonitor(
-    // 上下文环境
+    /**
+     * 上下文环境。
+     */
     mContext: Context,
-    // 调用者关注的OP项
+
+    /**
+     * 调用者关注的OP类型列表。
+     *
+     * 如果需要监控所有OP类型，可以传入空值。
+     */
     private val ops: IntArray? = null
 ) {
 
@@ -34,6 +43,13 @@ open class AppOpsMonitor(
     private var opFilter: AppOpsFilterCallback = DefaultOpsFilter()
     // 缓存上次查询到的OpEntity列表
     private var lastOpList: List<OpEntity> = listOf()
+
+    /**
+     * 包名黑名单。
+     *
+     * 集合中的项将被过滤。
+     */
+    private val blackList: MutableSet<String> = CopyOnWriteArraySet()
     // OP监听器回调集合
     private val listeners: MutableSet<AppOpsListener> = CopyOnWriteArraySet()
 
@@ -89,11 +105,20 @@ open class AppOpsMonitor(
      * @param[rawList] 从系统API获取到的原始OP列表。
      */
     private fun processOPList(rawList: List<OpEntity>) {
-        // 根据包名去重
-        var result: MutableList<OpEntity> = if (distinctByPackageName) {
-            rawList.distinctBy { it.packageName }.toMutableList()
+        var result: MutableList<OpEntity> = if (blackList.isNotEmpty()) {
+            // 如果包名在黑名单中，则将其丢弃。
+            rawList.filter {
+                !blackList.contains(it.packageName)
+            }.toMutableList()
         } else {
             rawList.toMutableList()
+        }
+
+        // 根据包名去重
+        result = if (distinctByPackageName) {
+            result.distinctBy { it.packageName }.toMutableList()
+        } else {
+            result.toMutableList()
         }
 
         // 根据过滤规则筛选有效表项
@@ -104,6 +129,18 @@ open class AppOpsMonitor(
             lastOpList = result
             notifyAppOpsChange(result)
         }
+    }
+
+    fun addAppToBlackList(name: String) {
+        blackList.add(name)
+    }
+
+    fun removeAppFromBlackList(name: String) {
+        blackList.remove(name)
+    }
+
+    fun clearBlackList() {
+        blackList.clear()
     }
 
     /**
