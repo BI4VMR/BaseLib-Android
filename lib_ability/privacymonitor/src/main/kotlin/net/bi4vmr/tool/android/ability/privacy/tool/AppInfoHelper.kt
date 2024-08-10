@@ -61,6 +61,19 @@ class AppInfoHelper private constructor(mContext: Context) {
     }
 
     /**
+     * TODO 添加简述。
+     *
+     * TODO 添加详情。
+     *
+     * @param[TODO] 添加参数说明。
+     * @return TODO 添加返回值说明。
+     */
+    fun isSystemApp(packageName: String): Boolean {
+        val flags: Int = getApplicationInfo(packageName)?.flags ?: 0
+        return (flags and ApplicationInfo.FLAG_SYSTEM) == 0
+    }
+
+    /**
      * 获取应用信息。
      *
      * @param[packageName] 待查询的应用程序包名。
