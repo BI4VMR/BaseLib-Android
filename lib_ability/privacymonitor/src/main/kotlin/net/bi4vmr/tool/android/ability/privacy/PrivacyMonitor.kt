@@ -34,6 +34,12 @@ open class PrivacyMonitor(
     // 敏感权限应用监听器回调集合
     private val listeners: MutableSet<PrivacyItemListener> = CopyOnWriteArraySet()
 
+    /**
+     * 是否忽略系统应用。
+     *
+     */
+    private var ignoreSystemApp: Boolean = false
+
     init {
         registerAppOpsListener { list ->
             val appList: List<PrivacyItem> = opListToPrivacyList(list)
@@ -49,6 +55,14 @@ open class PrivacyMonitor(
      */
     fun getPrivacyItems(): List<PrivacyItem> {
         return opListToPrivacyList(getAppOps())
+    }
+
+    fun isIgnoreSystemApp(): Boolean {
+        return ignoreSystemApp
+    }
+
+    fun setIgnoreSystemApp(state: Boolean) {
+        ignoreSystemApp = state
     }
 
     /**
@@ -85,12 +99,17 @@ open class PrivacyMonitor(
     private fun opListToPrivacyList(opList: List<OpEntity>): List<PrivacyItem> {
         val datas: MutableList<PrivacyItem> = mutableListOf()
         // 为原始OP信息添加应用名称与图标
-        opList.forEach {
+        for (op: OpEntity in opList) {
+            // 忽略系统应用
+            if (ignoreSystemApp && appInfoHelper.isSystemApp(op.packageName)) {
+                continue
+            }
+
             // 获取应用名称，如果获取失败则填写为包名。
-            val appName: String = appInfoHelper.getLabel(it.packageName) ?: it.packageName
+            val appName: String = appInfoHelper.getLabel(op.packageName) ?: op.packageName
             // 获取应用图标，如果获取失败则填写为默认图片。
-            val icon: Drawable = appInfoHelper.getIcon(it.packageName) ?: defaultIcon
-            val item = PrivacyItem(appName, icon, it)
+            val icon: Drawable = appInfoHelper.getIcon(op.packageName) ?: defaultIcon
+            val item = PrivacyItem(appName, icon, op)
             datas.add(item)
         }
 

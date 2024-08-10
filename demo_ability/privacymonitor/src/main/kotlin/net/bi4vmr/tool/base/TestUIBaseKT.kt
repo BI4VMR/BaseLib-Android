@@ -48,6 +48,7 @@ class TestUIBaseKT : AppCompatActivity() {
         floatWindow.clearData()
         floatWindow.show()
 
+        locationMonitor.setIgnoreSystemApp(true)
         locationMonitor.registerPrivacyItemListener(locationAppListener)
         val initList: List<PrivacyItem> = locationMonitor.getPrivacyItems()
         Log.i(TAG, "LocationPrivacyListInit. List:$initList")
@@ -62,6 +63,7 @@ class TestUIBaseKT : AppCompatActivity() {
         floatWindow.clearData()
         floatWindow.show()
 
+        micMonitor.setIgnoreSystemApp(true)
         micMonitor.registerPrivacyItemListener(locationAppListener)
         val initList: List<PrivacyItem> = micMonitor.getPrivacyItems()
         Log.i(TAG, "MicPrivacyListInit. List:$initList")
@@ -76,6 +78,7 @@ class TestUIBaseKT : AppCompatActivity() {
         floatWindow.clearData()
         floatWindow.show()
 
+        cameraMonitor.setIgnoreSystemApp(true)
         cameraMonitor.registerPrivacyItemListener(cameraAppListener)
         val initList: List<PrivacyItem> = cameraMonitor.getPrivacyItems()
         Log.i(TAG, "CameraPrivacyListInit. List:$initList")
