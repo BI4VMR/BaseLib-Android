@@ -1,4 +1,4 @@
-package net.bi4vmr.tool.android.ability.privacy.appops
+package net.bi4vmr.tool.android.ability.privacymonitor.appops
 
 /**
  * AppOp枚举。
@@ -15,6 +15,7 @@ enum class AppOps(
      */
     val code: Int
 ) {
+
     NONE(-1),
     COARSE_LOCATION(0),
     FINE_LOCATION(1),

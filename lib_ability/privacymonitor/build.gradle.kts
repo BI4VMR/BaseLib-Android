@@ -1,4 +1,4 @@
-val versionMinSDK: Int = Integer.valueOf(agp.versions.minSdk.get())
+val versionMinSDK = 30
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
 val mvnGroupID: String = "net.bi4vmr.tool.android"

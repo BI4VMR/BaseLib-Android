@@ -1,4 +1,4 @@
-package net.bi4vmr.tool.android.ability.privacy.monitor
+package net.bi4vmr.tool.android.ability.privacymonitor.monitor
 
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
@@ -6,8 +6,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import net.bi4vmr.tool.android.ability.privacy.appops.AppOpsManagerExt
-import net.bi4vmr.tool.android.ability.privacy.appops.OpEntity
+import net.bi4vmr.tool.android.ability.privacymonitor.appops.AppOpsManagerExt
+import net.bi4vmr.tool.android.ability.privacymonitor.appops.OpEntity
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**

@@ -1,7 +1,7 @@
-package net.bi4vmr.tool.android.ability.privacy.monitor
+package net.bi4vmr.tool.android.ability.privacymonitor.monitor
 
 import android.app.AppOpsManager
-import net.bi4vmr.tool.android.ability.privacy.appops.OpEntity
+import net.bi4vmr.tool.android.ability.privacymonitor.appops.OpEntity
 
 /**
  * OP表项筛选回调。

@@ -11,7 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import net.bi4vmr.tool.R
-import net.bi4vmr.tool.android.ability.privacy.PrivacyItem
+import net.bi4vmr.tool.android.ability.privacymonitor.PrivacyItem
 import net.bi4vmr.tool.databinding.PrivacyListBinding
 
 /**

@@ -3,11 +3,11 @@ package net.bi4vmr.tool.base
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import net.bi4vmr.tool.android.ability.privacy.CameraPrivacyMonitor
-import net.bi4vmr.tool.android.ability.privacy.LocationPrivacyMonitor
-import net.bi4vmr.tool.android.ability.privacy.MICPrivacyMonitor
-import net.bi4vmr.tool.android.ability.privacy.PrivacyItem
-import net.bi4vmr.tool.android.ability.privacy.PrivacyMonitor
+import net.bi4vmr.tool.android.ability.privacymonitor.CameraPrivacyMonitor
+import net.bi4vmr.tool.android.ability.privacymonitor.LocationPrivacyMonitor
+import net.bi4vmr.tool.android.ability.privacymonitor.MICPrivacyMonitor
+import net.bi4vmr.tool.android.ability.privacymonitor.PrivacyItem
+import net.bi4vmr.tool.android.ability.privacymonitor.PrivacyMonitor
 import net.bi4vmr.tool.databinding.TestuiBaseBinding
 
 class TestUIBaseKT : AppCompatActivity() {
@@ -48,7 +48,7 @@ class TestUIBaseKT : AppCompatActivity() {
         floatWindow.clearData()
         floatWindow.show()
 
-        locationMonitor.setIgnoreSystemApp(true)
+        // locationMonitor.setIgnoreSystemApp(true)
         locationMonitor.registerPrivacyItemListener(locationAppListener)
         val initList: List<PrivacyItem> = locationMonitor.getPrivacyItems()
         Log.i(TAG, "LocationPrivacyListInit. List:$initList")
@@ -63,7 +63,7 @@ class TestUIBaseKT : AppCompatActivity() {
         floatWindow.clearData()
         floatWindow.show()
 
-        micMonitor.setIgnoreSystemApp(true)
+        // micMonitor.setIgnoreSystemApp(true)
         micMonitor.registerPrivacyItemListener(locationAppListener)
         val initList: List<PrivacyItem> = micMonitor.getPrivacyItems()
         Log.i(TAG, "MicPrivacyListInit. List:$initList")
@@ -78,7 +78,7 @@ class TestUIBaseKT : AppCompatActivity() {
         floatWindow.clearData()
         floatWindow.show()
 
-        cameraMonitor.setIgnoreSystemApp(true)
+        // cameraMonitor.setIgnoreSystemApp(true)
         cameraMonitor.registerPrivacyItemListener(cameraAppListener)
         val initList: List<PrivacyItem> = cameraMonitor.getPrivacyItems()
         Log.i(TAG, "CameraPrivacyListInit. List:$initList")

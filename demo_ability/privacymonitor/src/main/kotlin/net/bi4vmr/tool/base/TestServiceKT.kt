@@ -4,8 +4,8 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import net.bi4vmr.tool.android.ability.privacy.appops.AppOps
-import net.bi4vmr.tool.android.ability.privacy.appops.AppOpsManagerExt
+import net.bi4vmr.tool.android.ability.privacymonitor.appops.AppOps
+import net.bi4vmr.tool.android.ability.privacymonitor.appops.AppOpsManagerExt
 
 /**
  * 示例服务：隐私权限使用状况。

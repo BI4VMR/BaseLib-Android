@@ -1,7 +1,7 @@
-package net.bi4vmr.tool.android.ability.privacy
+package net.bi4vmr.tool.android.ability.privacymonitor
 
 import android.graphics.drawable.Drawable
-import net.bi4vmr.tool.android.ability.privacy.appops.OpEntity
+import net.bi4vmr.tool.android.ability.privacymonitor.appops.OpEntity
 
 /**
  * 实体类：隐私应用表项。

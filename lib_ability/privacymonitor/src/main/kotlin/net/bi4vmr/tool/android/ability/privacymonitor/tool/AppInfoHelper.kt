@@ -1,4 +1,4 @@
-package net.bi4vmr.tool.android.ability.privacy.tool
+package net.bi4vmr.tool.android.ability.privacymonitor.tool
 
 import android.annotation.SuppressLint
 import android.content.Context

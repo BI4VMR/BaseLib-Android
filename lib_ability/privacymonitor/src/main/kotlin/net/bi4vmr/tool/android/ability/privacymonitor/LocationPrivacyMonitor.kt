@@ -1,9 +1,9 @@
-package net.bi4vmr.tool.android.ability.privacy
+package net.bi4vmr.tool.android.ability.privacymonitor
 
 import android.content.Context
-import net.bi4vmr.tool.android.ability.privacy.appops.AppOps
-import net.bi4vmr.tool.android.ability.privacy.appops.OpEntity
-import net.bi4vmr.tool.android.ability.privacy.monitor.AppOpsFilterCallback
+import net.bi4vmr.tool.android.ability.privacymonitor.appops.AppOps
+import net.bi4vmr.tool.android.ability.privacymonitor.appops.OpEntity
+import net.bi4vmr.tool.android.ability.privacymonitor.monitor.AppOpsFilterCallback
 
 /**
  * 位置权限使用状况监视器。

@@ -1,10 +1,12 @@
-package net.bi4vmr.tool.android.ability.privacy.appops
+package net.bi4vmr.tool.android.ability.privacymonitor.appops
 
 import android.annotation.SuppressLint
 import android.app.AppOpsManager
 import android.content.Context
 import android.util.Log
+import net.bi4vmr.tool.android.ability.privacymonitor.common.LogConfig
 import java.lang.reflect.Method
+import java.util.concurrent.Executors
 
 /**
  * AppOpsManager功能扩展。
@@ -32,11 +34,27 @@ class AppOpsManagerExt private constructor(mContext: Context) {
             return instance!!
         }
 
-        private val TAG = "BaseLib-${AppOpsManagerExt::class.java.simpleName}"
+        private val TAG = "${LogConfig.TAG_PREFIX}${AppOpsManagerExt::class.java.simpleName}"
     }
 
     private val opsManagerClass = AppOpsManager::class.java
     private val opsManager: AppOpsManager = mContext.getSystemService(opsManagerClass)
+
+    init {
+        Log.i(TAG, "startWatchingActive")
+        val exec = Executors.newSingleThreadExecutor()
+        val arr = arrayOf(
+            AppOpsManager.OPSTR_CAMERA,
+            AppOpsManager.OPSTR_MONITOR_HIGH_POWER_LOCATION,
+            AppOpsManager.OPSTR_RECORD_AUDIO
+        )
+
+        opsManager.startWatchingActive(arr, exec, object : AppOpsManager.OnOpActiveChangedListener {
+            override fun onOpActiveChanged(op: String, uid: Int, packageName: String, active: Boolean) {
+                Log.i("TestApp", "OnOpActiveChanged. Name:[$op] Active:[$active] PackageName:[$packageName] UID:[$uid]")
+            }
+        })
+    }
 
     /**
      * 查询权限使用情况。
@@ -69,12 +87,18 @@ class AppOpsManagerExt private constructor(mContext: Context) {
                             // 获取OP代码
                             val methodGetOP = entry.javaClass.getMethod("getOp")
                             val opCode: Int = methodGetOP.invoke(entry) as Int
+                            // 获取Mode代码
+                            val methodGetMode = entry.javaClass.getMethod("getMode")
+                            val modeCode: Int = methodGetMode.invoke(entry) as Int
+
                             // 获取当前是否正在运行
                             val methodIsRunning = entry.javaClass.getMethod("isRunning")
                             val running: Boolean = methodIsRunning.invoke(entry) as Boolean
                             // 将OP记录转换为PrivacyItem
                             val opName: String = AppOps.valueOf(opCode)?.toString() ?: "UNKNOWN"
-                            result.add(OpEntity(packageName, uid, opCode, opName, running))
+                            result.add(OpEntity(packageName, uid, opCode, opName, modeCode, running).apply {
+                                Log.i("TestApp", "${this}")
+                            })
                         }
                     }
                 }

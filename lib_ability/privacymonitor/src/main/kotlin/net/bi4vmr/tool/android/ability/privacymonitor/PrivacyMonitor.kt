@@ -1,11 +1,10 @@
-package net.bi4vmr.tool.android.ability.privacy
+package net.bi4vmr.tool.android.ability.privacymonitor
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import net.bi4vmr.tool.android.ability.privacy.appops.OpEntity
-import net.bi4vmr.tool.android.ability.privacy.monitor.AppOpsMonitor
-import net.bi4vmr.tool.android.ability.privacy.tool.AppInfoHelper
-import net.bi4vmr.tool.android.ability.privacymonitor.R
+import net.bi4vmr.tool.android.ability.privacymonitor.appops.OpEntity
+import net.bi4vmr.tool.android.ability.privacymonitor.monitor.AppOpsMonitor
+import net.bi4vmr.tool.android.ability.privacymonitor.tool.AppInfoHelper
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**

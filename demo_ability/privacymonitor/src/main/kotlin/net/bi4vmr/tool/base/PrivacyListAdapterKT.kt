@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import net.bi4vmr.tool.android.ability.privacy.PrivacyItem
+import net.bi4vmr.tool.android.ability.privacymonitor.PrivacyItem
 import net.bi4vmr.tool.databinding.PrivacyListItemBinding
 
 /**
