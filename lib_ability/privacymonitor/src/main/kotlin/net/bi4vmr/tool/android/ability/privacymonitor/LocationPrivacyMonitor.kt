@@ -20,9 +20,7 @@ class LocationPrivacyMonitor(mContext: Context) : PrivacyMonitor(mContext, OPS_L
          */
         private val OPS_LOCATION: IntArray = intArrayOf(
             // 高精度GNSS位置
-            AppOps.MONITOR_HIGH_POWER_LOCATION.code,
-            // TODO Test 摄像头
-            AppOps.CAMERA.code,
+            AppOps.MONITOR_HIGH_POWER_LOCATION.code
         )
 
         private val TAG = "${PrivacyLog.TAG_PREFIX}${LocationPrivacyMonitor::class.java.simpleName}"
@@ -39,8 +37,7 @@ class LocationPrivacyMonitor(mContext: Context) : PrivacyMonitor(mContext, OPS_L
 
         override fun test(item: OpEntity): Boolean {
             // 仅当程序正在使用“高精度定位”权限，将其加入结果列表。
-            // TODO return (item.opCode == AppOps.MONITOR_HIGH_POWER_LOCATION.code) && item.running
-            return ((item.opCode == AppOps.MONITOR_HIGH_POWER_LOCATION.code) && item.running)||((item.opCode == AppOps.CAMERA.code) && item.running)
+            return (item.opCode == AppOps.MONITOR_HIGH_POWER_LOCATION.code) && item.running
         }
     }
 }
