@@ -52,10 +52,15 @@ class TestUIBaseKT : AppCompatActivity() {
         floatWindow.show()
 
         // locationMonitor.setIgnoreSystemApp(true)
+        // locationMonitor.isDistinctByPackageName(true)
         locationMonitor.registerPrivacyEventListener(locationAppListener)
         val initList: List<PrivacyItem> = locationMonitor.getPrivacyItems()
         Log.i(TAG, "LocationPrivacyListInit. List:$initList")
-        floatWindow.updateData(locationMonitor.getPrivacyItems())
+        floatWindow.updateData(initList)
+
+        val state: Boolean = locationMonitor.isInUsing()
+        Log.i(TAG, "LocationPrivacyStateInit. State:[$state]")
+        floatWindow.updateState(state)
     }
 
     // 开始监听录音权限
@@ -71,6 +76,10 @@ class TestUIBaseKT : AppCompatActivity() {
         val initList: List<PrivacyItem> = micMonitor.getPrivacyItems()
         Log.i(TAG, "MicPrivacyListInit. List:$initList")
         floatWindow.updateData(initList)
+
+        val state: Boolean = micMonitor.isInUsing()
+        Log.i(TAG, "MicPrivacyStateInit. State:[$state]")
+        floatWindow.updateState(state)
     }
 
     // 开始监听录像权限
@@ -86,6 +95,10 @@ class TestUIBaseKT : AppCompatActivity() {
         val initList: List<PrivacyItem> = cameraMonitor.getPrivacyItems()
         Log.i(TAG, "CameraPrivacyListInit. List:$initList")
         floatWindow.updateData(cameraMonitor.getPrivacyItems())
+
+        val state: Boolean = cameraMonitor.isInUsing()
+        Log.i(TAG, "CameraPrivacyStateInit. State:[$state]")
+        floatWindow.updateState(state)
     }
 
     // 重置悬浮窗
@@ -104,9 +117,15 @@ class TestUIBaseKT : AppCompatActivity() {
      * 隐私权限应用监听器实现。
      */
     private inner class PrivacyAppListener : PrivacyEventListener {
+
         override fun onListChange(items: List<PrivacyItem>) {
-            Log.i(TAG, "PrivacyItemListener-OnChange. List:$items")
+            Log.i(TAG, "PrivacyAppListener-OnListChange. List:$items")
             floatWindow.updateData(items)
+        }
+
+        override fun onStateChange(state: Boolean) {
+            Log.i(TAG, "PrivacyAppListener-OnStateChange. State:[$state]")
+            floatWindow.updateState(state)
         }
     }
 }

@@ -1,13 +1,14 @@
 package net.bi4vmr.tool.base
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import net.bi4vmr.tool.R
@@ -51,8 +52,6 @@ class PrivacyListWindowKT(private val mContext: Context) : Dialog(mContext, R.st
             }
         }
 
-        binding.tvNoItem.visibility = View.VISIBLE
-        binding.list.visibility = View.GONE
         binding.list.adapter = adapter
     }
 
@@ -61,24 +60,26 @@ class PrivacyListWindowKT(private val mContext: Context) : Dialog(mContext, R.st
         setContentView(binding.root)
     }
 
+    @SuppressLint("SetTextI18n")
+    fun updateState(state: Boolean) {
+        if (state) {
+            binding.tvState.text = "存在正在使用敏感权限的应用"
+            binding.tvState.setBackgroundColor(Color.RED)
+        } else {
+            binding.tvState.text = "没有正在使用敏感权限的应用"
+            binding.tvState.setBackgroundColor(Color.GREEN)
+        }
+    }
+
     fun updateData(data: List<PrivacyItem>) {
         Handler(Looper.getMainLooper()).post {
             adapter.updateData(data)
-            if (data.isEmpty()) {
-                binding.tvNoItem.visibility = View.VISIBLE
-                binding.list.visibility = View.GONE
-            } else {
-                binding.tvNoItem.visibility = View.GONE
-                binding.list.visibility = View.VISIBLE
-            }
         }
     }
 
     fun clearData() {
         Handler(Looper.getMainLooper()).post {
             adapter.clearData()
-            binding.tvNoItem.visibility = View.VISIBLE
-            binding.list.visibility = View.GONE
         }
     }
 }

@@ -29,6 +29,7 @@ data class PrivacyItem(
      */
     val op: OpEntity
 ) {
+
     companion object {
 
         /**

@@ -37,15 +37,26 @@ open class PrivacyMonitor(
 
     private val opManagerExt: AppOpsManagerExt = AppOpsManagerExt.getInstance(mContext)
     private val appInfoHelper: AppInfoHelper = AppInfoHelper.getInstance(mContext)
+
     // 敏感权限事件监听器的具体实现
     private val eventListeners: MutableSet<PrivacyEventListener> = CopyOnWriteArraySet()
-    // 缓存上次查询到的数据
+
+    // 缓存应用列表
     private var itemsCache: MutableList<PrivacyItem> = mutableListOf()
+
+    /**
+     * 上次权限被使用的状态。
+     *
+     * 列表变更后，将新结果与该变量比较，如果发生变化则通知监听器。
+     */
+    private var lastUseState: Boolean = false
+
     // OP运行状态监听器
     private val opActiveStateListener: OnOpActiveChangedListener = OPActiveStateListener()
 
     // 默认的应用图标
     private var defaultIcon: Drawable = mContext.resources.getDrawable(R.drawable.ic_app_default, null)
+
     // OP过滤器
     private var opFilter: AppOpsFilterCallback = DefaultOpsFilter()
 
@@ -66,14 +77,27 @@ open class PrivacyMonitor(
      */
     private var ignoreSystemApp: Boolean = false
 
+    /**
+     * 添加包名至黑名单。
+     *
+     * @param[name] 包名。
+     */
     fun addAppToBlackList(name: String) {
         blackList.add(name)
     }
 
+    /**
+     * 从黑名单移除包名。
+     *
+     * @param[name] 包名。
+     */
     fun removeAppFromBlackList(name: String) {
         blackList.remove(name)
     }
 
+    /**
+     * 清空黑名单。
+     */
     fun clearBlackList() {
         blackList.clear()
     }
@@ -156,6 +180,18 @@ open class PrivacyMonitor(
     }
 
     /**
+     * 当前权限是否正在被使用。
+     *
+     * 指示当前权限的整体状态，应用列表不为空时为`true`，否则为`false`。
+     *
+     * @param
+     * @return
+     */
+    fun isInUsing(): Boolean {
+        return processOPList(opManagerExt.getPackagesOps(ops)).isNotEmpty()
+    }
+
+    /**
      * 根据过滤规则处理原始列表，并将[OpEntity]对象转换为[PrivacyItem]对象。
      *
      * @param[rawList] 从[AppOpsManagerExt.getPackagesOps]获取到的原始OP信息列表。
@@ -205,6 +241,7 @@ open class PrivacyMonitor(
         if (eventListeners.isEmpty()) {
             // 更新缓存
             itemsCache = getPrivacyItems().toMutableList()
+            lastUseState = itemsCache.isNotEmpty()
             // 注册状态变化监听器
             opManagerExt.startWatchingActive(ops, opActiveStateListener)
         }
@@ -232,9 +269,11 @@ open class PrivacyMonitor(
      * @param[items] 应用列表。
      */
     private fun notifyPrivacyListChange(items: List<PrivacyItem>) {
+        PrivacyLog.printDebug(TAG, "NotifyPrivacyListChange start. List:$items")
         eventListeners.forEach {
             it.onListChange(items)
         }
+        PrivacyLog.printDebug(TAG, "NotifyPrivacyListChange end.")
     }
 
     /**
@@ -243,9 +282,11 @@ open class PrivacyMonitor(
      * @param[state] 使用状态。
      */
     private fun notifyPrivacyStateChange(state: Boolean) {
+        PrivacyLog.printDebug(TAG, "NotifyPrivacyStateChange start. State:[$state]")
         eventListeners.forEach {
             it.onStateChange(state)
         }
+        PrivacyLog.printDebug(TAG, "NotifyPrivacyStateChange end.")
     }
 
     /**
@@ -259,24 +300,65 @@ open class PrivacyMonitor(
                 TAG,
                 "OnOpActiveChanged. APP:[$packageName] UID:[$uid] Code:[$opCode] Name:[$op] State:[$active]"
             )
+
             // 查找缓存中是否有与当前事件匹配的项
-            itemsCache.find {
-                it.op.packageName == packageName &&
-                        it.op.uid == uid &&
-                        it.op.opCode == opCode
-            }?.let { item ->
-                // 最新状态与缓存状态不同时，触发后续操作，否则忽略该事件。
-                if (item.op.running != active) {
-                    // 如果OP没有被过滤规则丢弃，则更新至列表中。
-                    if (active) {
-                        val opEntity = OpEntity(packageName, uid, opCode, OpMode.ALLOWED.code, true)
-                        itemsCache.add(PrivacyItem.parseFromOpEntity(opEntity, appInfoHelper, defaultIcon))
-                    } else {
-                        itemsCache.remove(item)
+            fun findItemInCache(): PrivacyItem? {
+                return itemsCache.find {
+                    it.op.packageName == packageName &&
+                            it.op.uid == uid &&
+                            it.op.opCode == opCode
+                }
+            }
+
+            // 标志位：缓存是否改变
+            var cacheChanged = false
+            if (active) {
+                /* 添加表项的逻辑 */
+                run rules@{
+                    // 包名黑名单
+                    if (blackList.isNotEmpty() && blackList.contains(packageName)) {
+                        PrivacyLog.printDebug(TAG, "Item ignored by black list.")
+                        return@rules
                     }
-                    // 通知监听器
-                    notifyPrivacyListChange(itemsCache)
-                    notifyPrivacyStateChange(itemsCache.isNotEmpty())
+
+                    // 根据包名去重
+                    if (distinctByPackageName && findItemInCache() != null) {
+                        PrivacyLog.printDebug(TAG, "Item ignored by package name distinct rules.")
+                        return@rules
+                    }
+
+                    // 忽略系统应用
+                    if (ignoreSystemApp && appInfoHelper.isSystemApp(packageName)) {
+                        PrivacyLog.printDebug(TAG, "Item ignored by exclude system app.")
+                        return@rules
+                    }
+
+                    // 自定义过滤规则
+                    val opEntity = OpEntity(packageName, uid, opCode, OpMode.ALLOWED.code, true)
+                    if (!opFilter.test(opEntity)) {
+                        PrivacyLog.printDebug(TAG, "Item ignored by custom filter.")
+                        return@rules
+                    }
+
+                    // 未被上述过滤条件丢弃，将该项添加至缓存。
+                    itemsCache.add(PrivacyItem.parseFromOpEntity(opEntity, appInfoHelper, defaultIcon))
+                    cacheChanged = true
+                }
+            } else {
+                /* 移除表项的逻辑 */
+                findItemInCache()?.let {
+                    itemsCache.remove(it)
+                    cacheChanged = true
+                }
+            }
+
+            if (cacheChanged) {
+                notifyPrivacyListChange(itemsCache)
+                // 如果整体使用状态发生变化，则发出通知。
+                val newUseState: Boolean = itemsCache.isNotEmpty()
+                if (lastUseState != newUseState) {
+                    lastUseState = newUseState
+                    notifyPrivacyStateChange(newUseState)
                 }
             }
         }
