@@ -17,14 +17,14 @@ public class MainActivity extends AppCompatActivity {
         ActivityMainBinding binding = ActivityMainBinding.inflate(LayoutInflater.from(this));
         setContentView(binding.getRoot());
 
-        // // Logcat工具
+        // 基本应用
         // binding.btnLogcat.setOnClickListener(v -> {
         //     Intent intent = new Intent(this, TestUILogcat.class);
         //     startActivity(intent);
         // });
 
-        // Logcat工具(KT)
-        binding.btnLogcatKT.setOnClickListener(v -> {
+        // 基本应用(KT)
+        binding.btnBaseKT.setOnClickListener(v -> {
             Intent intent = new Intent(this, TestUIBaseKT.class);
             startActivity(intent);
         });

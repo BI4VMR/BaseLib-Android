@@ -21,10 +21,10 @@
             android:textSize="18sp" />
 
         <Button
-            android:id="@+id/btnLogcat"
+            android:id="@+id/btnBase"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Logcat工具"
+            android:text="基本应用"
             android:textAllCaps="false" />
 
         <TextView
@@ -35,10 +35,10 @@
             android:textSize="18sp" />
 
         <Button
-            android:id="@+id/btnLogcatKT"
+            android:id="@+id/btnBaseKT"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Logcat工具"
+            android:text="基本应用"
             android:textAllCaps="false" />
     </LinearLayout>
 </ScrollView>
