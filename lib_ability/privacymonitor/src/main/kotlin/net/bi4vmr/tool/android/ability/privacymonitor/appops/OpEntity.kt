@@ -28,11 +28,6 @@ data class OpEntity(
     val opCode: Int,
 
     /**
-     * OP名称，可以使用[AppOps.valueOf]方法根据[opCode]转换。
-     */
-    val opName: String,
-
-    /**
      * 请求结果编码。
      */
     val modeCode: Int,
@@ -44,5 +39,5 @@ data class OpEntity(
      * 当程序停止该操作后，OP的运行状态将变为"false"。另外一部分OP没有该属性，它们是瞬态的，运行状态永远为"false"，例如：粗略位置
      * `COARSE_LOCATION(0)` 和精确位置 `FINE_LOCATION(1)` 。
      */
-    val isRunning: Boolean
+    val running: Boolean
 )

@@ -3,7 +3,6 @@ package net.bi4vmr.tool.android.ability.privacymonitor
 import android.content.Context
 import net.bi4vmr.tool.android.ability.privacymonitor.appops.AppOps
 import net.bi4vmr.tool.android.ability.privacymonitor.appops.OpEntity
-import net.bi4vmr.tool.android.ability.privacymonitor.monitor.AppOpsFilterCallback
 
 /**
  * 录像权限使用状况监视器。
@@ -33,8 +32,8 @@ class CameraPrivacyMonitor(mContext: Context) : PrivacyMonitor(mContext, OPS_CAM
     private inner class Filter : AppOpsFilterCallback {
 
         override fun test(item: OpEntity): Boolean {
-            val isInCalling: Boolean = (item.opCode == AppOps.PHONE_CALL_CAMERA.code) && item.isRunning
-            val isInRecording: Boolean = (item.opCode == AppOps.CAMERA.code) && item.isRunning
+            val isInCalling: Boolean = (item.opCode == AppOps.PHONE_CALL_CAMERA.code) && item.running
+            val isInRecording: Boolean = (item.opCode == AppOps.CAMERA.code) && item.running
             return isInCalling || isInRecording
         }
     }

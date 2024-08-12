@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import net.bi4vmr.tool.android.ability.privacymonitor.PrivacyItem
+import net.bi4vmr.tool.android.ability.privacymonitor.appops.AppOps
 import net.bi4vmr.tool.databinding.PrivacyListItemBinding
 
 /**
@@ -66,7 +67,7 @@ class PrivacyListAdapterKT : RecyclerView.Adapter<PrivacyListAdapterKT.BaseViewH
             with(binding) {
                 tvTitle.text = data.title
                 tvPackageName.text = data.op.packageName
-                tvOPName.text = data.op.opName
+                tvOPName.text = AppOps.valueOf(data.op.opCode)?.name ?: "-"
                 ivIcon.setImageDrawable(data.icon)
             }
         }

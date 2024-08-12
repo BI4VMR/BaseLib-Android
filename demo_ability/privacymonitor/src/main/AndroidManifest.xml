@@ -31,10 +31,5 @@
         <activity
             android:name=".base.TestUIBaseKT"
             android:exported="false" />
-
-        <!-- 示例服务：AppOps接口测试 -->
-        <service
-            android:name=".base.TestServiceKT"
-            android:exported="true" />
     </application>
 </manifest>

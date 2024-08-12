@@ -1,12 +1,12 @@
-package net.bi4vmr.tool.android.ability.privacymonitor.monitor
+package net.bi4vmr.tool.android.ability.privacymonitor
 
-import android.app.AppOpsManager
+import net.bi4vmr.tool.android.ability.privacymonitor.appops.AppOpsManagerExt
 import net.bi4vmr.tool.android.ability.privacymonitor.appops.OpEntity
 
 /**
  * OP表项筛选回调。
  *
- * [AppOpsMonitor]从[AppOpsManager]中获取到应用权限使用记录列表时，将会回调该接口中的方法，判断是否将表项加入结果列表。
+ * [PrivacyMonitor]从[AppOpsManagerExt]中获取到OP记录列表时，将会回调该接口中的方法，判断是否将表项加入结果列表。
  *
  * @since 1.0.0
  * @author bi4vmr@outlook.com

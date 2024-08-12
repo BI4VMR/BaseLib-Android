@@ -6,8 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import net.bi4vmr.tool.android.ability.privacymonitor.CameraPrivacyMonitor
 import net.bi4vmr.tool.android.ability.privacymonitor.LocationPrivacyMonitor
 import net.bi4vmr.tool.android.ability.privacymonitor.MICPrivacyMonitor
+import net.bi4vmr.tool.android.ability.privacymonitor.PrivacyEventListener
 import net.bi4vmr.tool.android.ability.privacymonitor.PrivacyItem
-import net.bi4vmr.tool.android.ability.privacymonitor.PrivacyMonitor
+import net.bi4vmr.tool.android.ability.privacymonitor.util.PrivacyLog
 import net.bi4vmr.tool.databinding.TestuiBaseBinding
 
 class TestUIBaseKT : AppCompatActivity() {
@@ -32,6 +33,8 @@ class TestUIBaseKT : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        PrivacyLog.debug = true
+
         with(binding) {
             btnLocation.setOnClickListener { testLocation() }
             btnMIC.setOnClickListener { testMic() }
@@ -49,7 +52,7 @@ class TestUIBaseKT : AppCompatActivity() {
         floatWindow.show()
 
         // locationMonitor.setIgnoreSystemApp(true)
-        locationMonitor.registerPrivacyItemListener(locationAppListener)
+        locationMonitor.registerPrivacyEventListener(locationAppListener)
         val initList: List<PrivacyItem> = locationMonitor.getPrivacyItems()
         Log.i(TAG, "LocationPrivacyListInit. List:$initList")
         floatWindow.updateData(locationMonitor.getPrivacyItems())
@@ -64,7 +67,7 @@ class TestUIBaseKT : AppCompatActivity() {
         floatWindow.show()
 
         // micMonitor.setIgnoreSystemApp(true)
-        micMonitor.registerPrivacyItemListener(locationAppListener)
+        micMonitor.registerPrivacyEventListener(micAppListener)
         val initList: List<PrivacyItem> = micMonitor.getPrivacyItems()
         Log.i(TAG, "MicPrivacyListInit. List:$initList")
         floatWindow.updateData(initList)
@@ -79,7 +82,7 @@ class TestUIBaseKT : AppCompatActivity() {
         floatWindow.show()
 
         // cameraMonitor.setIgnoreSystemApp(true)
-        cameraMonitor.registerPrivacyItemListener(cameraAppListener)
+        cameraMonitor.registerPrivacyEventListener(cameraAppListener)
         val initList: List<PrivacyItem> = cameraMonitor.getPrivacyItems()
         Log.i(TAG, "CameraPrivacyListInit. List:$initList")
         floatWindow.updateData(cameraMonitor.getPrivacyItems())
@@ -92,15 +95,15 @@ class TestUIBaseKT : AppCompatActivity() {
 
         floatWindow.dismiss()
 
-        locationMonitor.unregisterPrivacyItemListener(locationAppListener)
-        micMonitor.unregisterPrivacyItemListener(micAppListener)
-        cameraMonitor.unregisterPrivacyItemListener(cameraAppListener)
+        locationMonitor.unregisterPrivacyEventListener(locationAppListener)
+        micMonitor.unregisterPrivacyEventListener(micAppListener)
+        cameraMonitor.unregisterPrivacyEventListener(cameraAppListener)
     }
 
     /**
      * 隐私权限应用监听器实现。
      */
-    private inner class PrivacyAppListener : PrivacyMonitor.PrivacyItemListener() {
+    private inner class PrivacyAppListener : PrivacyEventListener {
         override fun onListChange(items: List<PrivacyItem>) {
             Log.i(TAG, "PrivacyItemListener-OnChange. List:$items")
             floatWindow.updateData(items)

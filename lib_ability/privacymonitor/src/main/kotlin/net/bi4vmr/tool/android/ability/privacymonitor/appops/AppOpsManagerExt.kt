@@ -3,10 +3,9 @@ package net.bi4vmr.tool.android.ability.privacymonitor.appops
 import android.annotation.SuppressLint
 import android.app.AppOpsManager
 import android.content.Context
-import android.util.Log
-import net.bi4vmr.tool.android.ability.privacymonitor.common.LogConfig
+import net.bi4vmr.tool.android.ability.privacymonitor.util.PrivacyLog
 import java.lang.reflect.Method
-import java.util.concurrent.Executors
+import java.util.concurrent.Executor
 
 /**
  * AppOpsManager功能扩展。
@@ -14,7 +13,7 @@ import java.util.concurrent.Executors
  * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
-class AppOpsManagerExt private constructor(mContext: Context) {
+class AppOpsManagerExt private constructor(private val mContext: Context) {
 
     companion object {
         // 本实例的生命周期跟随整个进程，不会导致内存泄露，因此可以忽略警告。
@@ -34,32 +33,63 @@ class AppOpsManagerExt private constructor(mContext: Context) {
             return instance!!
         }
 
-        private val TAG = "${LogConfig.TAG_PREFIX}${AppOpsManagerExt::class.java.simpleName}"
+        private val TAG = "${PrivacyLog.TAG_PREFIX}${AppOpsManagerExt::class.java.simpleName}"
     }
 
     private val opsManagerClass = AppOpsManager::class.java
     private val opsManager: AppOpsManager = mContext.getSystemService(opsManagerClass)
 
-    init {
-        Log.i(TAG, "startWatchingActive")
-        val exec = Executors.newSingleThreadExecutor()
-        val arr = arrayOf(
-            AppOpsManager.OPSTR_CAMERA,
-            AppOpsManager.OPSTR_MONITOR_HIGH_POWER_LOCATION,
-            AppOpsManager.OPSTR_RECORD_AUDIO
-        )
-
-        opsManager.startWatchingActive(arr, exec, object : AppOpsManager.OnOpActiveChangedListener {
-            override fun onOpActiveChanged(op: String, uid: Int, packageName: String, active: Boolean) {
-                Log.i("TestApp", "OnOpActiveChanged. Name:[$op] Active:[$active] PackageName:[$packageName] UID:[$uid]")
-            }
-        })
+    /**
+     * 获取OP名称对应的编码。
+     *
+     * @param[name] OP名称。
+     * @return OP编码。如果无法识别，则返回 `-1` 。
+     */
+    fun opNameToCode(name: String): Int {
+        try {
+            val method: Method = opsManagerClass.getMethod("strOpToOp", String::class.java)
+            return method.invoke(opsManager, name) as? Int ?: -1
+        } catch (e: Exception) {
+            PrivacyLog.printError(TAG, "Reflect operate failed! Reason:[${e.message}]", e)
+            return -1
+        }
     }
 
     /**
-     * 查询权限使用情况。
+     * 获取OP编码对应的字符串名称。
      *
-     * 如果调用者没有被授予 `GET_APP_OPS_STATS` 权限，只能查到自身的结果。
+     * @param[code] OP编码。
+     * @return 名称。如果数值超出范围则返回 `Unknown(<编号>)` 。
+     */
+    fun opCodeToName(code: Int): String {
+        try {
+            val method: Method = opsManagerClass.getMethod("opToPublicName", Int::class.java)
+            return method.invoke(opsManager, code) as? String ?: "NULL"
+        } catch (e: Exception) {
+            PrivacyLog.printError(TAG, "Reflect operate failed! Reason:[${e.message}]", e)
+            return "NULL"
+        }
+    }
+
+    /**
+     * 将编码数组转为名称数组。
+     *
+     * @param[codes] OP编码数组。
+     * @return OP名称数组。
+     */
+    fun opCodeArrayToNameArray(codes: IntArray): Array<String> {
+        val result: Array<String> = Array(codes.size) { "" }
+        codes.forEachIndexed { index, code ->
+            result[index] = opCodeToName(code)
+        }
+
+        return result
+    }
+
+    /**
+     * 查询近期的OP事件。
+     *
+     * 如果调用者没有被授予 `GET_APP_OPS_STATS` 权限，只能查到自身产生的事件。
      *
      * @param[ops] OP类型数组。传入空值时表示不限制类型，将返回所有OP信息。
      * @return 列表，元素为[OpEntity]对象。
@@ -94,11 +124,12 @@ class AppOpsManagerExt private constructor(mContext: Context) {
                             // 获取当前是否正在运行
                             val methodIsRunning = entry.javaClass.getMethod("isRunning")
                             val running: Boolean = methodIsRunning.invoke(entry) as Boolean
-                            // 将OP记录转换为PrivacyItem
-                            val opName: String = AppOps.valueOf(opCode)?.toString() ?: "UNKNOWN"
-                            result.add(OpEntity(packageName, uid, opCode, opName, modeCode, running).apply {
-                                Log.i("TestApp", "${this}")
-                            })
+                            // 将OP记录转换为OpEntity
+                            val entity = OpEntity(packageName, uid, opCode, modeCode, running)
+                            result.add(entity)
+
+                            // 输出调试日志
+                            PrivacyLog.printDebug(TAG, "GetPackagesOps. $entity")
                         }
                     }
                 }
@@ -106,9 +137,56 @@ class AppOpsManagerExt private constructor(mContext: Context) {
 
             return result
         } catch (e: Exception) {
-            Log.e(TAG, "Reflect operate failed! Reason:[${e.message}]")
-            e.printStackTrace()
+            PrivacyLog.printError(TAG, "Reflect operate failed! Reason:[${e.message}]", e)
             return result
         }
+    }
+
+    /**
+     * 开始监听OP的运行状态变化。
+     *
+     * 监听各应用OP的 `isRunning` 状态变化事件。
+     *
+     * @param[ops] 感兴趣的OP名称数组。
+     * @param[callback] 监听器具体实现。
+     * @param[executor] 事件回调线程。若不特别指定，默认使用主线程执行回调。
+     */
+    @JvmOverloads
+    fun startWatchingActive(
+        ops: Array<String>,
+        callback: AppOpsManager.OnOpActiveChangedListener,
+        executor: Executor = mContext.mainExecutor,
+    ) {
+        PrivacyLog.printDebug(TAG, "StartWatchingActive. Ops:${ops.contentToString()}")
+        opsManager.startWatchingActive(ops, executor, callback)
+    }
+
+    /**
+     * 开始监听OP的运行状态变化。
+     *
+     * 监听各应用OP的 `isRunning` 状态变化事件。
+     *
+     * @param[ops] 感兴趣的OP编码数组。
+     * @param[callback] 监听器具体实现。
+     * @param[executor] 事件回调线程。若不特别指定，默认使用主线程执行回调。
+     */
+    @JvmOverloads
+    fun startWatchingActive(
+        ops: IntArray,
+        callback: AppOpsManager.OnOpActiveChangedListener,
+        executor: Executor = mContext.mainExecutor,
+    ) {
+        PrivacyLog.printDebug(TAG, "StartWatchingActive. Ops:${ops.contentToString()}")
+        opsManager.startWatchingActive(opCodeArrayToNameArray(ops), executor, callback)
+    }
+
+    /**
+     * 停止监听OP的运行状态变化。
+     *
+     * @param[callback] 监听器具体实现。
+     */
+    fun stopWatchingActive(callback: AppOpsManager.OnOpActiveChangedListener) {
+        PrivacyLog.printDebug(TAG, "StopWatchingActive.")
+        opsManager.stopWatchingActive(callback)
     }
 }
