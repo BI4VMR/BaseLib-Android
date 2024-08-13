@@ -370,8 +370,8 @@ open class PrivacyMonitor(
     private inner class DefaultOpsFilter : AppOpsFilterCallback {
 
         override fun test(item: OpEntity): Boolean {
-            // 默认不过滤任何表项
-            return true
+            // 只有具备运行状态属性的权限才有意义，并且当前未在使用的OP项不需要加表，因此将其忽略。
+            return item.running
         }
     }
 }

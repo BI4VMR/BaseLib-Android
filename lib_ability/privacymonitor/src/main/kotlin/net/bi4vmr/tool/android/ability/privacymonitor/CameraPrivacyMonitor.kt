@@ -2,7 +2,6 @@ package net.bi4vmr.tool.android.ability.privacymonitor
 
 import android.content.Context
 import net.bi4vmr.tool.android.ability.privacymonitor.appops.AppOps
-import net.bi4vmr.tool.android.ability.privacymonitor.appops.OpEntity
 import net.bi4vmr.tool.android.ability.privacymonitor.util.PrivacyLog
 
 /**
@@ -26,21 +25,5 @@ class CameraPrivacyMonitor(mContext: Context) : PrivacyMonitor(mContext, OPS_CAM
         )
 
         private val TAG = "${PrivacyLog.TAG_PREFIX}${CameraPrivacyMonitor::class.java.simpleName}"
-    }
-
-    init {
-        setAppOpsFilter(Filter())
-    }
-
-    /**
-     * OP筛选器。
-     */
-    private inner class Filter : AppOpsFilterCallback {
-
-        override fun test(item: OpEntity): Boolean {
-            val isInCalling: Boolean = (item.opCode == AppOps.PHONE_CALL_CAMERA.code) && item.running
-            val isInRecording: Boolean = (item.opCode == AppOps.CAMERA.code) && item.running
-            return isInCalling || isInRecording
-        }
     }
 }
