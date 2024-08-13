@@ -7,7 +7,8 @@ ktx_serial-json = "1.6.2"
 
 
 # ----- Gradle插件 -----
-gradle_ksp = "1.9.21-1.0.16"
+plugin_ksp = "1.9.21-1.0.16"
+plugin_dokka = "1.9.20"
 
 
 # 组件
@@ -27,4 +28,5 @@ ktx_serial-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serializati
 # ----- Kotlin -----
 core = { id = "org.jetbrains.kotlin.jvm", version.ref = "core" }
 serial = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "core" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "gradle_ksp" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "plugin_ksp" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "plugin_dokka" }

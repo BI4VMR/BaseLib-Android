@@ -27,8 +27,8 @@ room = "2.5.1"
 
 
 # ----- Gradle插件 -----
-agp = "7.4.2"
-kotlinSupport = "1.9.21"
+plugin_agp = "7.4.2"
+plugin_kotlin = "1.9.21"
 
 
 # 组件
@@ -90,6 +90,6 @@ coil = ["coil-core", "coil-gif"]
 
 # Gradle插件
 [plugins]
-application = { id = "com.android.application", version.ref = "agp" }
-library = { id = "com.android.library", version.ref = "agp" }
-kotlinSupport = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinSupport" }
+application = { id = "com.android.application", version.ref = "plugin_agp" }
+library = { id = "com.android.library", version.ref = "plugin_agp" }
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "plugin_kotlin" }

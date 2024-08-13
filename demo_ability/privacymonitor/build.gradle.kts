@@ -6,7 +6,7 @@ val versionModuleName: String = agp.versions.moduleName.get()
 
 plugins {
     alias(libAndroid.plugins.application)
-    alias(libAndroid.plugins.kotlinSupport)
+    alias(libAndroid.plugins.kotlin)
 }
 
 @Suppress("UnstableApiUsage")

@@ -7,7 +7,7 @@ val mvnVersion: String = "1.0.0"
 
 plugins {
     alias(libAndroid.plugins.library)
-    alias(libAndroid.plugins.kotlinSupport)
+    alias(libAndroid.plugins.kotlin)
     id("maven-publish")
 }
 
