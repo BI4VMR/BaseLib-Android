@@ -1,3 +1,4 @@
+// 相关接口自API 30开始提供，因此本库只能用在最低API大于或等于30的项目中。
 val versionMinSDK = 30
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
@@ -6,8 +7,8 @@ val mvnArtifactID: String = "ability-privacymonitor"
 val mvnVersion: String = "1.0.0"
 
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.android.kotlin)
+    alias(libAndroid.plugins.library)
+    alias(libAndroid.plugins.kotlinSupport)
     id("maven-publish")
 }
 
@@ -45,10 +46,6 @@ android {
             withJavadocJar()
         }
     }
-}
-
-dependencies {
-    implementation(libs.kotlinx.coroutines)
 }
 
 publishing {

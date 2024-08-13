@@ -91,20 +91,34 @@ dependencyResolutionManagement {
 
     // 版本管理配置
     versionCatalogs {
-        // 声明命名空间"libs"
-        create("libs") {
-            // 导入依赖版本配置文件
-            from(files("script/version/dependency.toml"))
+        // 公共组件(Java)
+        create("libJava") {
+            from(files("misc/version/dependency_public_java.toml"))
+        }
+
+        // 公共组件(Kotlin)
+        create("libKotlin") {
+            from(files("misc/version/dependency_public_kotlin.toml"))
+        }
+
+        // 公共组件(Android)
+        create("libAndroid") {
+            from(files("misc/version/dependency_public_android.toml"))
+        }
+
+        // 私有组件(Java)
+        create("privateLibJava") {
+            from(files("misc/version/dependency_private_java.toml"))
+        }
+
+        // 私有组件(Android)
+        create("privateLibAndroid") {
+            from(files("misc/version/dependency_private_android.toml"))
         }
 
         // AGP相关配置
         create("agp") {
-            from(files("script/version/agp.toml"))
-        }
-
-        // 基础组件库
-        create("baselibs") {
-            from(files("script/version/dependency_baselib.toml"))
+            from(files("misc/version/agp.toml"))
         }
     }
 }

@@ -13,8 +13,8 @@ java {
 }
 
 dependencies {
-    implementation(baselibs.android.common.logcat)
-    implementation(baselibs.android.ability.privacymonitor)
+    implementation(privateLibAndroid.common.logcat)
+    implementation(privateLibAndroid.ability.privacyMonitor)
 }
 
 publishing {

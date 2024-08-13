@@ -1,0 +1,95 @@
+# 版本号
+[versions]
+# ----- 核心组件 -----
+appcompat = "1.6.1"
+constraintLayout = "2.1.4"
+material = "1.8.0"
+
+ktx_core = "1.10.1"
+ktx_coroutine = "1.8.1"
+ktx_lifecycleRuntime = "2.5.1"
+ktx_lifecycleViewModel = "2.5.1"
+
+
+# ----- 实用工具 -----
+utilCodeX = "1.31.1"
+
+
+# ----- 图像处理 -----
+glide-core = "4.16.0"
+
+coil-core = "1.1.1"
+coil-gif = "0.9.5"
+
+
+# ----- 数据存储 -----
+room = "2.5.1"
+
+
+# ----- Gradle插件 -----
+agp = "7.4.2"
+kotlinSupport = "1.9.21"
+
+
+# 组件
+[libraries]
+# ----- 核心组件 -----
+# AppCompat
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+# 约束布局
+constraintLayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayout" }
+# Google Material Design
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
+# Android Kotlin扩展（核心）
+ktx_core = { group = "androidx.core", name = "core-ktx", version.ref = "ktx_core" }
+# Android Kotlin扩展（协程）
+ktx_coroutine = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "ktx_coroutine" }
+# Android Kotlin扩展（Lifecycle-Runtime）
+ktx_lifecycleRuntime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "ktx_lifecycleRuntime" }
+# Android Kotlin扩展（Lifecycle-ViewModel）
+ktx_lifecycleViewModel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "ktx_lifecycleViewModel" }
+
+
+# ----- 实用工具 -----
+# UtilCodeX
+utilCodeX = { group = "com.blankj", name = "utilcodex", version.ref = "utilCodeX" }
+
+
+# ----- 图像处理 -----
+# Glide
+glide-core = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide-core" }
+glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide-core" }
+
+# Coil
+coil-core = { group = "io.coil-kt", name = "coil", version.ref = "coil-core" }
+coil-gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil-gif" }
+
+
+# ----- 数据存储 -----
+# Room核心
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+# Room注解处理器
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+# Room Kotlin扩展
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+# Room测试支持
+room-test = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+
+
+# 编组
+[bundles]
+# ----- 核心组件 -----
+base = ["appcompat", "material", "constraintLayout"]
+baseWithKT = ["appcompat", "material", "constraintLayout", "ktx_core", "ktx_coroutine", "ktx_lifecycleRuntime", "ktx_lifecycleViewModel"]
+
+
+# ----- 图像处理 -----
+coil = ["coil-core", "coil-gif"]
+
+
+# Gradle插件
+[plugins]
+application = { id = "com.android.application", version.ref = "agp" }
+library = { id = "com.android.library", version.ref = "agp" }
+kotlinSupport = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinSupport" }

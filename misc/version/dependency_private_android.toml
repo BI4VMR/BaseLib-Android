@@ -1,0 +1,16 @@
+# 版本号
+[versions]
+all = "1.0.0"
+
+common_logcat = "1.0.0"
+
+ability_privacyMonitor = "1.0.0"
+
+
+# 组件
+[libraries]
+all = { group = "net.bi4vmr.tool.android", name = "all", version.ref = "all" }
+
+common_logcat = { group = "net.bi4vmr.tool.android", name = "common-logcat", version.ref = "common_logcat" }
+
+ability_privacyMonitor = { group = "net.bi4vmr.tool.android", name = "ability-privacymonitor", version.ref = "ability_privacyMonitor" }
