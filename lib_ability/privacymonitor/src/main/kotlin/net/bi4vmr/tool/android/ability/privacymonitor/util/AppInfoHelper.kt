@@ -33,7 +33,7 @@ class AppInfoHelper private constructor(mContext: Context) {
             return instance!!
         }
 
-        private val TAG = "BaseLib-${AppInfoHelper::class.java.simpleName}"
+        private val TAG = "${PrivacyLog.TAG_PREFIX}${AppInfoHelper::class.java.simpleName}"
     }
 
     private val packageManager: PackageManager = mContext.packageManager

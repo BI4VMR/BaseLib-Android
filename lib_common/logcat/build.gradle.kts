@@ -6,8 +6,8 @@ val mvnArtifactID: String = "common-logcat"
 val mvnVersion: String = "1.0.0"
 
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.android.kotlin)
+    alias(libAndroid.plugins.library)
+    alias(libAndroid.plugins.kotlinSupport)
     id("maven-publish")
 }
 
@@ -48,7 +48,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.kotlinx.coroutines)
+    implementation(libKotlin.ktx.coroutines)
 }
 
 publishing {
