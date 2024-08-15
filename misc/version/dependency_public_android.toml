@@ -10,6 +10,7 @@ ktx_coroutine = "1.8.1"
 ktx_lifecycleRuntime = "2.5.1"
 ktx_lifecycleViewModel = "2.5.1"
 
+desugarLibs = "2.0.4"
 
 # ----- 实用工具 -----
 utilCodeX = "1.31.1"
@@ -49,6 +50,9 @@ ktx_coroutine = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-an
 ktx_lifecycleRuntime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "ktx_lifecycleRuntime" }
 # Android Kotlin扩展（Lifecycle-ViewModel）
 ktx_lifecycleViewModel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "ktx_lifecycleViewModel" }
+
+# Android Kotlin扩展（Lifecycle-ViewModel）
+desugarLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarLibs" }
 
 
 # ----- 实用工具 -----
