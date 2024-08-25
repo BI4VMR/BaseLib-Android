@@ -135,14 +135,21 @@ include(":lib_all")
 // Logcat扩展
 include(":lib_common:logcat")
 
+// ----- 用户界面 -----
+// 通用工具
+include(":lib_ui:universal")
+
 // ----- 核心能力 -----
 // 敏感权限监控工具
 include(":lib_ability:privacymonitor")
 
 
 // ----- 示例程序 -----
-// 示例程序：通用组件 - 日志
+// 通用组件 - Logcat扩展
 include(":demo_common:logcat")
 
-// 示例程序：系统能力 - 敏感权限监控工具
+// 用户界面 - 通用工具
+include(":demo_ui:universal")
+
+// 系统能力 - 敏感权限监控工具
 include(":demo_ability:privacymonitor")
