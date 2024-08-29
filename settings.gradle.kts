@@ -139,13 +139,13 @@ include(":lib_common:logcat")
 // 通用工具
 include(":lib_ui:universal")
 // 模拟时钟
-// include(":lib_ui:analogClock")
+include(":lib_ui:analogClock")
 
 // ----- 核心能力 -----
 // 敏感权限监控工具
 include(":lib_ability:privacyMonitor")
 // Framework扩展
-// include(":lib_ability:frameworkExtend")
+include(":lib_ability:frameworkExtend")
 
 
 // ----- 示例程序 -----
