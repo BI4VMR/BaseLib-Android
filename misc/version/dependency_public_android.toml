@@ -2,13 +2,19 @@
 [versions]
 # ----- 核心组件 -----
 appcompat = "1.6.1"
-constraintLayout = "2.1.4"
 material = "1.8.0"
+constraintLayout = "2.1.4"
 
 ktx_core = "1.10.1"
 ktx_coroutine = "1.8.1"
 ktx_lifecycleRuntime = "2.5.1"
 ktx_lifecycleViewModel = "2.5.1"
+
+desugarLibs = "2.0.4"
+
+compose_bom = "2023.06.01"
+compose_activity = "1.6.1"
+compose_compiler = "1.5.7"
 
 
 # ----- 实用工具 -----
@@ -27,8 +33,8 @@ room = "2.5.1"
 
 
 # ----- Gradle插件 -----
-agp = "7.4.2"
-kotlinSupport = "1.9.21"
+plugin_agp = "7.4.2"
+plugin_kotlin = "1.9.21"
 
 
 # 组件
@@ -36,19 +42,40 @@ kotlinSupport = "1.9.21"
 # ----- 核心组件 -----
 # AppCompat
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-# 约束布局
-constraintLayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayout" }
 # Google Material Design
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+# Constraint Layout
+constraintLayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayout" }
 
-# Android Kotlin扩展（核心）
+# Android Kotlin扩展
+# 核心
 ktx_core = { group = "androidx.core", name = "core-ktx", version.ref = "ktx_core" }
-# Android Kotlin扩展（协程）
+# 协程
 ktx_coroutine = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "ktx_coroutine" }
-# Android Kotlin扩展（Lifecycle-Runtime）
+# Lifecycle-Runtime
 ktx_lifecycleRuntime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "ktx_lifecycleRuntime" }
-# Android Kotlin扩展（Lifecycle-ViewModel）
+# Lifecycle-ViewModel
 ktx_lifecycleViewModel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "ktx_lifecycleViewModel" }
+
+# JVM8-11兼容模块
+desugarLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarLibs" }
+
+# Jetpack Compose
+# BOM文件（其他组件的版本配置文件）
+compose_bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose_bom" }
+# 核心组件
+compose_ui = { group = "androidx.compose.ui", name = "ui" }
+compose_ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+# Material3支持
+compose_material3 = { group = "androidx.compose.material3", name = "material3" }
+# Activity支持
+compose_activity = { group = "androidx.activity", name = "activity-compose", version.ref = "compose_activity" }
+# 调试工具
+compose_ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+compose_ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+# 测试工具
+compose_ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+compose_ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 
 
 # ----- 实用工具 -----
@@ -58,7 +85,9 @@ utilCodeX = { group = "com.blankj", name = "utilcodex", version.ref = "utilCodeX
 
 # ----- 图像处理 -----
 # Glide
+# 核心
 glide-core = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide-core" }
+# 注解处理器
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide-core" }
 
 # Coil
@@ -67,21 +96,33 @@ coil-gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil-gif" }
 
 
 # ----- 数据存储 -----
-# Room核心
+# Room
+# 核心
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-# Room注解处理器
+# 注解处理器
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-# Room Kotlin扩展
+# Kotlin扩展
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
-# Room测试支持
+# 测试工具
 room-test = { group = "androidx.room", name = "room-testing", version.ref = "room" }
 
 
 # 编组
 [bundles]
 # ----- 核心组件 -----
-base = ["appcompat", "material", "constraintLayout"]
-baseWithKT = ["appcompat", "material", "constraintLayout", "ktx_core", "ktx_coroutine", "ktx_lifecycleRuntime", "ktx_lifecycleViewModel"]
+# APP
+# 核心组件
+appBase = ["appcompat", "material", "constraintLayout"]
+# 核心组件(Kotlin)
+appBaseKT = ["appcompat", "material", "constraintLayout", "ktx_core", "ktx_coroutine", "ktx_lifecycleRuntime", "ktx_lifecycleViewModel"]
+
+# Jetpack Compose
+# 核心组件
+compose_core = ["compose_ui", "compose_ui-graphics", "compose_material3", "compose_activity"]
+# 调试工具
+compose_debug = ["compose_ui-tooling", "compose_ui-tooling-preview"]
+# 测试工具
+compose_test = ["compose_ui-test-manifest", "compose_ui-test-junit4"]
 
 
 # ----- 图像处理 -----
@@ -90,6 +131,6 @@ coil = ["coil-core", "coil-gif"]
 
 # Gradle插件
 [plugins]
-application = { id = "com.android.application", version.ref = "agp" }
-library = { id = "com.android.library", version.ref = "agp" }
-kotlinSupport = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinSupport" }
+application = { id = "com.android.application", version.ref = "plugin_agp" }
+library = { id = "com.android.library", version.ref = "plugin_agp" }
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "plugin_kotlin" }

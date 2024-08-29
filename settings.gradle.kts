@@ -138,10 +138,14 @@ include(":lib_common:logcat")
 // ----- 用户界面 -----
 // 通用工具
 include(":lib_ui:universal")
+// 模拟时钟
+include(":lib_ui:analogClock")
 
 // ----- 核心能力 -----
 // 敏感权限监控工具
-include(":lib_ability:privacymonitor")
+include(":lib_ability:privacyMonitor")
+// Framework
+include(":lib_ability:frameworkExtend")
 
 
 // ----- 示例程序 -----
@@ -152,4 +156,4 @@ include(":demo_common:logcat")
 include(":demo_ui:universal")
 
 // 系统能力 - 敏感权限监控工具
-include(":demo_ability:privacymonitor")
+include(":demo_ability:privacyMonitor")

@@ -4,7 +4,7 @@ val versionMinSDK: Int = Integer.valueOf(agp.versions.minSdk.get())
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
 val mvnGroupID: String = "net.bi4vmr.tool.android"
-val mvnArtifactID: String = "ui-universal"
+val mvnArtifactID: String = "ui-analogClock"
 val mvnVersion: String = "1.0.0"
 
 plugins {
@@ -14,7 +14,7 @@ plugins {
 }
 
 android {
-    namespace = "net.bi4vmr.tool.android.ui.universal"
+    namespace = "net.bi4vmr.tool.android.ui.analogclock"
     compileSdk = versionCompileSDK
 
     defaultConfig {

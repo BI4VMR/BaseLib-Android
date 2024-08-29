@@ -6,7 +6,7 @@ val versionModuleName: String = agp.versions.moduleName.get()
 
 plugins {
     alias(libAndroid.plugins.application)
-    alias(libAndroid.plugins.kotlinSupport)
+    alias(libAndroid.plugins.kotlin)
 }
 
 @Suppress("UnstableApiUsage")
@@ -66,10 +66,10 @@ android {
 }
 
 dependencies {
-    implementation(libAndroid.bundles.baseWithKT)
+    implementation(libAndroid.bundles.appBaseKT)
 
     // 本地依赖
-    implementation(project(":lib_ability:privacymonitor"))
+    implementation(project(":lib_ability:privacyMonitor"))
     // 远程依赖
     // implementation(privateLibAndroid.ability.privacyMonitor)
 }

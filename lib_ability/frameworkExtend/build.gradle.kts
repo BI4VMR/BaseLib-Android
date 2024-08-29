@@ -1,10 +1,9 @@
-@file:Suppress("UnstableApiUsage")
-
-val versionMinSDK: Int = Integer.valueOf(agp.versions.minSdk.get())
+// 相关接口自API 30开始提供，因此本库只能用在最低API大于或等于30的项目中。
+val versionMinSDK = 30
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
 val mvnGroupID: String = "net.bi4vmr.tool.android"
-val mvnArtifactID: String = "ui-universal"
+val mvnArtifactID: String = "ability-frameworkExtend"
 val mvnVersion: String = "1.0.0"
 
 plugins {
@@ -13,8 +12,9 @@ plugins {
     id("maven-publish")
 }
 
+@Suppress("UnstableApiUsage")
 android {
-    namespace = "net.bi4vmr.tool.android.ui.universal"
+    namespace = "net.bi4vmr.tool.android.ability.frameworkextend"
     compileSdk = versionCompileSDK
 
     defaultConfig {
@@ -46,10 +46,6 @@ android {
             withJavadocJar()
         }
     }
-}
-
-dependencies {
-    implementation(libKotlin.ktx.coroutines)
 }
 
 publishing {
