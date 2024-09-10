@@ -3,7 +3,7 @@ val versionMinSDK = 30
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
 val mvnGroupID: String = "net.bi4vmr.tool.android"
-val mvnArtifactID: String = "ability-frameworkExtend"
+val mvnArtifactID: String = "ability-frameworkextend"
 val mvnVersion: String = "1.0.0"
 
 plugins {

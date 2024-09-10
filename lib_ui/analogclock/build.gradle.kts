@@ -4,7 +4,7 @@ val versionMinSDK: Int = Integer.valueOf(agp.versions.minSdk.get())
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
 val mvnGroupID: String = "net.bi4vmr.tool.android"
-val mvnArtifactID: String = "ui-analogClock"
+val mvnArtifactID: String = "ui-analogclock"
 val mvnVersion: String = "1.0.0"
 
 plugins {
@@ -36,6 +36,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "11"
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 
     publishing {

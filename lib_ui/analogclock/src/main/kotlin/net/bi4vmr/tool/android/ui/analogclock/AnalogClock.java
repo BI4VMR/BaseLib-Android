@@ -1,4 +1,4 @@
-package net.bi4vmr.study.analogclock;
+package net.bi4vmr.tool.android.ui.analogclock;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,7 +13,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import net.bi4vmr.study.databinding.AnalogClockMainViewBinding;
+import net.bi4vmr.tool.android.ui.analogclock.databinding.AnalogClockMainViewBinding;
 
 import java.time.Instant;
 import java.time.LocalTime;
@@ -22,19 +22,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Name        : AnalogClock
+ * 模拟时钟控件。
  * <p>
- * Author      : BI4VMR
+ * 支持秒级指针平滑显示，可以自由替换素材并设置缩放，用于取代原生的AnalogClock。
  * <p>
- * Email       : bi4vmr@outlook.com
- * <p>
- * Date        : 2023-12-28 19:30
- * <p>
- * Description : 模拟时钟控件，支持秒级指针平滑显示，可以自由替换素材并设置缩放，用于取代原生的AnalogClock。
- * <p>
- * 设计参考：
- * <p>
- * <a href="https://github.com/schorschii/FsClock-Android">FsClock-Android</a>
+ * 设计参考：<a href="https://github.com/schorschii/FsClock-Android">FsClock-Android</a>
+ *
+ * @author bi4vmr@outlook.com
+ * @since 1.0.0
  */
 public class AnalogClock extends FrameLayout {
 
