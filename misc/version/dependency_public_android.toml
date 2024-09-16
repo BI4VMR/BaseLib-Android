@@ -22,10 +22,10 @@ utilCodeX = "1.31.1"
 
 
 # ----- 图像处理 -----
-glide-core = "4.16.0"
+glide_core = "4.16.0"
 
-coil-core = "1.1.1"
-coil-gif = "0.9.5"
+coil_core = "1.1.1"
+coil_gif = "0.9.5"
 
 
 # ----- 数据存储 -----
@@ -40,14 +40,18 @@ plugin_kotlin = "1.9.21"
 # 组件
 [libraries]
 # ----- 核心组件 -----
+# < Android 官方组件 >
 # AppCompat
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-# Google Material Design
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 # Constraint Layout
 constraintLayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayout" }
+# Google Material Design
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
-# Android Kotlin扩展
+# JVM8-11兼容模块
+desugarLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarLibs" }
+
+# < Android Kotlin扩展 >
 # 核心
 ktx_core = { group = "androidx.core", name = "core-ktx", version.ref = "ktx_core" }
 # 协程
@@ -57,10 +61,7 @@ ktx_lifecycleRuntime = { group = "androidx.lifecycle", name = "lifecycle-runtime
 # Lifecycle-ViewModel
 ktx_lifecycleViewModel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "ktx_lifecycleViewModel" }
 
-# JVM8-11兼容模块
-desugarLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarLibs" }
-
-# Jetpack Compose
+# < Jetpack Compose >
 # BOM文件（其他组件的版本配置文件）
 compose_bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose_bom" }
 # 核心组件
@@ -84,27 +85,29 @@ utilCodeX = { group = "com.blankj", name = "utilcodex", version.ref = "utilCodeX
 
 
 # ----- 图像处理 -----
-# Glide
+# < Glide >
 # 核心
-glide-core = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide-core" }
+glide_core = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide_core" }
 # 注解处理器
-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide-core" }
+glide_compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide_core" }
 
-# Coil
-coil-core = { group = "io.coil-kt", name = "coil", version.ref = "coil-core" }
-coil-gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil-gif" }
+# < Coil >
+# 核心
+coil_core = { group = "io.coil-kt", name = "coil", version.ref = "coil_core" }
+# GIF支持
+coil_gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil_gif" }
 
 
 # ----- 数据存储 -----
 # Room
 # 核心
-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room_runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 # 注解处理器
-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room_compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 # Kotlin扩展
-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room_ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 # 测试工具
-room-test = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+room_test = { group = "androidx.room", name = "room-testing", version.ref = "room" }
 
 
 # 编组
@@ -118,15 +121,13 @@ appBaseKT = ["appcompat", "material", "constraintLayout", "ktx_core", "ktx_corou
 
 # Jetpack Compose
 # 核心组件
-compose_core = ["compose_ui", "compose_ui-graphics", "compose_material3", "compose_activity"]
-# 调试工具
-compose_debug = ["compose_ui-tooling", "compose_ui-tooling-preview"]
+compose_core = ["compose_ui", "compose_ui-graphics", "compose_material3", "compose_activity", "compose_ui-tooling", "compose_ui-tooling-preview"]
 # 测试工具
 compose_test = ["compose_ui-test-manifest", "compose_ui-test-junit4"]
 
 
 # ----- 图像处理 -----
-coil = ["coil-core", "coil-gif"]
+coil = ["coil_core", "coil_gif"]
 
 
 # Gradle插件

@@ -7,15 +7,18 @@ ktx_serial-json = "1.6.2"
 
 
 # ----- Gradle插件 -----
-gradle_ksp = "1.9.21-1.0.16"
+plugin_ksp = "1.9.21-1.0.16"
+plugin_dokka = "1.9.20"
 
 
 # 组件
 [libraries]
 # ----- 核心组件 -----
+# < Kotlin 官方组件 >
 # Kotlin标准库
-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "core" }
+standardlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "core" }
 
+# < Kotlin 官方扩展 >
 # Kotlin协程支持
 ktx_coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "ktx_coroutines" }
 # Kotlin序列化支持(JSON)
@@ -27,4 +30,5 @@ ktx_serial-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serializati
 # ----- Kotlin -----
 core = { id = "org.jetbrains.kotlin.jvm", version.ref = "core" }
 serial = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "core" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "gradle_ksp" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "plugin_ksp" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "plugin_dokka" }
