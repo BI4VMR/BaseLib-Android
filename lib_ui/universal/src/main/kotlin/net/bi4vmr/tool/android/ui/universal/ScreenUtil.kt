@@ -1,8 +1,11 @@
 package net.bi4vmr.tool.android.ui.universal
 
+import android.content.Context
 import android.content.res.Resources
+import android.os.Build
 import android.util.DisplayMetrics
 import android.util.TypedValue
+import android.view.WindowManager
 import kotlin.math.roundToInt
 
 /**
@@ -12,6 +15,72 @@ import kotlin.math.roundToInt
  * @author bi4vmr@outlook.com
  */
 object ScreenUtil {
+
+    /**
+     * 获取屏幕宽度。
+     *
+     * 默认使用主屏幕的参数。
+     *
+     * @return 屏幕宽度数值（单位：像素）。
+     */
+    @JvmStatic
+    fun getScreenWidth(): Int {
+        // 获取主屏幕的参数
+        val dm: DisplayMetrics = Resources.getSystem().displayMetrics
+        return dm.widthPixels
+    }
+
+    /**
+     * 获取屏幕宽度。
+     *
+     * @param[context] 环境。
+     * @return 屏幕宽度数值（单位：像素）。
+     * @exception[IllegalStateException] Context不包含显示器相关信息。
+     */
+    @JvmStatic
+    fun getScreenWidth(context: Context): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val dm = DisplayMetrics()
+            context.display?.getRealMetrics(dm) ?: throw IllegalStateException("Context not contain display info!")
+            dm.widthPixels
+        } else {
+            val wm: WindowManager = context.getSystemService(WindowManager::class.java)
+            wm.defaultDisplay.width
+        }
+    }
+
+    /**
+     * 获取屏幕高度。
+     *
+     * 默认使用主屏幕的参数。
+     *
+     * @return 屏幕高度数值（单位：像素）。
+     */
+    @JvmStatic
+    fun getScreenHeight(): Int {
+        // 获取主屏幕的参数
+        val dm: DisplayMetrics = Resources.getSystem().displayMetrics
+        return dm.heightPixels
+    }
+
+    /**
+     * 获取屏幕高度。
+     *
+     * @param[context] 环境。
+     * @return 屏幕高度数值（单位：像素）。
+     * @exception[IllegalStateException] Context不包含显示器相关信息。
+     */
+    @JvmStatic
+    fun getScreenHeight(context: Context): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val dm = DisplayMetrics()
+            context.display?.getRealMetrics(dm) ?: throw IllegalStateException("Context not contain display info!")
+            dm.heightPixels
+        } else {
+            val wm: WindowManager = context.getSystemService(WindowManager::class.java)
+            wm.defaultDisplay.height
+        }
+    }
 
     /**
      * 将DP转为PX。
@@ -41,6 +110,21 @@ object ScreenUtil {
         // 获取主屏幕的参数
         val dm: DisplayMetrics = Resources.getSystem().displayMetrics
         return dpToPX(dm, dpValue)
+    }
+
+    /**
+     * 将DP转为PX。
+     *
+     * 可以指定屏幕所在的环境，以便支持多屏环境。
+     *
+     * @param[context] 环境。
+     * @param[dpValue] DP数值。
+     * @return PX数值。
+     * @exception[IllegalStateException] Context不包含显示器相关信息。
+     */
+    @JvmStatic
+    fun dpToPX(context: Context, dpValue: Float): Int {
+        return dpToPX(getDisplayMetrics(context), dpValue)
     }
 
     /**
@@ -91,6 +175,21 @@ object ScreenUtil {
     /**
      * 将SP转为PX。
      *
+     * 可以指定屏幕所在的环境，以便支持多屏环境。
+     *
+     * @param[context] 环境。
+     * @param[spValue] SP数值。
+     * @return PX数值。
+     * @exception[IllegalStateException] Context不包含显示器相关信息。
+     */
+    @JvmStatic
+    fun spToPX(context: Context, spValue: Float): Int {
+        return spToPX(getDisplayMetrics(context), spValue)
+    }
+
+    /**
+     * 将SP转为PX。
+     *
      * 可以指定屏幕参数，以便支持多屏环境。
      *
      * @param[dm] 屏幕参数。
@@ -115,6 +214,21 @@ object ScreenUtil {
     fun pxToDP(pxValue: Int): Int {
         val dm: DisplayMetrics = Resources.getSystem().displayMetrics
         return pxToDP(dm, pxValue)
+    }
+
+    /**
+     * 将PX转为DP。
+     *
+     * 可以指定屏幕所在的环境，以便支持多屏环境。
+     *
+     * @param[context] 环境。
+     * @param[pxValue] PX数值。
+     * @return DP数值。
+     * @exception[IllegalStateException] Context不包含显示器相关信息。
+     */
+    @JvmStatic
+    fun pxToDP(context: Context, pxValue: Int): Int {
+        return pxToDP(getDisplayMetrics(context), pxValue)
     }
 
     /**
@@ -149,6 +263,21 @@ object ScreenUtil {
     /**
      * 将PX转为SP。
      *
+     * 可以指定屏幕所在的环境，以便支持多屏环境。
+     *
+     * @param[context] 环境。
+     * @param[pxValue] PX数值。
+     * @return SP数值。
+     * @exception[IllegalStateException] Context不包含显示器相关信息。
+     */
+    @JvmStatic
+    fun pxToSP(context: Context, pxValue: Int): Int {
+        return pxToSP(getDisplayMetrics(context), pxValue)
+    }
+
+    /**
+     * 将PX转为SP。
+     *
      * 可以指定屏幕参数，以便支持多屏环境。
      *
      * @param[dm] 屏幕参数。
@@ -159,5 +288,24 @@ object ScreenUtil {
     fun pxToSP(dm: DisplayMetrics, pxValue: Int): Int {
         val density = dm.scaledDensity
         return (pxValue / density).roundToInt()
+    }
+
+    /**
+     * 获取指定Context对应的屏幕参数。
+     *
+     * @param[context] 环境。
+     * @return DisplayMetrics对象。
+     * @exception[IllegalStateException] Context不包含显示器相关信息。
+     */
+    private fun getDisplayMetrics(context: Context): DisplayMetrics {
+        val dm = DisplayMetrics()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            context.display?.getRealMetrics(dm) ?: throw IllegalStateException("Context not contain display info!")
+        } else {
+            val wm: WindowManager = context.getSystemService(WindowManager::class.java)
+            wm.defaultDisplay.getRealMetrics(dm)
+        }
+
+        return dm
     }
 }

@@ -130,7 +130,7 @@ rootProject.name = "BaseLib-Android"
 
 
 // ----- 依赖传递 -----
-// include(":lib_all")
+include(":lib_all")
 
 // ----- 通用组件 -----
 // Logcat扩展
