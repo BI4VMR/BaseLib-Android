@@ -29,7 +29,13 @@ coil_gif = "0.9.5"
 
 
 # ----- 数据存储 -----
+debugDB = "1.0.7"
+
 room = "2.5.1"
+
+
+# ----- 网络通讯 -----
+okdownload_core = "1.0.7"
 
 
 # ----- Gradle插件 -----
@@ -99,7 +105,7 @@ coil_gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil_gif" }
 
 
 # ----- 数据存储 -----
-# Room
+# < Room >
 # 核心
 room_runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 # 注解处理器
@@ -108,6 +114,16 @@ room_compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 room_ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 # 测试工具
 room_test = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+
+# < 调试工具 >
+# Web调试工具
+debugDB = { group = "com.github.amitshekhariitbhu.Android-Debug-Database", name = "debug-db", version.ref = "debugDB" }
+
+
+# ----- 网络通讯 -----
+# < OkDownload >
+# 核心
+okdownload_core = { group = "com.liulishuo.okdownload", name = "okdownload", version.ref = "okdownload_core" }
 
 
 # 编组
