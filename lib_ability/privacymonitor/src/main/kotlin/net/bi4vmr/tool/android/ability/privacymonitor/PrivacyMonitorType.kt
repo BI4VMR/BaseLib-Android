@@ -1,7 +1,5 @@
 package net.bi4vmr.tool.android.ability.privacymonitor
 
-import android.content.Context
-
 /**
  * 本工具内置的监视器类型。
  *
@@ -50,10 +48,9 @@ enum class PrivacyMonitorType {
     /**
      * 获取指定类型监视器的实例。
      *
-     * @param[context] 运行环境。
      * @return 当前枚举对应的[PrivacyMonitor]对象。
      */
-    fun newInstance(context: Context): PrivacyMonitor {
+    fun newInstance(): PrivacyMonitor {
         return when (this) {
             LOCATION -> LocationPrivacyMonitor()
             MICROPHONE -> MICPrivacyMonitor()
