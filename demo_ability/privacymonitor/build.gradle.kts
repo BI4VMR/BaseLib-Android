@@ -70,6 +70,8 @@ android {
 dependencies {
     implementation(libAndroid.bundles.appBaseKT)
 
+    compileOnly(project(":lib_ability:framework"))
+    runtimeOnly(privateLibAndroid.ability.framework)
     compileOnly(project(":lib_ability:privacymonitor"))
     runtimeOnly(privateLibAndroid.ability.privacyMonitor)
 }

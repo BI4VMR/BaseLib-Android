@@ -15,6 +15,7 @@ java {
 dependencies {
     implementation(privateLibAndroid.common.logcat)
     implementation(privateLibAndroid.ability.privacyMonitor)
+    implementation(privateLibAndroid.ability.framework)
 }
 
 publishing {

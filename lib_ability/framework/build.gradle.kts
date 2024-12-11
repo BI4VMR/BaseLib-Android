@@ -1,6 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-val versionMinSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
+val versionMinSDK: Int = Integer.valueOf(agp.versions.minSdk.get())
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
 val mvnGroupID: String = "net.bi4vmr.tool.android"

@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.WindowManager
 import net.bi4vmr.tool.R
+import net.bi4vmr.tool.android.ability.framework.window.WindowManagerExtend
 import net.bi4vmr.tool.android.ability.privacymonitor.PrivacyItem
 import net.bi4vmr.tool.databinding.PrivacyListBinding
 
@@ -48,7 +49,7 @@ class PrivacyListWindowKT(private val mContext: Context) : Dialog(mContext, R.st
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
                         WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                 // PRIVATE_FLAG_TRUSTED_OVERLAY(0x20000000)
-                WindowManagerUtil.addPrivateFlags(this, WindowManagerUtil.PrivateFlags.TRUSTED_OVERLAY)
+                WindowManagerExtend.addPrivateFlags(this, WindowManagerExtend.PrivateFlags.TRUSTED_OVERLAY)
             }
         }
 
