@@ -1,42 +1,24 @@
 package net.bi4vmr.tool.android.ability.privacymonitor.util
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
+import net.bi4vmr.tool.android.ability.framework.common.ApplicationExtend
 
 /**
  * 应用程序信息查询工具。
  *
  * @author bi4vmr@outlook.com
  */
-class AppInfoHelper private constructor(mContext: Context) {
+object AppInfoHelper {
 
-    companion object {
-        // 本实例的生命周期跟随整个进程，不会导致内存泄露，因此可以忽略警告。
-        @SuppressLint("StaticFieldLeak")
-        @Volatile
-        private var instance: AppInfoHelper? = null
+    private const val TAG: String = "BaseLib-AppInfoHelper"
 
-        @JvmStatic
-        fun getInstance(context: Context): AppInfoHelper {
-            if (instance == null) {
-                synchronized(this) {
-                    if (instance == null) {
-                        instance = AppInfoHelper(context.applicationContext)
-                    }
-                }
-            }
-            return instance!!
-        }
-
-        private val TAG = "${PrivacyLog.TAG_PREFIX}${AppInfoHelper::class.java.simpleName}"
-    }
-
-    private val packageManager: PackageManager = mContext.packageManager
+    private val appContext: Context = ApplicationExtend.getAppContext()
+    private val packageManager: PackageManager = appContext.packageManager
 
     /**
      * 获取应用标签。

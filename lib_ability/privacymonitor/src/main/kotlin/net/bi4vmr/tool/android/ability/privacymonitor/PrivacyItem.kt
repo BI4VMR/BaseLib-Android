@@ -1,7 +1,7 @@
 package net.bi4vmr.tool.android.ability.privacymonitor
 
 import android.graphics.drawable.Drawable
-import net.bi4vmr.tool.android.ability.privacymonitor.appops.OpEntity
+import net.bi4vmr.tool.android.ability.framework.appops.OpEntity
 import net.bi4vmr.tool.android.ability.privacymonitor.util.AppInfoHelper
 
 /**
@@ -36,15 +36,14 @@ data class PrivacyItem(
          * 将[OpEntity]转换为[PrivacyItem]。
          *
          * @param[op] [OpEntity]对象。
-         * @param[appInfoHelper] [AppInfoHelper]对象。
          * @param[defaultIcon] 默认应用图标。
          * @return [PrivacyItem]对象。
          */
-        internal fun parseFromOpEntity(op: OpEntity, appInfoHelper: AppInfoHelper, defaultIcon: Drawable): PrivacyItem {
+        internal fun parseFromOpEntity(op: OpEntity, defaultIcon: Drawable): PrivacyItem {
             // 获取应用名称，如果获取失败则填写为包名。
-            val appName: String = appInfoHelper.getLabel(op.packageName) ?: op.packageName
+            val appName: String = AppInfoHelper.getLabel(op.packageName) ?: op.packageName
             // 获取应用图标，如果获取失败则填写为默认图片。
-            val icon: Drawable = appInfoHelper.getIcon(op.packageName) ?: defaultIcon
+            val icon: Drawable = AppInfoHelper.getIcon(op.packageName) ?: defaultIcon
 
             return PrivacyItem(appName, icon, op)
         }

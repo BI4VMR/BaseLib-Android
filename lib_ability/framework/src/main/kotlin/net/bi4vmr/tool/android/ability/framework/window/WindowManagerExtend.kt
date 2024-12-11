@@ -1,18 +1,18 @@
-package net.bi4vmr.tool.android.ability.frameworkextend.wm
+package net.bi4vmr.tool.android.ability.framework.window
 
 import android.util.Log
 import android.view.WindowManager
 import java.lang.reflect.Field
 
 /**
- * WindowManager的相关接口。
+ * [WindowManager]的功能扩展类。
  *
  * @author bi4vmr@outlook.com
  * @since 1.0.0
  */
-object WindowManagerUtil {
+object WindowManagerExtend {
 
-    private val TAG: String = WindowManagerUtil::class.java.simpleName
+    private val TAG: String = WindowManagerExtend::class.java.simpleName
 
     /**
      * LayoutParams的Flags。

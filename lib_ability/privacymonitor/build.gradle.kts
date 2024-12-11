@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 // 相关接口自API 30开始提供，因此本库只能用在最低API大于或等于30的项目中。
 val versionMinSDK = 30
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
@@ -12,7 +14,6 @@ plugins {
     id("maven-publish")
 }
 
-@Suppress("UnstableApiUsage")
 android {
     namespace = "net.bi4vmr.tool.android.ability.privacymonitor"
     compileSdk = versionCompileSDK
@@ -46,6 +47,12 @@ android {
             withJavadocJar()
         }
     }
+}
+
+dependencies {
+    // 内部组件依赖
+    compileOnly(project(":lib_ability:framework"))
+    runtimeOnly(privateLibAndroid.ability.framework)
 }
 
 publishing {

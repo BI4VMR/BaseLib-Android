@@ -17,11 +17,11 @@ class TestUIBaseKT : AppCompatActivity() {
         private val TAG: String = "TestApp-${TestUIBaseKT::class.java.simpleName}"
     }
 
-    private val locationMonitor: LocationPrivacyMonitor by lazy { LocationPrivacyMonitor(applicationContext) }
+    private val locationMonitor: LocationPrivacyMonitor by lazy { LocationPrivacyMonitor() }
     private val locationAppListener: PrivacyAppListener by lazy { PrivacyAppListener() }
-    private val micMonitor: MICPrivacyMonitor by lazy { MICPrivacyMonitor(applicationContext) }
+    private val micMonitor: MICPrivacyMonitor by lazy { MICPrivacyMonitor() }
     private val micAppListener: PrivacyAppListener by lazy { PrivacyAppListener() }
-    private val cameraMonitor: CameraPrivacyMonitor by lazy { CameraPrivacyMonitor(applicationContext) }
+    private val cameraMonitor: CameraPrivacyMonitor by lazy { CameraPrivacyMonitor() }
     private val cameraAppListener: PrivacyAppListener by lazy { PrivacyAppListener() }
 
     private val binding: TestuiBaseBinding by lazy {

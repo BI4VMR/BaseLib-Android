@@ -1,4 +1,4 @@
-package net.bi4vmr.tool.android.ability.privacymonitor.util
+package net.bi4vmr.tool.android.ability.framework.util
 
 import android.util.Log
 
@@ -8,7 +8,7 @@ import android.util.Log
  * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
-object PrivacyLog {
+object FrameworkLog {
 
     /**
      * 日志输出全局开关。

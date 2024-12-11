@@ -1,4 +1,4 @@
-package net.bi4vmr.tool.android.ability.privacymonitor.appops
+package net.bi4vmr.tool.android.ability.framework.appops
 
 /**
  * OP Mode枚举。

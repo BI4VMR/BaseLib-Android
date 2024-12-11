@@ -3,9 +3,9 @@ package net.bi4vmr.tool.android.ability.privacymonitor
 import android.app.AppOpsManager.OnOpActiveChangedListener
 import android.content.Context
 import android.graphics.drawable.Drawable
-import net.bi4vmr.tool.android.ability.privacymonitor.appops.AppOpsManagerExt
-import net.bi4vmr.tool.android.ability.privacymonitor.appops.OpEntity
-import net.bi4vmr.tool.android.ability.privacymonitor.appops.OpMode
+import net.bi4vmr.tool.android.ability.framework.appops.AppOpsManagerExtend
+import net.bi4vmr.tool.android.ability.framework.appops.OpEntity
+import net.bi4vmr.tool.android.ability.framework.common.ApplicationExtend
 import net.bi4vmr.tool.android.ability.privacymonitor.util.AppInfoHelper
 import net.bi4vmr.tool.android.ability.privacymonitor.util.PrivacyLog
 import java.util.concurrent.CopyOnWriteArraySet
@@ -13,17 +13,12 @@ import java.util.concurrent.CopyOnWriteArraySet
 /**
  * 敏感权限使用状况监视器。
  *
- * 扩展了[AppOpsManagerExt]，为OP信息添加了应用名称等更多属性，并提供黑名单等过滤规则。
+ * 扩展了[AppOpsManagerExtend]，为OP信息添加了应用名称等更多属性，并提供黑名单等过滤规则。
  *
  * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
 open class PrivacyMonitor(
-
-    /**
-     * 上下文环境。
-     */
-    private val mContext: Context,
 
     /**
      * 感兴趣的OP类型。
@@ -32,11 +27,10 @@ open class PrivacyMonitor(
 ) {
 
     companion object {
-        private val TAG = "${PrivacyLog.TAG_PREFIX}${PrivacyMonitor::class.java.simpleName}"
+        private const val TAG: String = "BaseLib-PrivacyMonitor"
     }
 
-    private val opManagerExt: AppOpsManagerExt = AppOpsManagerExt.getInstance(mContext)
-    private val appInfoHelper: AppInfoHelper = AppInfoHelper.getInstance(mContext)
+    private val appContext: Context = ApplicationExtend.getAppContext()
 
     // 敏感权限事件监听器的具体实现
     private val eventListeners: MutableSet<PrivacyEventListener> = CopyOnWriteArraySet()
@@ -55,7 +49,7 @@ open class PrivacyMonitor(
     private val opActiveStateListener: OnOpActiveChangedListener = OPActiveStateListener()
 
     // 默认的应用图标
-    private var defaultIcon: Drawable = mContext.resources.getDrawable(R.drawable.ic_app_default, null)
+    private var defaultIcon: Drawable = appContext.resources.getDrawable(R.drawable.ic_app_default, null)
 
     // OP过滤器
     private var opFilter: AppOpsFilterCallback = DefaultOpsFilter()
@@ -167,7 +161,7 @@ open class PrivacyMonitor(
      * 将未知应用的图标重置为默认资源。
      */
     fun resetDefaultIcon() {
-        defaultIcon = mContext.resources.getDrawable(R.drawable.ic_app_default, null)
+        defaultIcon = appContext.resources.getDrawable(R.drawable.ic_app_default, null)
     }
 
     /**
@@ -176,7 +170,7 @@ open class PrivacyMonitor(
      * @return 应用列表。
      */
     fun getPrivacyItems(): List<PrivacyItem> {
-        return processOPList(opManagerExt.getPackagesOps(ops))
+        return processOPList(AppOpsManagerExtend.getPackagesOps(ops))
     }
 
     /**
@@ -188,13 +182,13 @@ open class PrivacyMonitor(
      * @return
      */
     fun isInUsing(): Boolean {
-        return processOPList(opManagerExt.getPackagesOps(ops)).isNotEmpty()
+        return processOPList(AppOpsManagerExtend.getPackagesOps(ops)).isNotEmpty()
     }
 
     /**
      * 根据过滤规则处理原始列表，并将[OpEntity]对象转换为[PrivacyItem]对象。
      *
-     * @param[rawList] 从[AppOpsManagerExt.getPackagesOps]获取到的原始OP信息列表。
+     * @param[rawList] 从[AppOpsManagerExtend.getPackagesOps]获取到的原始OP信息列表。
      */
     private fun processOPList(rawList: List<OpEntity>): List<PrivacyItem> {
         var opList: MutableList<OpEntity> = rawList.toMutableList()
@@ -215,7 +209,7 @@ open class PrivacyMonitor(
         // 忽略系统应用
         if (ignoreSystemApp) {
             opList = opList.filter {
-                !appInfoHelper.isSystemApp(it.packageName)
+                !AppInfoHelper.isSystemApp(it.packageName)
             }.toMutableList()
         }
 
@@ -225,7 +219,7 @@ open class PrivacyMonitor(
         // 转换数据
         val result: MutableList<PrivacyItem> = mutableListOf()
         opList.forEach {
-            result.add(PrivacyItem.parseFromOpEntity(it, appInfoHelper, defaultIcon))
+            result.add(PrivacyItem.parseFromOpEntity(it, defaultIcon))
         }
 
         return result
@@ -243,7 +237,7 @@ open class PrivacyMonitor(
             itemsCache = getPrivacyItems().toMutableList()
             lastUseState = itemsCache.isNotEmpty()
             // 注册状态变化监听器
-            opManagerExt.startWatchingActive(ops, opActiveStateListener)
+            AppOpsManagerExtend.startWatchingActive(ops, opActiveStateListener)
         }
 
         eventListeners.add(l)
@@ -259,7 +253,7 @@ open class PrivacyMonitor(
 
         // 如果没有监听者了，则注销OP监听器。
         if (eventListeners.isEmpty()) {
-            opManagerExt.stopWatchingActive(opActiveStateListener)
+            AppOpsManagerExtend.stopWatchingActive(opActiveStateListener)
         }
     }
 
@@ -269,11 +263,11 @@ open class PrivacyMonitor(
      * @param[items] 应用列表。
      */
     private fun notifyPrivacyListChange(items: List<PrivacyItem>) {
-        PrivacyLog.printDebug(TAG, "NotifyPrivacyListChange start. List:$items")
+        PrivacyLog.logD(TAG, "NotifyPrivacyListChange start. List:$items")
         eventListeners.forEach {
             it.onListChange(items)
         }
-        PrivacyLog.printDebug(TAG, "NotifyPrivacyListChange end.")
+        PrivacyLog.logD(TAG, "NotifyPrivacyListChange end.")
     }
 
     /**
@@ -282,11 +276,11 @@ open class PrivacyMonitor(
      * @param[state] 使用状态。
      */
     private fun notifyPrivacyStateChange(state: Boolean) {
-        PrivacyLog.printDebug(TAG, "NotifyPrivacyStateChange start. State:[$state]")
+        PrivacyLog.logD(TAG, "NotifyPrivacyStateChange start. State:[$state]")
         eventListeners.forEach {
             it.onStateChange(state)
         }
-        PrivacyLog.printDebug(TAG, "NotifyPrivacyStateChange end.")
+        PrivacyLog.logD(TAG, "NotifyPrivacyStateChange end.")
     }
 
     /**
@@ -295,8 +289,8 @@ open class PrivacyMonitor(
     private inner class OPActiveStateListener : OnOpActiveChangedListener {
 
         override fun onOpActiveChanged(op: String, uid: Int, packageName: String, active: Boolean) {
-            val opCode: Int = opManagerExt.opNameToCode(op)
-            PrivacyLog.printDebug(
+            val opCode: Int = AppOpsManagerExtend.opNameToCode(op)
+            PrivacyLog.logD(
                 TAG,
                 "OnOpActiveChanged. APP:[$packageName] UID:[$uid] Code:[$opCode] Name:[$op] State:[$active]"
             )
@@ -317,31 +311,37 @@ open class PrivacyMonitor(
                 run rules@{
                     // 包名黑名单
                     if (blackList.isNotEmpty() && blackList.contains(packageName)) {
-                        PrivacyLog.printDebug(TAG, "Item ignored by black list.")
+                        PrivacyLog.logD(TAG, "Item ignored by black list.")
                         return@rules
                     }
 
                     // 根据包名去重
                     if (distinctByPackageName && findItemInCache() != null) {
-                        PrivacyLog.printDebug(TAG, "Item ignored by package name distinct rules.")
+                        PrivacyLog.logD(TAG, "Item ignored by package name distinct rules.")
                         return@rules
                     }
 
                     // 忽略系统应用
-                    if (ignoreSystemApp && appInfoHelper.isSystemApp(packageName)) {
-                        PrivacyLog.printDebug(TAG, "Item ignored by exclude system app.")
+                    if (ignoreSystemApp && AppInfoHelper.isSystemApp(packageName)) {
+                        PrivacyLog.logD(TAG, "Item ignored by exclude system app.")
                         return@rules
                     }
 
                     // 自定义过滤规则
-                    val opEntity = OpEntity(packageName, uid, opCode, OpMode.ALLOWED.code, true)
+                    val opEntity = net.bi4vmr.tool.android.ability.framework.appops.OpEntity(
+                        packageName,
+                        uid,
+                        opCode,
+                        net.bi4vmr.tool.android.ability.framework.appops.OpMode.ALLOWED.code,
+                        true
+                    )
                     if (!opFilter.test(opEntity)) {
-                        PrivacyLog.printDebug(TAG, "Item ignored by custom filter.")
+                        PrivacyLog.logD(TAG, "Item ignored by custom filter.")
                         return@rules
                     }
 
                     // 未被上述过滤条件丢弃，将该项添加至缓存。
-                    itemsCache.add(PrivacyItem.parseFromOpEntity(opEntity, appInfoHelper, defaultIcon))
+                    itemsCache.add(PrivacyItem.parseFromOpEntity(opEntity, defaultIcon))
                     cacheChanged = true
                 }
             } else {

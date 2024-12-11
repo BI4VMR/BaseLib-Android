@@ -15,8 +15,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.bi4vmr.tool.android.ability.framework.appops.AppOps
 import net.bi4vmr.tool.android.ability.privacymonitor.PrivacyItem
-import net.bi4vmr.tool.android.ability.privacymonitor.appops.AppOps
 import net.bi4vmr.tool.databinding.PrivacyListItemBinding
 import java.util.concurrent.CopyOnWriteArrayList
 

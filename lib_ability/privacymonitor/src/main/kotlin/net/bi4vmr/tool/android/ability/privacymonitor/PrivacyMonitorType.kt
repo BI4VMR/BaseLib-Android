@@ -55,9 +55,9 @@ enum class PrivacyMonitorType {
      */
     fun newInstance(context: Context): PrivacyMonitor {
         return when (this) {
-            LOCATION -> LocationPrivacyMonitor(context)
-            MICROPHONE -> MICPrivacyMonitor(context)
-            CAMERA -> CameraPrivacyMonitor(context)
+            LOCATION -> LocationPrivacyMonitor()
+            MICROPHONE -> MICPrivacyMonitor()
+            CAMERA -> CameraPrivacyMonitor()
         }
     }
 }

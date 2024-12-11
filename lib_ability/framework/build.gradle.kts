@@ -1,9 +1,10 @@
-// 相关接口自API 30开始提供，因此本库只能用在最低API大于或等于30的项目中。
-val versionMinSDK = 30
+@file:Suppress("UnstableApiUsage")
+
+val versionMinSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
 val mvnGroupID: String = "net.bi4vmr.tool.android"
-val mvnArtifactID: String = "ability-frameworkextend"
+val mvnArtifactID: String = "ability-framework"
 val mvnVersion: String = "1.0.0"
 
 plugins {
@@ -12,9 +13,8 @@ plugins {
     id("maven-publish")
 }
 
-@Suppress("UnstableApiUsage")
 android {
-    namespace = "net.bi4vmr.tool.android.ability.frameworkextend"
+    namespace = "net.bi4vmr.tool.android.ability.framework"
     compileSdk = versionCompileSDK
 
     defaultConfig {

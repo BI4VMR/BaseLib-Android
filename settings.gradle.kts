@@ -170,7 +170,7 @@ include(":lib_ui:analogclock")
 // 敏感权限监控工具
 include(":lib_ability:privacymonitor")
 // Framework扩展
-include(":lib_ability:frameworkextend")
+include(":lib_ability:framework")
 
 
 // ----- 示例程序 -----

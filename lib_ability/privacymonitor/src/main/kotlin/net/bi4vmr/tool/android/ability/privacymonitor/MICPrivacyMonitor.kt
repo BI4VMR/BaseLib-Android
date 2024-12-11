@@ -1,8 +1,6 @@
 package net.bi4vmr.tool.android.ability.privacymonitor
 
-import android.content.Context
-import net.bi4vmr.tool.android.ability.privacymonitor.appops.AppOps
-import net.bi4vmr.tool.android.ability.privacymonitor.util.PrivacyLog
+import net.bi4vmr.tool.android.ability.framework.appops.AppOps
 
 /**
  * 录音权限使用状况监视器。
@@ -10,7 +8,7 @@ import net.bi4vmr.tool.android.ability.privacymonitor.util.PrivacyLog
  * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
-class MICPrivacyMonitor(mContext: Context) : PrivacyMonitor(mContext, OPS_MIC) {
+class MICPrivacyMonitor : PrivacyMonitor(OPS_MIC) {
 
     companion object {
 
@@ -23,7 +21,5 @@ class MICPrivacyMonitor(mContext: Context) : PrivacyMonitor(mContext, OPS_MIC) {
             // 语音通话
             AppOps.PHONE_CALL_MICROPHONE.code
         )
-
-        private val TAG = "${PrivacyLog.TAG_PREFIX}${MICPrivacyMonitor::class.java.simpleName}"
     }
 }

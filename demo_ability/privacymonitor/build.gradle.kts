@@ -1,3 +1,6 @@
+@file:Suppress("UnstableApiUsage")
+
+// 相关接口自API 30开始提供，因此本库只能用在最低API大于或等于30的项目中。
 val versionMinSDK = 30
 val versionCompileSDK: Int = agp.versions.compileSdk.get().toInt()
 val versionTargetSDK: Int = agp.versions.targetSdk.get().toInt()
@@ -9,7 +12,6 @@ plugins {
     alias(libAndroid.plugins.kotlin)
 }
 
-@Suppress("UnstableApiUsage")
 android {
     namespace = "net.bi4vmr.tool"
     compileSdk = versionCompileSDK
@@ -68,8 +70,6 @@ android {
 dependencies {
     implementation(libAndroid.bundles.appBaseKT)
 
-    // 本地依赖
-    implementation(project(":lib_ability:privacymonitor"))
-    // 远程依赖
-    // implementation(privateLibAndroid.ability.privacyMonitor)
+    compileOnly(project(":lib_ability:privacymonitor"))
+    runtimeOnly(privateLibAndroid.ability.privacyMonitor)
 }

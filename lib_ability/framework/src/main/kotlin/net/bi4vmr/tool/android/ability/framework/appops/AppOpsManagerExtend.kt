@@ -1,9 +1,9 @@
-package net.bi4vmr.tool.android.ability.privacymonitor.appops
+package net.bi4vmr.tool.android.ability.framework.appops
 
-import android.annotation.SuppressLint
 import android.app.AppOpsManager
 import android.content.Context
-import net.bi4vmr.tool.android.ability.privacymonitor.util.PrivacyLog
+import net.bi4vmr.tool.android.ability.framework.common.ApplicationExtend
+import net.bi4vmr.tool.android.ability.framework.util.FrameworkLog
 import java.lang.reflect.Method
 import java.util.concurrent.Executor
 
@@ -13,31 +13,13 @@ import java.util.concurrent.Executor
  * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
-class AppOpsManagerExt private constructor(private val mContext: Context) {
+object AppOpsManagerExtend {
 
-    companion object {
-        // 本实例的生命周期跟随整个进程，不会导致内存泄露，因此可以忽略警告。
-        @SuppressLint("StaticFieldLeak")
-        @Volatile
-        private var instance: AppOpsManagerExt? = null
+    private const val TAG: String = "BaseLib-AppOpsManagerExtend"
 
-        @JvmStatic
-        fun getInstance(context: Context): AppOpsManagerExt {
-            if (instance == null) {
-                synchronized(this) {
-                    if (instance == null) {
-                        instance = AppOpsManagerExt(context.applicationContext)
-                    }
-                }
-            }
-            return instance!!
-        }
-
-        private val TAG = "${PrivacyLog.TAG_PREFIX}${AppOpsManagerExt::class.java.simpleName}"
-    }
-
+    private val appContext: Context = ApplicationExtend.getAppContext()
     private val opsManagerClass = AppOpsManager::class.java
-    private val opsManager: AppOpsManager = mContext.getSystemService(opsManagerClass)
+    private val opsManager: AppOpsManager = appContext.getSystemService(opsManagerClass)
 
     /**
      * 获取OP名称对应的编码。
@@ -50,7 +32,7 @@ class AppOpsManagerExt private constructor(private val mContext: Context) {
             val method: Method = opsManagerClass.getMethod("strOpToOp", String::class.java)
             return method.invoke(opsManager, name) as? Int ?: -1
         } catch (e: Exception) {
-            PrivacyLog.printError(TAG, "Reflect operate failed! Reason:[${e.message}]", e)
+            FrameworkLog.logE(TAG, "Reflect operate failed! Reason:[${e.message}]", e)
             return -1
         }
     }
@@ -66,7 +48,7 @@ class AppOpsManagerExt private constructor(private val mContext: Context) {
             val method: Method = opsManagerClass.getMethod("opToPublicName", Int::class.java)
             return method.invoke(opsManager, code) as? String ?: "NULL"
         } catch (e: Exception) {
-            PrivacyLog.printError(TAG, "Reflect operate failed! Reason:[${e.message}]", e)
+            FrameworkLog.logE(TAG, "Reflect operate failed! Reason:[${e.message}]", e)
             return "NULL"
         }
     }
@@ -129,7 +111,7 @@ class AppOpsManagerExt private constructor(private val mContext: Context) {
                             result.add(entity)
 
                             // 输出调试日志
-                            PrivacyLog.printDebug(TAG, "GetPackagesOps. $entity")
+                            FrameworkLog.logD(TAG, "GetPackagesOps. $entity")
                         }
                     }
                 }
@@ -137,7 +119,7 @@ class AppOpsManagerExt private constructor(private val mContext: Context) {
 
             return result
         } catch (e: Exception) {
-            PrivacyLog.printError(TAG, "Reflect operate failed! Reason:[${e.message}]", e)
+            FrameworkLog.logE(TAG, "Reflect operate failed! Reason:[${e.message}]", e)
             return result
         }
     }
@@ -155,9 +137,9 @@ class AppOpsManagerExt private constructor(private val mContext: Context) {
     fun startWatchingActive(
         ops: Array<String>,
         callback: AppOpsManager.OnOpActiveChangedListener,
-        executor: Executor = mContext.mainExecutor,
+        executor: Executor = appContext.mainExecutor,
     ) {
-        PrivacyLog.printDebug(TAG, "StartWatchingActive. Ops:${ops.contentToString()}")
+        FrameworkLog.logD(TAG, "StartWatchingActive. Ops:${ops.contentToString()}")
         opsManager.startWatchingActive(ops, executor, callback)
     }
 
@@ -174,9 +156,9 @@ class AppOpsManagerExt private constructor(private val mContext: Context) {
     fun startWatchingActive(
         ops: IntArray,
         callback: AppOpsManager.OnOpActiveChangedListener,
-        executor: Executor = mContext.mainExecutor,
+        executor: Executor = appContext.mainExecutor,
     ) {
-        PrivacyLog.printDebug(TAG, "StartWatchingActive. Ops:${ops.contentToString()}")
+        FrameworkLog.logD(TAG, "StartWatchingActive. Ops:${ops.contentToString()}")
         opsManager.startWatchingActive(opCodeArrayToNameArray(ops), executor, callback)
     }
 
@@ -186,7 +168,7 @@ class AppOpsManagerExt private constructor(private val mContext: Context) {
      * @param[callback] 监听器具体实现。
      */
     fun stopWatchingActive(callback: AppOpsManager.OnOpActiveChangedListener) {
-        PrivacyLog.printDebug(TAG, "StopWatchingActive.")
+        FrameworkLog.logD(TAG, "StopWatchingActive.")
         opsManager.stopWatchingActive(callback)
     }
 }
