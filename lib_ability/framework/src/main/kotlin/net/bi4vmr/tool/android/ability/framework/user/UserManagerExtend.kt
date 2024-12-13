@@ -32,7 +32,7 @@ object UserManagerExtend {
     // private val appContext: Context = ApplicationExtend.getAppContext()
     // private val userManagerClass = UserManager::class.java
     // private val userManager: UserManager = appContext.getSystemService(userManagerClass)
-    private val activityManagerClass = ActivityManager::class.java
+    private val activityManagerClass: Class<ActivityManager> = ActivityManager::class.java
     // private val activityManager: ActivityManager = appContext.getSystemService(activityManagerClass)
 
     /**

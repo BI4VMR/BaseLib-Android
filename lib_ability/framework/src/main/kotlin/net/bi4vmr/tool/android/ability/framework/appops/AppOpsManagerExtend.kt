@@ -18,7 +18,7 @@ object AppOpsManagerExtend {
     private const val TAG: String = "BaseLib-AppOpsManagerExtend"
 
     private val appContext: Context = ApplicationExtend.getAppContext()
-    private val opsManagerClass = AppOpsManager::class.java
+    private val opsManagerClass: Class<AppOpsManager> = AppOpsManager::class.java
     private val opsManager: AppOpsManager = appContext.getSystemService(opsManagerClass)
 
     /**
