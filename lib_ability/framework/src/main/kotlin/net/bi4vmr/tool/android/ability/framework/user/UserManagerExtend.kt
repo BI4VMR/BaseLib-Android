@@ -43,6 +43,7 @@ object UserManagerExtend {
      *
      * 本变量值与 [UserHandle] 中的 `SYSTEM` 常量保持一致。
      */
+    @JvmField
     val USER_HANDLE_SYSTEM: UserHandle = getUserHandleByUserID(USER_ID_SYSTEM)
 
     /**
@@ -50,6 +51,7 @@ object UserManagerExtend {
      *
      * 本变量值与 [UserHandle] 中的 `ALL` 常量保持一致。
      */
+    @JvmField
     val USER_HANDLE_ALL: UserHandle = getUserHandleByUserID(USER_ID_ALL)
 
     /**
@@ -57,6 +59,7 @@ object UserManagerExtend {
      *
      * 本变量值与 [UserHandle] 中的 `CURRENT` 常量保持一致。
      */
+    @JvmField
     val USER_HANDLE_CURRENT: UserHandle = getUserHandleByUserID(USER_ID_CURRENT)
 
 
