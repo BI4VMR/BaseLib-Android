@@ -1,0 +1,35 @@
+# 版本号
+[versions]
+all = "1.0.0"
+
+common_logcat = "1.0.0"
+
+ui_universal = "1.0.0"
+ui_analogClock = "1.0.0"
+ui_pieProgressbar = "1.0.0"
+ui_baseRVAdapter = "1.0.0"
+ui-crossWindowBlurTool = "1.0.0"
+
+ability_privacyMonitor = "1.0.0"
+ability_framework = "1.0.0"
+
+
+# 组件
+[libraries]
+all = { group = "net.bi4vmr.tool.android", name = "all", version.ref = "all" }
+
+common_logcat = { group = "net.bi4vmr.tool.android", name = "common-logcat", version.ref = "common_logcat" }
+
+ui_universal = { group = "net.bi4vmr.tool.android", name = "ui-universal", version.ref = "ui_universal" }
+
+ui_analogClock = { group = "net.bi4vmr.tool.android", name = "ui-analogclock", version.ref = "ui_analogClock" }
+
+ui_pieProgressbar = { group = "net.bi4vmr.tool.android", name = "ui-pieprogressbar", version.ref = "ui_pieProgressbar" }
+
+ui_baseRVAdapter = { group = "net.bi4vmr.tool.android", name = "ui-baservadapter", version.ref = "ui_baseRVAdapter" }
+
+ui-crossWindowBlurTool = { group = "net.bi4vmr.tool.android", name = "ui-crosswindowblurtool", version.ref = "ui-crossWindowBlurTool" }
+
+ability_privacyMonitor = { group = "net.bi4vmr.tool.android", name = "ability-privacymonitor", version.ref = "ability_privacyMonitor" }
+
+ability_framework = { group = "net.bi4vmr.tool.android", name = "ability-framework", version.ref = "ability_framework" }

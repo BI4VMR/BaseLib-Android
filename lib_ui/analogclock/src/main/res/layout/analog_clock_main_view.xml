@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/ivDial"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:importantForAccessibility="no"
+        android:scaleType="centerInside"
+        android:src="@drawable/analog_clock_dial" />
+
+    <ImageView
+        android:id="@+id/ivHourPointer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="centerInside"
+        android:src="@drawable/analog_clock_hour" />
+
+    <ImageView
+        android:id="@+id/ivMinutePointer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="centerInside"
+        android:src="@drawable/analog_clock_minute" />
+
+    <ImageView
+        android:id="@+id/ivSecondPointer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="centerInside"
+        android:src="@drawable/analog_clock_second" />
+</FrameLayout>
