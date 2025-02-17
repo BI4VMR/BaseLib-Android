@@ -9,10 +9,10 @@ import android.view.WindowManager
 import kotlin.math.roundToInt
 
 /**
- * UI界面通用工具。
+ * 屏幕相关工具。
  *
- * @since 1.0.0
  * @author bi4vmr@outlook.com
+ * @since 1.0.0
  */
 object ScreenUtil {
 

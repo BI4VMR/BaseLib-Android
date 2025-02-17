@@ -47,6 +47,13 @@
                 android:layout_height="wrap_content"
                 android:text="单位转换"
                 android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btnResUtil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="资源工具"
+                android:textAllCaps="false" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

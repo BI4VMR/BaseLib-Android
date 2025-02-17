@@ -50,6 +50,8 @@ android {
 
 dependencies {
     implementation(libKotlin.ktx.coroutines)
+    // TODO 移至TOML
+    implementation("androidx.annotation:annotation:1.9.1")
 }
 
 publishing {
