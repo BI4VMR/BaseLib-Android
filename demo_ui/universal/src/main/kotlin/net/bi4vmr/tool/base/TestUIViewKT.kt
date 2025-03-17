@@ -37,7 +37,7 @@ class TestUIViewKT : AppCompatActivity() {
         Log.i(TAG, "--- 资源工具 ---")
         binding.tvLog.append("\n--- 资源工具 ---\n")
 
-        ResourceUtil.getColorFromAttr(this, R.attr.titleColor)
-        ResourceUtil.getColorFromAttr(this, androidx.appcompat.R.attr.actionBarSize)
+        ResourceUtil.parseColorFromAttr(this, R.attr.titleColor)
+        ResourceUtil.parseColorFromAttrUnsafe(this, androidx.appcompat.R.attr.actionBarSize)
     }
 }
