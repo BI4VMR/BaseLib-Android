@@ -60,7 +60,7 @@ publishing {
         maven {
             name = "private"
             isAllowInsecureProtocol = true
-            setUrl("http://172.18.5.1:8081/repository/maven-private/")
+            setUrl("http://172.16.5.1:8081/repository/maven-private/")
             credentials {
                 username = "uploader"
                 password = "uploader"
