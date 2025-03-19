@@ -6,7 +6,7 @@
         android:icon="@drawable/ic_funny_256"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DEFAULT">
+        android:theme="@style/Theme.Default">
 
         <activity
             android:name=".MainActivity"

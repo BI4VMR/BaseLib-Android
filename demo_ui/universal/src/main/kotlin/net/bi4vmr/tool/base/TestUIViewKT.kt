@@ -37,7 +37,15 @@ class TestUIViewKT : AppCompatActivity() {
         Log.i(TAG, "--- 资源工具 ---")
         binding.tvLog.append("\n--- 资源工具 ---\n")
 
-        ResourceUtil.parseColorFromAttr(this, R.attr.titleColor)
-        ResourceUtil.parseColorFromAttrUnsafe(this, androidx.appcompat.R.attr.actionBarSize)
+        val titleColor: Int = ResourceUtil.parseColorFromAttr(this, R.attr.titleColor)
+        Log.i(TAG, "titleColor:[$titleColor]")
+        binding.tvLog.append("titleColor:[$titleColor]")
+        binding.tvLog.setTextColor(titleColor)
+        val titleColor2: Int = ResourceUtil.parseColorFromAttr(this, androidx.appcompat.R.attr.actionBarSize)
+        Log.i(TAG, "titleColor2:[$titleColor2]")
+        binding.tvLog.append("titleColor2:[$titleColor2]")
+        binding.tvLog.setTextColor(titleColor2)
+
+        // ResourceUtil.parseColorFromAttrUnsafe(this, androidx.appcompat.R.attr.actionBarSize)
     }
 }
