@@ -179,7 +179,8 @@ include(":lib_ui:analogclock")
 include(":lib_ability:privacymonitor")
 // Framework扩展
 include(":lib_ability:framework")
-
+// Framework扩展（空实现）
+include(":lib_ability:framework_fakeimplementation")
 
 // ----- 示例程序 -----
 // 通用组件 - Logcat扩展
