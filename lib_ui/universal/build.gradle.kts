@@ -49,7 +49,7 @@ android {
 }
 
 dependencies {
-    implementation(libKotlin.ktx.coroutines)
+    implementation(libAndroid.ktx.core)
     // TODO 移至TOML
     implementation("androidx.annotation:annotation:1.9.1")
 }
