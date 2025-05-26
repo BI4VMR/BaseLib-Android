@@ -73,6 +73,8 @@ include(":lib_common:logcat")
 include(":lib_ui:universal")
 // 模拟时钟
 include(":lib_ui:analogclock")
+// 饼图进度条
+include(":lib_ui:pieprogressbar")
 
 /* ----- 核心能力 ----- */
 // 敏感权限监控工具

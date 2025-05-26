@@ -4,7 +4,7 @@ val versionMinSDK: Int = Integer.valueOf(agp.versions.minSdk.get())
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
 val mvnGroupID: String = "net.bi4vmr.tool.android"
-val mvnArtifactID: String = "ui-universal"
+val mvnArtifactID: String = "ui-pieprogressbar"
 val mvnVersion: String = "1.0.0"
 
 plugins {
@@ -14,7 +14,7 @@ plugins {
 }
 
 android {
-    namespace = "net.bi4vmr.tool.android.ui.universal"
+    namespace = "net.bi4vmr.tool.android.ui.pieprogressbar"
     compileSdk = versionCompileSDK
 
     defaultConfig {
@@ -38,6 +38,10 @@ android {
         jvmTarget = "11"
     }
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     publishing {
         multipleVariants {
             // 指定以下配置对所有Build Variant生效
@@ -46,11 +50,6 @@ android {
             withJavadocJar()
         }
     }
-}
-
-dependencies {
-    implementation(libAndroid.ktx.core)
-    implementation(libAndroid.annotation)
 }
 
 publishing {
