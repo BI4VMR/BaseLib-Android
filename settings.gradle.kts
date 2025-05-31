@@ -75,6 +75,8 @@ include(":lib_ui:universal")
 include(":lib_ui:analogclock")
 // 饼图进度条
 include(":lib_ui:pieprogressbar")
+// 跨窗口背景模糊工具
+include(":lib_ui:crosswindowblurtool")
 
 /* ----- 核心能力 ----- */
 // 敏感权限监控工具
