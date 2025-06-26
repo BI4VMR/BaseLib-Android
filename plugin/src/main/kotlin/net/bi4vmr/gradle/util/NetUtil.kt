@@ -11,6 +11,13 @@ import java.net.Socket
  */
 object NetUtil {
 
+    /**
+     * 主机可达性侦测(TCP)。
+     *
+     * @param[ip]   目标IP地址。
+     * @param[port] 目标端口。
+     * @return `true` 表示目标可达； `false` 表示目标不可达。
+     */
     fun scanByTCP(ip: String, port: Int): Boolean {
         val socket = Socket()
         try {

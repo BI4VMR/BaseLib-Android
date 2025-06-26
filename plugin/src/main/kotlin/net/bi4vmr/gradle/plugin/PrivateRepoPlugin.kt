@@ -39,9 +39,9 @@ class PrivateRepoPlugin : Plugin<Project> {
             }
 
             // 插件配置阶段为单线程执行，不必考虑同步问题。
-            addRepo(target.repositories, netTestResult!!)
+            addRepo(target.repositories, requireNotNull(netTestResult))
         } else {
-            addRepo(target.repositories, netTestResult!!)
+            addRepo(target.repositories, requireNotNull(netTestResult))
         }
     }
 
