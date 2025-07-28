@@ -1,11 +1,10 @@
 @file:Suppress("UnstableApiUsage")
 
-// 相关接口自API 30开始提供，因此本库只能用在最低API大于或等于30的项目中。
-val versionMinSDK = 30
+val versionMinSDK: Int = Integer.valueOf(agp.versions.minSdk.get())
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
 val mvnGroupID: String = "net.bi4vmr.tool.android"
-val mvnArtifactID: String = "ability-privacymonitor"
+val mvnArtifactID: String = "storage-room-tool"
 val mvnVersion: String = "1.0.0"
 
 plugins {
@@ -15,7 +14,7 @@ plugins {
 }
 
 android {
-    namespace = "net.bi4vmr.tool.android.ability.privacymonitor"
+    namespace = "net.bi4vmr.tool.android.storage.room"
     compileSdk = versionCompileSDK
 
     defaultConfig {
@@ -50,9 +49,7 @@ android {
 }
 
 dependencies {
-    // 内部组件依赖
-    compileOnly(project(":lib_ability:framework"))
-    runtimeOnly(privateLibAndroid.ability.framework)
+    implementation(libAndroid.room.runtime)
 }
 
 publishing {
@@ -96,27 +93,4 @@ publishing {
             }
         }
     }
-}
-
-/**
- * 配置发布任务之间的依赖关系。
- *
- * 当前模块依赖某个模块，因此发布当前模块时，必须先发布被依赖的模块。
- *
- * "dependsOn()"方法指定了执行该任务时需要同时执行指定任务；"mustRunAfter()"方法则指定了该任务需要在指定任务完成后开始执行。
- */
-tasks.named("publish") {
-    val name = "publish"
-    val depTasks: Array<String> = arrayOf(":lib_ability:framework:$name")
-
-    dependsOn(*depTasks)
-    mustRunAfter(*depTasks)
-}
-
-tasks.named("publishToMavenLocal") {
-    val name = "publishToMavenLocal"
-    val depTasks: Array<String> = arrayOf(":lib_ability:framework:$name")
-
-    dependsOn(*depTasks)
-    mustRunAfter(*depTasks)
 }

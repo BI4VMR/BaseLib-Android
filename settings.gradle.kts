@@ -86,6 +86,10 @@ include(":lib_ability:framework")
 // Framework扩展（空实现）
 include(":lib_ability:framework_fakeimplementation")
 
+/* ----- 数据存储 ----- */
+// Room工具
+include(":lib_storage:room-tool")
+
 /* ----- 示例程序 ----- */
 // 通用组件 - Logcat扩展
 include(":demo_common:logcat")
