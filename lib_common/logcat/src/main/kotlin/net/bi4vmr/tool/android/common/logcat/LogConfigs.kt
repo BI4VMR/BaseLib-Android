@@ -10,7 +10,7 @@ object LogConfigs {
     /**
      * 预设配置：调试版本。
      *
-     * 起始日志级别：Verbose
+     * 起始日志级别：Debug
      *
      * 类名与行号显示开关：开启
      *

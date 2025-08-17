@@ -18,10 +18,12 @@ object LogUtil {
      * 输出Verbose日志。
      *
      * @param[msg] 消息内容。
+     * @param[e] 异常，可选，不需要打印时默认为空值。
      */
     @JvmStatic
-    fun v(msg: String) {
-        print(Level.VERBOSE, msg)
+    @JvmOverloads
+    fun v(msg: String, e: Throwable? = null) {
+        print(Level.VERBOSE, msg, e = e)
     }
 
     /**
@@ -29,20 +31,24 @@ object LogUtil {
      *
      * @param[tag] 消息Tag。
      * @param[msg] 消息内容。
+     * @param[e] 异常，可选，不需要打印时默认为空值。
      */
     @JvmStatic
-    fun v(tag: String, msg: String) {
-        print(Level.VERBOSE, msg, tag)
+    @JvmOverloads
+    fun v(tag: String, msg: String, e: Throwable? = null) {
+        print(Level.VERBOSE, msg, tag, e = e)
     }
 
     /**
      * 输出Debug日志。
      *
      * @param[msg] 消息内容。
+     * @param[e] 异常，可选，不需要打印时默认为空值。
      */
     @JvmStatic
-    fun d(msg: String) {
-        print(Level.DEBUG, msg)
+    @JvmOverloads
+    fun d(msg: String, e: Throwable? = null) {
+        print(Level.DEBUG, msg, e = e)
     }
 
     /**
@@ -50,20 +56,24 @@ object LogUtil {
      *
      * @param[tag] 消息Tag。
      * @param[msg] 消息内容。
+     * @param[e] 异常，可选，不需要打印时默认为空值。
      */
     @JvmStatic
-    fun d(tag: String, msg: String) {
-        print(Level.DEBUG, msg, tag)
+    @JvmOverloads
+    fun d(tag: String, msg: String, e: Throwable? = null) {
+        print(Level.DEBUG, msg, tag, e = e)
     }
 
     /**
      * 输出Info日志。
      *
      * @param[msg] 消息内容。
+     * @param[e] 异常，可选，不需要打印时默认为空值。
      */
     @JvmStatic
-    fun i(msg: String) {
-        print(Level.INFO, msg)
+    @JvmOverloads
+    fun i(msg: String, e: Throwable? = null) {
+        print(Level.INFO, msg, e = e)
     }
 
     /**
@@ -71,20 +81,24 @@ object LogUtil {
      *
      * @param[tag] 消息Tag。
      * @param[msg] 消息内容。
+     * @param[e] 异常，可选，不需要打印时默认为空值。
      */
     @JvmStatic
-    fun i(tag: String, msg: String) {
-        print(Level.INFO, msg, tag)
+    @JvmOverloads
+    fun i(tag: String, msg: String, e: Throwable? = null) {
+        print(Level.INFO, msg, tag, e = e)
     }
 
     /**
      * 输出Warn日志。
      *
      * @param[msg] 消息内容。
+     * @param[e] 异常，可选，不需要打印时默认为空值。
      */
     @JvmStatic
-    fun w(msg: String) {
-        print(Level.WARN, msg)
+    @JvmOverloads
+    fun w(msg: String, e: Throwable? = null) {
+        print(Level.WARN, msg, e = e)
     }
 
     /**
@@ -92,20 +106,24 @@ object LogUtil {
      *
      * @param[tag] 消息Tag。
      * @param[msg] 消息内容。
+     * @param[e] 异常，可选，不需要打印时默认为空值。
      */
     @JvmStatic
-    fun w(tag: String, msg: String) {
-        print(Level.WARN, msg, tag)
+    @JvmOverloads
+    fun w(tag: String, msg: String, e: Throwable? = null) {
+        print(Level.WARN, msg, tag, e = e)
     }
 
     /**
      * 输出Error日志。
      *
      * @param[msg] 消息内容。
+     * @param[e] 异常，可选，不需要打印时默认为空值。
      */
     @JvmStatic
-    fun e(msg: String) {
-        print(Level.ERROR, msg)
+    @JvmOverloads
+    fun e(msg: String, e: Throwable? = null) {
+        print(Level.ERROR, msg, e = e)
     }
 
     /**
@@ -113,10 +131,12 @@ object LogUtil {
      *
      * @param[tag] 消息Tag。
      * @param[msg] 消息内容。
+     * @param[e] 异常，可选，不需要打印时默认为空值。
      */
     @JvmStatic
-    fun e(tag: String, msg: String) {
-        print(Level.ERROR, msg, tag)
+    @JvmOverloads
+    fun e(tag: String, msg: String, e: Throwable? = null) {
+        print(Level.ERROR, msg, tag, e = e)
     }
 
     /**
@@ -128,10 +148,11 @@ object LogUtil {
      * @param[msg] 日志内容。
      * @param[tag] 日志Tag。
      * @param[stackOffset] 调用者信息在调用栈中的索引。
+     * @param[e] 异常，可选，不需要打印时默认为空值。
      *
      * 栈首的若干项为本工具类内部调用信息，它们可以被忽略，之后的元素为调用者信息。
      */
-    fun print(level: Level, msg: String, tag: String? = null, stackOffset: Int = 5) {
+    fun print(level: Level, msg: String, tag: String? = null, stackOffset: Int = 5, e: Throwable? = null) {
         // 如果全局输出开关未开启，则不必输出日志。
         if (!LogConfig.enable) {
             return
@@ -142,10 +163,10 @@ object LogUtil {
             return
         }
 
-        // 获取调用栈。
+        // 获取调用栈
         val stack: Array<StackTraceElement> = Thread.currentThread().stackTrace
 
-        // 工具调试日志。
+        // 工具调试日志
         // stack.forEach {
         //     val className: String = it.className
         //     val methodName: String = it.methodName
@@ -153,7 +174,7 @@ object LogUtil {
         //     Log.d(TAG, "Class:[$className] Method:[$methodName] Line:[$lineNumber]")
         // }
 
-        // 工具调试日志。
+        // 工具调试日志
         // Log.d(TAG, "Called by JVM static function? [$callByJVMStatic]")
 
         /* 构建输出内容 */
@@ -182,7 +203,7 @@ object LogUtil {
             msg
         }
 
-        printMultiLineIfNeeded(level, printTag, printMsg)
+        printMultiLineIfNeeded(level, printTag, printMsg, e)
     }
 
     /**
@@ -245,14 +266,15 @@ object LogUtil {
      * @param[level] 日志级别。
      * @param[tag] 日志Tag。
      * @param[message] 日志内容。
+     * @param[e] 异常，可选，不需要打印时默认为空值。
      */
-    private fun printMultiLineIfNeeded(level: Level, tag: String, message: String) {
+    private fun printMultiLineIfNeeded(level: Level, tag: String, message: String, e: Throwable? = null) {
         // 每行最大长度
         val limit = 1250
 
         // 未开启自动换行输出，或长度未达到限制数值，则原样输出。
         if (!LogConfig.multiLinePrint || message.length <= limit) {
-            logcat(level, tag, message)
+            logcat(level, tag, message, e)
             return
         }
 
@@ -263,12 +285,12 @@ object LogUtil {
             if (i != lines) {
                 /* 打印完整的行 */
                 val line: String = message.substring(i * limit, (i + 1) * limit)
-                logcat(level, tag, "Line:[${i + 1}] $line")
+                logcat(level, tag, "Line:[${i + 1}] $line", e)
             } else {
                 /* 打印最后一行 */
                 val line: String = message.substring(i * limit)
                 if (line.isNotEmpty()) {
-                    logcat(level, tag, "Line:[${i + 1}] $line")
+                    logcat(level, tag, "Line:[${i + 1}] $line", e)
                 }
             }
         }
@@ -280,14 +302,25 @@ object LogUtil {
      * @param[level] 日志级别。
      * @param[tag] 日志Tag。
      * @param[message] 日志内容。
+     * @param[e] 异常，可选，不需要打印时默认为空值。
      */
-    private fun logcat(level: Level, tag: String, message: String) {
-        when (level) {
-            Level.VERBOSE -> Log.v(tag, message)
-            Level.DEBUG -> Log.d(tag, message)
-            Level.INFO -> Log.i(tag, message)
-            Level.WARN -> Log.w(tag, message)
-            Level.ERROR -> Log.e(tag, message)
+    private fun logcat(level: Level, tag: String, message: String, e: Throwable? = null) {
+        if (e != null) {
+            when (level) {
+                Level.VERBOSE -> Log.v(tag, message, e)
+                Level.DEBUG -> Log.d(tag, message, e)
+                Level.INFO -> Log.i(tag, message, e)
+                Level.WARN -> Log.w(tag, message, e)
+                Level.ERROR -> Log.e(tag, message, e)
+            }
+        } else {
+            when (level) {
+                Level.VERBOSE -> Log.v(tag, message)
+                Level.DEBUG -> Log.d(tag, message)
+                Level.INFO -> Log.i(tag, message)
+                Level.WARN -> Log.w(tag, message)
+                Level.ERROR -> Log.e(tag, message)
+            }
         }
     }
 }

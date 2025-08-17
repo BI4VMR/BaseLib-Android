@@ -1,9 +1,11 @@
-val versionMinSDK: Int = Integer.valueOf(agp.versions.minSdk.get())
+@file:Suppress("UnstableApiUsage")
+
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
-val mvnGroupID: String = "net.bi4vmr.tool.android"
-val mvnArtifactID: String = "common-logcat"
-val mvnVersion: String = "1.0.0"
+val depInTOML: MinimalExternalModuleDependency = privateLibAndroid.common.logcat.get()
+val mvnGroupID: String = requireNotNull(depInTOML.group)
+val mvnArtifactID: String = depInTOML.name
+val mvnVersion: String = requireNotNull(depInTOML.version)
 
 plugins {
     alias(libAndroid.plugins.library)
@@ -11,14 +13,9 @@ plugins {
     id("maven-publish")
 }
 
-@Suppress("UnstableApiUsage")
 android {
     namespace = "net.bi4vmr.tool.android.common.logcat"
     compileSdk = versionCompileSDK
-
-    defaultConfig {
-        minSdk = versionMinSDK
-    }
 
     sourceSets {
         getByName("main") {
