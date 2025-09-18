@@ -75,6 +75,8 @@ include(":lib_ui:universal")
 include(":lib_ui:analogclock")
 // 饼图进度条
 include(":lib_ui:pieprogressbar")
+// RecyclerView通用适配器
+include(":lib_ui:baservadapter")
 // 跨窗口背景模糊工具
 include(":lib_ui:crosswindowblurtool")
 
