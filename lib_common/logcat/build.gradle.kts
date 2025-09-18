@@ -45,7 +45,7 @@ android {
 }
 
 dependencies {
-    implementation(libKotlin.ktx.coroutines)
+    implementation(libKotlin.ktx.coroutines.core)
 }
 
 publishing {

@@ -62,7 +62,7 @@ abstract class BaseAdapter<I : ListItem>
      *
      * 用于控制是否输出详细日志。
      */
-    protected var debugMode: Boolean = false
+    var debugMode: Boolean = false
 
     /**
      * ViewType映射表。
@@ -182,15 +182,6 @@ abstract class BaseAdapter<I : ListItem>
     override fun getItemViewType(position: Int): Int {
         val item: I = mDataSource[position]
         return item.getViewType()
-    }
-
-    /**
-     * 设置是否启用调试模式。
-     *
-     * @param[enabled] `true`表示启用调试模式，`false`表示关闭调试模式。
-     */
-    fun setDebugMode(enabled: Boolean) {
-        debugMode = enabled
     }
 
     /**

@@ -3,9 +3,10 @@
 val versionMinSDK: Int = Integer.valueOf(agp.versions.minSdk.get())
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
-val mvnGroupID: String = "net.bi4vmr.tool.android"
-val mvnArtifactID: String = "ui-analogclock"
-val mvnVersion: String = "1.0.0"
+val depInTOML: MinimalExternalModuleDependency = privateLibAndroid.ui.analogClock.get()
+val mvnGroupID: String = requireNotNull(depInTOML.group)
+val mvnArtifactID: String = depInTOML.name
+val mvnVersion: String = requireNotNull(depInTOML.version)
 
 plugins {
     alias(libAndroid.plugins.library)
@@ -19,14 +20,6 @@ android {
 
     defaultConfig {
         minSdk = versionMinSDK
-    }
-
-    sourceSets {
-        getByName("main") {
-            java {
-                java.srcDirs("src/main/kotlin")
-            }
-        }
     }
 
     compileOptions {
@@ -53,7 +46,7 @@ android {
 }
 
 dependencies {
-    implementation(libKotlin.ktx.coroutines)
+    implementation(libKotlin.ktx.coroutines.core)
 }
 
 publishing {

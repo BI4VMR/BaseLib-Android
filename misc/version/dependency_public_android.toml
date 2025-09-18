@@ -4,7 +4,7 @@
 appcompat = "1.6.1"
 material = "1.8.0"
 constraintLayout = "2.1.4"
-recyclerview = "1.4.0"
+recyclerview = "1.3.2"
 
 ktx_core = "1.10.1"
 ktx_coroutine = "1.8.1"
@@ -14,32 +14,45 @@ ktx_lifecycleViewModel = "2.5.1"
 annotation = "1.9.1"
 desugarLibs = "2.0.4"
 
-compose_bom = "2023.06.01"
-compose_activity = "1.6.1"
-compose_compiler = "1.5.7"
+compose-bom = "2023.06.01"
+compose-activity = "1.6.1"
+compose-compiler = "1.5.7"
 
 
 # ----- 实用工具 -----
 utilCodeX = "1.31.1"
 
+freeReflection = "3.1.0"
+
 
 # ----- 媒体技术 -----
-glide_core = "4.16.0"
+glide-core = "4.16.0"
 
-coil_core = "1.1.1"
-coil_gif = "0.9.5"
+coil-core = "1.1.1"
+coil-gif = "0.9.5"
 
 media3 = "1.1.0"
 
 
 # ----- 数据存储 -----
-debugDB = "1.0.7"
-
 room = "2.5.1"
+
+debugDB = "1.0.7"
 
 
 # ----- 网络通讯 -----
-okdownload_core = "1.0.7"
+okdownload-core = "1.0.7"
+
+
+# ----- 工程架构 -----
+hilt = "2.52"
+
+
+# ----- 测试工具 -----
+androidx-test = "1.2.1"
+androidx-test_espresso = "3.6.1"
+
+jraska-livedata-test = "1.3.0"
 
 
 # ----- Gradle插件 -----
@@ -77,39 +90,42 @@ ktx_lifecycleViewModel = { group = "androidx.lifecycle", name = "lifecycle-viewm
 
 # < Jetpack Compose >
 # BOM文件（其他组件的版本配置文件）
-compose_bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose_bom" }
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 # 核心组件
-compose_ui = { group = "androidx.compose.ui", name = "ui" }
-compose_ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+compose-ui = { group = "androidx.compose.ui", name = "ui" }
+compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 # Material3支持
-compose_material3 = { group = "androidx.compose.material3", name = "material3" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 # Activity支持
-compose_activity = { group = "androidx.activity", name = "activity-compose", version.ref = "compose_activity" }
+compose-activity = { group = "androidx.activity", name = "activity-compose", version.ref = "compose-activity" }
 # 调试工具
-compose_ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
-compose_ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 # 测试工具
-compose_ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-compose_ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 
 
 # ----- 实用工具 -----
 # UtilCodeX
 utilCodeX = { group = "com.blankj", name = "utilcodex", version.ref = "utilCodeX" }
 
+# FreeReflection（解除Android 10及以上版本的隐藏接口反射限制）
+freeReflection = { group = "com.github.tiann", name = "FreeReflection", version.ref = "freeReflection" }
+
 
 # ----- 媒体技术 -----
 # < Glide >
 # 核心
-glide_core = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide_core" }
+glide-core = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide-core" }
 # 注解处理器
-glide_compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide_core" }
+glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide-core" }
 
 # < Coil >
 # 核心
-coil_core = { group = "io.coil-kt", name = "coil", version.ref = "coil_core" }
+coil-core = { group = "io.coil-kt", name = "coil", version.ref = "coil-core" }
 # GIF支持
-coil_gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil_gif" }
+coil-gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil-gif" }
 
 # < Jetpack Media3 >
 # ExoPlayer核心
@@ -133,23 +149,45 @@ media3_ui = { group = "androidx.media3", name = "media3-ui", version.ref = "medi
 # ----- 数据存储 -----
 # < Room >
 # 核心
-room_runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 # 注解处理器
-room_compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 # Kotlin扩展
-room_ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 # 测试工具
-room_test = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+room-test = { group = "androidx.room", name = "room-testing", version.ref = "room" }
 
 # < 调试工具 >
-# Web调试工具
+# SQLite Web调试工具
 debugDB = { group = "com.github.amitshekhariitbhu.Android-Debug-Database", name = "debug-db", version.ref = "debugDB" }
 
 
 # ----- 网络通讯 -----
 # < OkDownload >
 # 核心
-okdownload_core = { group = "com.liulishuo.okdownload", name = "okdownload", version.ref = "okdownload_core" }
+okdownload-core = { group = "com.liulishuo.okdownload", name = "okdownload", version.ref = "okdownload-core" }
+
+
+# ----- 工程架构 -----
+# <Dagger>
+# Dagger・Hilt・Android
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+# Dagger・Hilt・注解处理器
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+
+
+# ----- 测试工具 -----
+# <AndroidX Test>
+# AndroidX Test JUnit扩展（提供AndroidJUnit4，方便与JUnit集成。）
+androidx-test_junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test" }
+# AndroidX Test Espresso运行环境
+androidx-test_espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test_espresso" }
+
+# <Jraska LiveData 测试工具>
+# Jraska LiveData 测试工具(Java)
+jraska_liveDataTest-java = { group = "com.jraska.livedata", name = "testing", version.ref = "jraska-livedata-test" }
+# Jraska LiveData 测试工具(Kotlin)
+jraska_liveDataTest-kotlin = { group = "com.jraska.livedata", name = "testing-ktx", version.ref = "jraska-livedata-test" }
 
 
 # 编组
@@ -163,13 +201,13 @@ appBaseKT = ["appcompat", "material", "constraintLayout", "ktx_core", "ktx_corou
 
 # Jetpack Compose
 # 核心组件
-compose_core = ["compose_ui", "compose_ui-graphics", "compose_material3", "compose_activity", "compose_ui-tooling", "compose_ui-tooling-preview"]
+compose-core = ["compose-ui", "compose-ui-graphics", "compose-material3", "compose-activity", "compose-ui-tooling", "compose-ui-tooling-preview"]
 # 测试工具
-compose_test = ["compose_ui-test-manifest", "compose_ui-test-junit4"]
+compose-test = ["compose-ui-test-manifest", "compose-ui-test-junit4"]
 
 
 # ----- 图像处理 -----
-coil = ["coil_core", "coil_gif"]
+coil = ["coil-core", "coil-gif"]
 
 
 # Gradle插件
@@ -177,3 +215,4 @@ coil = ["coil_core", "coil_gif"]
 application = { id = "com.android.application", version.ref = "plugin_agp" }
 library = { id = "com.android.library", version.ref = "plugin_agp" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "plugin_kotlin" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
