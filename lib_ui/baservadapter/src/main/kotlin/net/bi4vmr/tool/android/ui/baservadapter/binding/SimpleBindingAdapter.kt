@@ -10,16 +10,25 @@ import net.bi4vmr.tool.android.ui.baservadapter.base.BaseAdapter
 import net.bi4vmr.tool.android.ui.baservadapter.base.BaseViewHolder
 import net.bi4vmr.tool.android.ui.baservadapter.base.ListItem
 import java.lang.reflect.Method
-import java.util.concurrent.ConcurrentHashMap
 
 /**
- * RecyclerView适配器的通用封装（ViewBinding支持）。
+ * RecyclerView适配器的通用封装（单一表项类型与ViewBinding支持）。
  *
  * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
-abstract class BindingAdapter<I : ListItem>
+abstract class SimpleBindingAdapter<I : ListItem>
 @JvmOverloads constructor(
+
+    /**
+     * ViewBinding的Class。
+     */
+    private val viewBindingClass: Class<out ViewBinding>,
+
+    /**
+     * ViewHolder的Class。
+     */
+    private val viewHolderClass: Class<out BaseViewHolder<I>>,
 
     /**
      * 初始数据源。
@@ -43,27 +52,14 @@ abstract class BindingAdapter<I : ListItem>
     uiScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 ) : BaseAdapter<I>(dataSource, bgScope, uiScope) {
 
-    /**
-     * ViewType映射表。
-     *
-     * 配置ViewType、ViewBinding与ViewHolder的映射关系，以便 [onCreateViewHolder] 方法自动创建ViewHolder实例。
-     *
-     * 如果调用者不希望使用本工具内置的映射方案，也可以自行重写 [onCreateViewHolder] 方法。
-     */
-    private val bindingMappers: MutableMap<Int, Pair<Class<out ViewBinding>, Class<out BindingViewHolder<*, *>>>> =
-        ConcurrentHashMap()
-
-    @Suppress("UNCHECKED_CAST")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BindingViewHolder<*, I> {
         if (debugMode) {
             Log.v(tag, "OnCreateViewHolder. ViewType:[$viewType]")
         }
 
-        val (vbClass, vhClass) = bindingMappers[viewType]
-            ?: throw IllegalArgumentException("ViewType [$viewType] is unknown! Did you forget to register it?")
-
+        // 只支持单一表项类型，使用泛型指定的ViewHolder即可，无需再查询映射表。
         // 反射调用 [ViewBinding.inflate] 方法创建ViewBinding实例
-        val inflateMethod: Method = vbClass.getMethod(
+        val inflateMethod: Method = viewBindingClass.getMethod(
             "inflate",
             LayoutInflater::class.java,
             ViewGroup::class.java,
@@ -73,40 +69,7 @@ abstract class BindingAdapter<I : ListItem>
             ?: throw IllegalStateException("Invoke ViewBinding.inflate() failed!")
 
         // 反射调用 [ViewHolder] 的构造方法创建实例
-        val constructor = vhClass.getConstructor(ViewBinding::class.java)
+        val constructor = viewHolderClass.getConstructor(ViewBinding::class.java)
         return constructor.newInstance(binding) as BindingViewHolder<*, I>
-    }
-
-    /**
-     * 注册ViewType、ViewBinding和ViewHolder的映射关系。
-     *
-     * @param[viewType] ViewType。
-     * @param[bindingClass] ViewBinding的Class。
-     * @param[viewHolderClass] ViewHolder的Class。
-     */
-    fun addBindingMapper(
-        viewType: Int,
-        bindingClass: Class<out ViewBinding>,
-        viewHolderClass: Class<out BindingViewHolder<*, *>>
-    ) {
-        bindingMappers[viewType] = bindingClass to viewHolderClass
-    }
-
-    /**
-     * 注销ViewType、ViewBinding和ViewHolder的映射关系。
-     *
-     * @param[viewType] ViewType。
-     */
-    fun removeBindingMapper(viewType: Int) {
-        bindingMappers.remove(viewType)
-    }
-
-    /**
-     * 获取所有ViewType、ViewBinding和ViewHolder的映射关系。
-     *
-     * @return 映射关系集合。
-     */
-    fun getBindingMappers(): Map<Int, Pair<Class<out ViewBinding>, Class<out BaseViewHolder<*>>>> {
-        return bindingMappers.toMap()
     }
 }

@@ -15,16 +15,50 @@ abstract class BaseDiffer<T : ListItem> {
 
     companion object {
 
-        const val FLAG_NAME: Int = 0x1
-        const val FLAG_TITLE: Int = FLAG_NAME shl 1
-        const val FLAG_CONTENT: Int = FLAG_NAME shl 2
-        const val FLAG_DESCRIPTION: Int = FLAG_NAME shl 3
-        const val FLAG_ICON: Int = FLAG_NAME shl 4
+        /**
+         * 标志位起始值。
+         */
+        private const val FLAG_START: Int = 0x1
+
+        /**
+         * 内置标志位：设置表项点击事件监听器。
+         */
+        const val FLAG_PRIVATE_CLICK_LISTENER_SET: Int = FLAG_START shl 1
+
+        /**
+         * 内置标志位：撤销表项点击事件监听器。
+         */
+        const val FLAG_PRIVATE_CLICK_LISTENER_UNSET: Int = FLAG_START shl 2
+
+        /**
+         * 预设标志位：名称。
+         */
+        const val FLAG_NAME: Int = FLAG_START shl 3
+
+        /**
+         * 预设标志位：标题。
+         */
+        const val FLAG_TITLE: Int = FLAG_START shl 4
+
+        /**
+         * 预设标志位：内容。
+         */
+        const val FLAG_CONTENT: Int = FLAG_START shl 5
+
+        /**
+         * 预设标志位：描述。
+         */
+        const val FLAG_DESCRIPTION: Int = FLAG_START shl 6
+
+        /**
+         * 预设标志位：图标。
+         */
+        const val FLAG_ICON: Int = FLAG_START shl 7
 
         /**
          * 自定义标志位的起始值。
          *
-         * 自定义标志位从该数值左移1位开始，依次递增。
+         * 自定义标志位从最大的预设标志位数值左移 `1` 位开始，依次递增。
          */
         const val FLAG_CUSTOM: Int = FLAG_ICON
 
@@ -42,7 +76,7 @@ abstract class BaseDiffer<T : ListItem> {
 
     /**
      * 判断参数所指定的两个位置对应表项是否相同。
-     * <p>
+     *
      * 如果表项具有唯一ID或多种类型，可以加入判断逻辑。
      *
      * @param[oldItem] 旧数据源中的表项。
@@ -54,7 +88,7 @@ abstract class BaseDiffer<T : ListItem> {
 
     /**
      * 判断参数所指定的两个位置对应表项的内容是否相同。
-     * <p>
+     *
      * 仅当 `areItemsTheSame()` 返回 `true` 时才会调用本方法。
      *
      * @param[oldItem] 旧数据源中的表项。

@@ -79,6 +79,18 @@ abstract class BaseAdapter<I : ListItem>
     private var mRecyclerView: RecyclerView? = null
 
     /**
+     * UI交互事件监听器实现。
+     *
+     * 维护调用者注册的UI事件监听器实现。
+     */
+    private var mUIEventListener: UIEventListener? = null
+
+    /**
+     * DiffUtil比较回调。
+     */
+    private var mDiffCallback: BaseDiffer<I> = DefaultDiffer()
+
+    /**
      * 最新的异步更新任务序号。
      *
      * 每个异步任务开始时将该序号加 `1` 并保存在自身的线程中，差异对比完毕后与全局变量比较：
@@ -87,18 +99,21 @@ abstract class BaseAdapter<I : ListItem>
      */
     private var mUpdateTaskSequence: Int = 0
 
-    /**
-     * DiffUtil比较回调。
-     */
-    private var mDiffCallback: BaseDiffer<I> = DefaultDiffer()
-
     @CallSuper
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        if (debugMode) {
+            Log.d(tag, "OnAttachedToRecyclerView.")
+        }
+
         mRecyclerView = recyclerView
     }
 
     @CallSuper
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        if (debugMode) {
+            Log.d(tag, "OnDetachedFromRecyclerView.")
+        }
+
         mRecyclerView = null
     }
 
@@ -112,7 +127,7 @@ abstract class BaseAdapter<I : ListItem>
     @Suppress("UNCHECKED_CAST")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<I> {
         if (debugMode) {
-            Log.v(tag, "OnCreateViewHolder. ViewType:[$viewType]")
+            Log.d(tag, "OnCreateViewHolder. ViewType:[$viewType]")
         }
 
         val (layoutID, vhClass) = viewTypeMappers[viewType]
@@ -132,10 +147,22 @@ abstract class BaseAdapter<I : ListItem>
      */
     override fun onBindViewHolder(holder: BaseViewHolder<I>, position: Int) {
         if (debugMode) {
-            Log.v(tag, "OnBindViewHolder. Position:[$position]")
+            Log.d(tag, "OnBindViewHolder. Position:[$position]")
         }
 
         val item: I = mDataSource[position]
+        // 注册表项点击监听器
+        if (mUIEventListener != null) {
+            holder.itemView.setOnClickListener {
+                // 主线程限定，不需要考虑同步问题。
+                requireNotNull(mUIEventListener).onItemClick(holder.adapterPosition, item)
+            }
+            holder.itemView.setOnLongClickListener {
+                // 主线程限定，不需要考虑同步问题。
+                requireNotNull(mUIEventListener).onItemLongClick(holder.adapterPosition, item)
+            }
+        }
+        // 执行数据绑定逻辑
         holder.bindData(item)
     }
 
@@ -153,7 +180,7 @@ abstract class BaseAdapter<I : ListItem>
      */
     override fun onBindViewHolder(holder: BaseViewHolder<I>, position: Int, payloads: MutableList<Any>) {
         if (debugMode && payloads.isEmpty()) {
-            Log.v(tag, "OnBindViewHolder. Position:[$position] NoPayload.")
+            Log.d(tag, "OnBindViewHolder. Position:[$position] NoPayload.")
         }
 
         if (payloads.isEmpty()) {
@@ -167,18 +194,47 @@ abstract class BaseAdapter<I : ListItem>
             }
 
             if (debugMode) {
-                Log.v(tag, "OnBindViewHolder. Position:[$position] Payload:[0x${payload.toString(16)}]")
+                Log.d(tag, "OnBindViewHolder. Position:[$position] Payload:[0x${payload.toString(16)}]")
             }
 
             val item: I = mDataSource[position]
+
+            // 如果是内置Flag，则执行相应的逻辑。
+            if (BaseViewHolder.hasFlag(payload, BaseDiffer.FLAG_PRIVATE_CLICK_LISTENER_SET)) {
+                holder.itemView.setOnClickListener {
+                    mUIEventListener?.onItemClick(holder.adapterPosition, item)
+                }
+                holder.itemView.setOnLongClickListener {
+                    mUIEventListener?.onItemLongClick(holder.adapterPosition, item) ?: true
+                }
+                return
+            }
+            if (BaseViewHolder.hasFlag(payload, BaseDiffer.FLAG_PRIVATE_CLICK_LISTENER_UNSET)) {
+                holder.itemView.setOnClickListener(null)
+                holder.itemView.setOnLongClickListener(null)
+                return
+            }
+
+            // 非内置Flag，则执行自定义逻辑。
             holder.bindData(item, payload)
         }
     }
 
+    /**
+     * 获取表项数量。
+     *
+     * @return 表项数量。
+     */
     override fun getItemCount(): Int {
         return mDataSource.size
     }
 
+    /**
+     * 获取表项类型。
+     *
+     * @param[position] 表项索引。
+     * @return 表项类型代码。
+     */
     override fun getItemViewType(position: Int): Int {
         val item: I = mDataSource[position]
         return item.getViewType()
@@ -250,7 +306,7 @@ abstract class BaseAdapter<I : ListItem>
     @JvmOverloads
     fun addItem(data: I, position: Int = -1) {
         if (debugMode) {
-            Log.v(tag, "AddItem. Position:[$position] Data:$data")
+            Log.d(tag, "AddItem. Position:[$position] Data:$data")
         }
 
         mUpdateTaskSequence++
@@ -280,7 +336,7 @@ abstract class BaseAdapter<I : ListItem>
     @JvmOverloads
     fun addItems(data: List<I>, position: Int = -1) {
         if (debugMode) {
-            Log.v(tag, "AddItems. Position:[$position] Size:[${data.size}]")
+            Log.d(tag, "AddItems. Position:[$position] Size:[${data.size}]")
         }
 
         mUpdateTaskSequence++
@@ -308,7 +364,7 @@ abstract class BaseAdapter<I : ListItem>
     @MainThread
     fun updateItem(data: I, position: Int) {
         if (debugMode) {
-            Log.v(tag, "UpdateItem. Position:[$position] Data:$data")
+            Log.d(tag, "UpdateItem. Position:[$position] Data:$data")
         }
 
         if (position < 0 || position >= mDataSource.size) {
@@ -331,7 +387,7 @@ abstract class BaseAdapter<I : ListItem>
     @MainThread
     fun removeItem(position: Int) {
         if (debugMode) {
-            Log.v(tag, "RemoveItem. Position:[$position]")
+            Log.d(tag, "RemoveItem. Position:[$position]")
         }
 
         if (position < 0 || position >= mDataSource.size) {
@@ -353,7 +409,7 @@ abstract class BaseAdapter<I : ListItem>
     @MainThread
     fun reloadItems(data: List<I>) {
         if (debugMode) {
-            Log.v(tag, "ReloadItems. Size:[${data.size}]")
+            Log.d(tag, "ReloadItems. Size:[${data.size}]")
         }
 
         mUpdateTaskSequence++
@@ -385,20 +441,20 @@ abstract class BaseAdapter<I : ListItem>
             if (newData.isEmpty()) {
                 Log.d(tag, "Submit. New data is empty.")
             } else {
-                Log.v(tag, "Submit. New data size is [${newData.size}], detail info start:")
+                Log.d(tag, "Submit. New data size is [${newData.size}], detail info start:")
                 newData.forEachIndexed { i, item ->
-                    Log.v(tag, "[$i] -> $item")
+                    Log.d(tag, "[$i] -> $item")
                 }
-                Log.v(tag, "Submit. New data detail info end.")
+                Log.d(tag, "Submit. New data detail info end.")
             }
             if (oldData.isEmpty()) {
                 Log.d(tag, "Submit. Old data is empty.")
             } else {
-                Log.v(tag, "Submit. Old data size is [${oldData.size}], detail info start:")
+                Log.d(tag, "Submit. Old data size is [${oldData.size}], detail info start:")
                 newData.forEachIndexed { i, item ->
-                    Log.v(tag, "[$i] -> $item")
+                    Log.d(tag, "[$i] -> $item")
                 }
-                Log.v(tag, "Submit. Old data detail info end.")
+                Log.d(tag, "Submit. Old data detail info end.")
             }
         }
 
@@ -489,5 +545,52 @@ abstract class BaseAdapter<I : ListItem>
      */
     fun resetDiffCallback() {
         mDiffCallback = DefaultDiffer()
+    }
+
+    /**
+     * UI交互事件监听器定义。
+     */
+    interface UIEventListener {
+
+        /**
+         * 表项被点击。
+         *
+         * @param[position] 被点击的表项位置。
+         * @param[item]     被点击的表项数据。
+         */
+        fun onItemClick(position: Int, item: ListItem)
+
+        /**
+         * 表项被长按。
+         *
+         * @param[position] 被长按的表项位置。
+         * @param[item]     被长按的表项数据。
+         * @return `true` 表示事件处理完毕无需分发给子View， `false` 表示事件需要继续分发给子View。
+         */
+        fun onItemLongClick(position: Int, item: ListItem): Boolean {
+            // 默认忽略长按事件
+            return true
+        }
+    }
+
+    private fun notifyItemClick(position: Int, item: ListItem) {
+        mUIEventListener?.onItemClick(position, item)
+    }
+
+    /**
+     * 设置表项事件监听器。
+     *
+     * @param[listener] 监听器实现。
+     */
+    fun setUIEventListener(listener: UIEventListener?) {
+        if (listener == null) {
+            /* 参数为空，表示撤销监听器。 */
+            notifyItemRangeChanged(0, itemCount, BaseDiffer.FLAG_PRIVATE_CLICK_LISTENER_UNSET)
+        } else if (mUIEventListener == null) {
+            /* 如果当前监听器为空，则需要设置监听器。 */
+            notifyItemRangeChanged(0, itemCount, BaseDiffer.FLAG_PRIVATE_CLICK_LISTENER_SET)
+        }
+
+        mUIEventListener = listener
     }
 }

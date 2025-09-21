@@ -215,4 +215,5 @@ coil = ["coil-core", "coil-gif"]
 application = { id = "com.android.application", version.ref = "plugin_agp" }
 library = { id = "com.android.library", version.ref = "plugin_agp" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "plugin_kotlin" }
+parcelize = { id = "kotlin-parcelize" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
