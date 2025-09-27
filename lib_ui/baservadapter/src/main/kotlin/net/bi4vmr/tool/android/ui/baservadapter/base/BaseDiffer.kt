@@ -115,7 +115,7 @@ abstract class BaseDiffer<T : ListItem> {
      *
      * @param[oldItem] 旧数据源中的表项。
      * @param[newItem] 新数据源中的表项。
-     * @return 组合标志位，通过 [FLAG_NAME] 等标志位指明需要更新的UI组件。
+     * @return 组合标志位，可以通过 [FLAG_NAME] 等标志位指明需要更新的UI组件。
      */
-    abstract fun getChangePayload(oldItem: T, newItem: T): Any
+    open fun getChangePayload(oldItem: T, newItem: T): Any = 0
 }

@@ -154,9 +154,25 @@ abstract class BaseAdapter<I : ListItem>
             ?: throw IllegalArgumentException("ViewType [$viewType] is unknown! Did you forget to register it?")
         // 通过布局文件创建View实例
         val itemView = LayoutInflater.from(parent.context).inflate(layoutID, parent, false)
+
         // 通过反射调用ViewHolder的构造方法创建实例
-        val constructor = vhClass.getConstructor(View::class.java)
-        return constructor.newInstance(itemView) as BaseViewHolder<I>
+        var instance: BaseViewHolder<I>
+        try {
+            val constructor = vhClass.getConstructor(View::class.java)
+            if (!constructor.isAccessible) {
+                constructor.isAccessible = true
+            }
+            instance = constructor.newInstance(itemView) as BaseViewHolder<I>
+        } catch (e: NoSuchMethodException) {
+            // 以上方式仅适用于ViewHolder不是Adapter内部类的情况，如果ViewHolder在Adapter内部，构造方法第一参数会变为Adapter实例。
+            val constructor = vhClass.getConstructor(javaClass, View::class.java)
+            if (!constructor.isAccessible) {
+                constructor.isAccessible = true
+            }
+            instance = constructor.newInstance(this, itemView) as BaseViewHolder<I>
+        }
+
+        return instance
     }
 
     /**

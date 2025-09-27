@@ -30,14 +30,14 @@ abstract class BaseViewHolder<I : ListItem>(itemView: View) : RecyclerView.ViewH
     }
 
     /**
-     * 根据ViewObject刷新所有控件。
+     * 根据表项数据刷新所有控件。
      *
      * @param[item] 新的表项数据。
      */
     abstract fun bindData(item: I)
 
     /**
-     * 根据Payload刷新部分控件。
+     * 根据Payload与表项数据刷新部分控件。
      *
      * 如果使用内置的Payload机制，请使用 [hasFlag] 方法判断Payload中包含的项目。
      *

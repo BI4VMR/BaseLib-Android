@@ -62,7 +62,7 @@ abstract class BindingAdapter<I : ListItem>
         val (vbClass, vhClass) = bindingMappers[viewType]
             ?: throw IllegalArgumentException("ViewType [$viewType] is unknown! Did you forget to register it?")
 
-        // 反射调用 [ViewBinding.inflate] 方法创建ViewBinding实例
+        // 反射调用ViewBinding的 `inflate` 方法创建ViewBinding实例
         val inflateMethod: Method = vbClass.getMethod(
             "inflate",
             LayoutInflater::class.java,
@@ -72,9 +72,24 @@ abstract class BindingAdapter<I : ListItem>
         val binding = inflateMethod.invoke(null, LayoutInflater.from(parent.context), parent, false)
             ?: throw IllegalStateException("Invoke ViewBinding.inflate() failed!")
 
-        // 反射调用 [ViewHolder] 的构造方法创建实例
-        val constructor = vhClass.getConstructor(vbClass)
-        return constructor.newInstance(binding) as BindingViewHolder<*, I>
+        // 通过反射调用ViewHolder的构造方法创建实例
+        var instance: BindingViewHolder<*, I>
+        try {
+            val constructor = vhClass.getConstructor(vbClass)
+            if (!constructor.isAccessible) {
+                constructor.isAccessible = true
+            }
+            instance = constructor.newInstance(binding) as BindingViewHolder<*, I>
+        } catch (e: NoSuchMethodException) {
+            // 以上方式仅适用于ViewHolder不是Adapter内部类的情况，如果ViewHolder在Adapter内部，构造方法第一参数会变为Adapter实例。
+            val constructor = vhClass.getConstructor(javaClass, vbClass)
+            if (!constructor.isAccessible) {
+                constructor.isAccessible = true
+            }
+            instance = constructor.newInstance(this, binding) as BindingViewHolder<*, I>
+        }
+
+        return instance
     }
 
     /**

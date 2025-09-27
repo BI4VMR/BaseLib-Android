@@ -16,6 +16,4 @@ internal class DefaultDiffer<T : ListItem> : BaseDiffer<T>() {
     override fun areContentsTheSame(oldItem: T, newItem: T): Boolean {
         return oldItem == newItem
     }
-
-    override fun getChangePayload(oldItem: T, newItem: T): Int = 0
 }

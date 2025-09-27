@@ -68,8 +68,23 @@ abstract class SimpleBindingAdapter<I : ListItem>
         val binding = inflateMethod.invoke(null, LayoutInflater.from(parent.context), parent, false)
             ?: throw IllegalStateException("Invoke ViewBinding.inflate() failed!")
 
-        // 反射调用 [ViewHolder] 的构造方法创建实例
-        val constructor = viewHolderClass.getConstructor(viewBindingClass)
-        return constructor.newInstance(binding) as BindingViewHolder<*, I>
+        // 通过反射调用ViewHolder的构造方法创建实例
+        var instance: BindingViewHolder<*, I>
+        try {
+            val constructor = viewHolderClass.getConstructor(viewBindingClass)
+            if (!constructor.isAccessible) {
+                constructor.isAccessible = true
+            }
+            instance = constructor.newInstance(binding) as BindingViewHolder<*, I>
+        } catch (e: NoSuchMethodException) {
+            // 以上方式仅适用于ViewHolder不是Adapter内部类的情况，如果ViewHolder在Adapter内部，构造方法第一参数会变为Adapter实例。
+            val constructor = viewHolderClass.getConstructor(javaClass, viewBindingClass)
+            if (!constructor.isAccessible) {
+                constructor.isAccessible = true
+            }
+            instance = constructor.newInstance(this, binding) as BindingViewHolder<*, I>
+        }
+
+        return instance
     }
 }

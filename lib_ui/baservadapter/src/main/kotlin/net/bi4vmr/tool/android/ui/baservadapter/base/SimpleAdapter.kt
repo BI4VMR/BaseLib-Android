@@ -69,8 +69,24 @@ abstract class SimpleAdapter<I : ListItem>
 
         // 只支持单一表项类型时，使用构造方法传入的ViewHolder类型即可，无需再查询映射表。
         val itemView = LayoutInflater.from(parent.context).inflate(layoutID, parent, false)
+
         // 通过反射调用ViewHolder的构造方法创建实例
-        val constructor = viewHolderClass.getConstructor(View::class.java)
-        return constructor.newInstance(itemView) as BaseViewHolder<I>
+        var instance: BaseViewHolder<I>
+        try {
+            val constructor = viewHolderClass.getConstructor(View::class.java)
+            if (!constructor.isAccessible) {
+                constructor.isAccessible = true
+            }
+            instance = constructor.newInstance(itemView) as BaseViewHolder<I>
+        } catch (e: NoSuchMethodException) {
+            // 以上方式仅适用于ViewHolder不是Adapter内部类的情况，如果ViewHolder在Adapter内部，构造方法第一参数会变为Adapter实例。
+            val constructor = viewHolderClass.getConstructor(javaClass, View::class.java)
+            if (!constructor.isAccessible) {
+                constructor.isAccessible = true
+            }
+            instance = constructor.newInstance(this, itemView) as BaseViewHolder<I>
+        }
+
+        return instance
     }
 }
