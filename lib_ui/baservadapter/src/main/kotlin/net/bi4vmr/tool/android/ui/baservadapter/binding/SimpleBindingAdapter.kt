@@ -7,7 +7,6 @@ import androidx.viewbinding.ViewBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import net.bi4vmr.tool.android.ui.baservadapter.base.BaseAdapter
-import net.bi4vmr.tool.android.ui.baservadapter.base.BaseViewHolder
 import net.bi4vmr.tool.android.ui.baservadapter.base.ListItem
 import java.lang.reflect.Method
 
@@ -28,7 +27,7 @@ abstract class SimpleBindingAdapter<I : ListItem>
     /**
      * ViewHolder的Class。
      */
-    private val viewHolderClass: Class<out BaseViewHolder<I>>,
+    private val viewHolderClass: Class<out BindingViewHolder<out ViewBinding, out ListItem>>,
 
     /**
      * 初始数据源。
@@ -52,9 +51,10 @@ abstract class SimpleBindingAdapter<I : ListItem>
     uiScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 ) : BaseAdapter<I>(dataSource, bgScope, uiScope) {
 
+    @Suppress("UNCHECKED_CAST")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BindingViewHolder<*, I> {
         if (debugMode) {
-            Log.v(tag, "OnCreateViewHolder. ViewType:[$viewType]")
+            Log.d(tag, "OnCreateViewHolder. ViewType:[$viewType]")
         }
 
         // 只支持单一表项类型，使用泛型指定的ViewHolder即可，无需再查询映射表。
@@ -69,7 +69,7 @@ abstract class SimpleBindingAdapter<I : ListItem>
             ?: throw IllegalStateException("Invoke ViewBinding.inflate() failed!")
 
         // 反射调用 [ViewHolder] 的构造方法创建实例
-        val constructor = viewHolderClass.getConstructor(ViewBinding::class.java)
+        val constructor = viewHolderClass.getConstructor(viewBindingClass)
         return constructor.newInstance(binding) as BindingViewHolder<*, I>
     }
 }

@@ -56,7 +56,7 @@ abstract class BindingAdapter<I : ListItem>
     @Suppress("UNCHECKED_CAST")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BindingViewHolder<*, I> {
         if (debugMode) {
-            Log.v(tag, "OnCreateViewHolder. ViewType:[$viewType]")
+            Log.d(tag, "OnCreateViewHolder. ViewType:[$viewType]")
         }
 
         val (vbClass, vhClass) = bindingMappers[viewType]
@@ -73,7 +73,7 @@ abstract class BindingAdapter<I : ListItem>
             ?: throw IllegalStateException("Invoke ViewBinding.inflate() failed!")
 
         // 反射调用 [ViewHolder] 的构造方法创建实例
-        val constructor = vhClass.getConstructor(ViewBinding::class.java)
+        val constructor = vhClass.getConstructor(vbClass)
         return constructor.newInstance(binding) as BindingViewHolder<*, I>
     }
 

@@ -67,7 +67,7 @@ abstract class SimpleAdapter<I : ListItem>
             Log.v(tag, "OnCreateViewHolder. ViewType:[$viewType]")
         }
 
-        // 只支持单一表项类型，使用泛型指定的ViewHolder即可，无需再查询映射表。
+        // 只支持单一表项类型时，使用构造方法传入的ViewHolder类型即可，无需再查询映射表。
         val itemView = LayoutInflater.from(parent.context).inflate(layoutID, parent, false)
         // 通过反射调用ViewHolder的构造方法创建实例
         val constructor = viewHolderClass.getConstructor(View::class.java)

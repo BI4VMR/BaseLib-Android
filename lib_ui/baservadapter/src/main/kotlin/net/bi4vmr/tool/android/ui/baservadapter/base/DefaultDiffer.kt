@@ -12,15 +12,6 @@ import android.annotation.SuppressLint
  */
 internal class DefaultDiffer<T : ListItem> : BaseDiffer<T>() {
 
-    override fun areItemsTheSame(oldItem: T, newItem: T): Boolean {
-        // 首先比较ViewType，如果ViewType不同，则两个表项一定是不同的。
-        val viewTypeSame = oldItem.getViewType() == newItem.getViewType()
-        if (!viewTypeSame) return false
-
-        // 如果ViewType相同，则调用两个表项的 `equals()` 方法进行比较。
-        return oldItem == newItem
-    }
-
     @SuppressLint("DiffUtilEquals")
     override fun areContentsTheSame(oldItem: T, newItem: T): Boolean {
         return oldItem == newItem

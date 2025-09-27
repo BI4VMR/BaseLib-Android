@@ -1,6 +1,7 @@
 package net.bi4vmr.tool.android.ui.baservadapter.base
 
 import android.annotation.SuppressLint
+import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -52,6 +54,10 @@ abstract class BaseAdapter<I : ListItem>
     private val uiScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 ) : RecyclerView.Adapter<BaseViewHolder<I>>() {
 
+    companion object {
+        private val DEFAULT_DEBOUNCE_DURATION = 500L
+    }
+
     /**
      * 日志Tag。
      */
@@ -79,11 +85,16 @@ abstract class BaseAdapter<I : ListItem>
     private var mRecyclerView: RecyclerView? = null
 
     /**
-     * UI交互事件监听器实现。
-     *
-     * 维护调用者注册的UI事件监听器实现。
+     * 表项点击事件监听器实现。
      */
-    private var mUIEventListener: UIEventListener? = null
+    private var mItemClickListener: ItemClickListener? = null
+
+    /**
+     * 点击事件防抖时长。
+     *
+     * 默认值为500毫秒。
+     */
+    private var mDebounceDuration: Long = DEFAULT_DEBOUNCE_DURATION
 
     /**
      * DiffUtil比较回调。
@@ -98,6 +109,15 @@ abstract class BaseAdapter<I : ListItem>
      * 如果任务序号与全局变量相同，说明任务有效，可以更新列表；否则说明已经有更晚开始的任务更新了列表，当前任务没必要再更新列表。
      */
     private var mUpdateTaskSequence: Int = 0
+
+    /**
+     * 数据更新互斥锁。
+     *
+     * 确保同时只能有一个协程访问数据源。
+     *
+     * 预留，暂不使用，目前更新数据均在主线程调度器执行，不会出现数据竞争问题。
+     */
+    private val updateMutex: Mutex? = null
 
     @CallSuper
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -151,17 +171,17 @@ abstract class BaseAdapter<I : ListItem>
         }
 
         val item: I = mDataSource[position]
+
         // 注册表项点击监听器
-        if (mUIEventListener != null) {
-            holder.itemView.setOnClickListener {
-                // 主线程限定，不需要考虑同步问题。
-                requireNotNull(mUIEventListener).onItemClick(holder.adapterPosition, item)
+        mItemClickListener?.let { outListener ->
+            holder.itemView.setDebouncedClickListener(tag, mDebounceDuration) {
+                outListener.onItemClick(holder.adapterPosition, item, it)
             }
             holder.itemView.setOnLongClickListener {
-                // 主线程限定，不需要考虑同步问题。
-                requireNotNull(mUIEventListener).onItemLongClick(holder.adapterPosition, item)
+                outListener.onItemLongClick(holder.adapterPosition, item, it)
             }
         }
+
         // 执行数据绑定逻辑
         holder.bindData(item)
     }
@@ -179,10 +199,6 @@ abstract class BaseAdapter<I : ListItem>
      * @see BaseDiffer
      */
     override fun onBindViewHolder(holder: BaseViewHolder<I>, position: Int, payloads: MutableList<Any>) {
-        if (debugMode && payloads.isEmpty()) {
-            Log.d(tag, "OnBindViewHolder. Position:[$position] NoPayload.")
-        }
-
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
         } else {
@@ -194,24 +210,27 @@ abstract class BaseAdapter<I : ListItem>
             }
 
             if (debugMode) {
-                Log.d(tag, "OnBindViewHolder. Position:[$position] Payload:[0x${payload.toString(16)}]")
+                Log.d(tag, "OnBindViewHolder. Position:[$position] Payload:[${payload.toString(2)}]")
             }
 
             val item: I = mDataSource[position]
 
-            // 如果是内置Flag，则执行相应的逻辑。
+            // 如果是内置Flag，则执行相应的逻辑，不必通知子类。
             if (BaseViewHolder.hasFlag(payload, BaseDiffer.FLAG_PRIVATE_CLICK_LISTENER_SET)) {
-                holder.itemView.setOnClickListener {
-                    mUIEventListener?.onItemClick(holder.adapterPosition, item)
-                }
-                holder.itemView.setOnLongClickListener {
-                    mUIEventListener?.onItemLongClick(holder.adapterPosition, item) ?: true
+                holder.itemView.let { rootView ->
+                    rootView.setDebouncedClickListener(tag, mDebounceDuration) {
+                        notifyItemClick(holder.adapterPosition, item, rootView)
+                    }
+                    rootView.setOnLongClickListener {
+                        notifyItemLongClick(holder.adapterPosition, item, rootView)
+                    }
                 }
                 return
-            }
-            if (BaseViewHolder.hasFlag(payload, BaseDiffer.FLAG_PRIVATE_CLICK_LISTENER_UNSET)) {
-                holder.itemView.setOnClickListener(null)
-                holder.itemView.setOnLongClickListener(null)
+            } else if (BaseViewHolder.hasFlag(payload, BaseDiffer.FLAG_PRIVATE_CLICK_LISTENER_UNSET)) {
+                holder.itemView.apply {
+                    setOnClickListener(null)
+                    setOnLongClickListener(null)
+                }
                 return
             }
 
@@ -277,6 +296,7 @@ abstract class BaseAdapter<I : ListItem>
      * 如果希望修改表项而不影响列表显示，请使用 [getCopyOfDataSource] 方法获取数据源副本。
      *
      * @return 当前数据源。
+     * @see [getCopyOfDataSource]
      */
     fun getDataSource(): List<I> = mDataSource
 
@@ -288,6 +308,7 @@ abstract class BaseAdapter<I : ListItem>
      * 该方法依赖列表项的 [ListItem.copy] 方法实现深拷贝，如果列表项并未正确实现此方法，修改数据源仍会影响列表显示。
      *
      * @return 当前数据源的副本。
+     * @see [getDataSource]
      */
     @Suppress("UNCHECKED_CAST")
     fun getCopyOfDataSource(): List<I> {
@@ -295,32 +316,113 @@ abstract class BaseAdapter<I : ListItem>
     }
 
     /**
+     * 获取指定表项。
+     *
+     * 该方法返回的数据源即内置数据源中的表项，因此不可修改表项的属性，防止影响到列表显示。
+     *
+     * 如果希望修改表项而不影响列表显示，请使用 [getCopyOfItem] 方法获取数据源副本。
+     *
+     * 如果给定的位置索引超出范围，则返回空值。
+     *
+     * @param[position] 待获取的位置。
+     * @return 表项数据。
+     * @see[getCopyOfItem]
+     */
+    fun getItem(position: Int): I? {
+        return mDataSource.getOrNull(position)
+    }
+
+    /**
+     * 获取指定表项的副本。
+     *
+     * 有时我们需要对表项进行一些修改，例如获取原表项修改属性，但我们又不希望影响到列表显示，此时可以使用本方法获取列表。
+     *
+     * 该方法依赖列表项的 [ListItem.copy] 方法实现深拷贝，如果列表项并未正确实现此方法，修改表项仍会影响列表显示。
+     *
+     * 如果给定的位置索引超出范围，则返回空值。
+     *
+     * @param[position] 待获取的位置。
+     * @return 表项数据的副本。
+     * @see[getItem]
+     */
+    @Suppress("UNCHECKED_CAST")
+    fun getCopyOfItem(position: Int): I? {
+        return mDataSource.getOrNull(position)?.copy() as? I
+    }
+
+    /**
+     * 向列表末尾插入表项。
+     *
+     * @param[data] 新的表项。
+     */
+    fun addItem(data: I) {
+        if (debugMode) {
+            Log.d(tag, "AddItem. Data:$data")
+        }
+
+        uiScope.launch {
+            mUpdateTaskSequence++
+
+            mDataSource.add(data)
+            notifyItemInserted(mDataSource.size - 1)
+        }
+    }
+
+    /**
      * 向指定位置插入表项。
      *
      * 将新的表项插入到指定位置，若该位置已存在表项，则将该表项以及后继表项都后移一位。
      *
+     * @param[position] 待插入的位置。
      * @param[data]     新的表项。
-     * @param[position] 待插入的位置，如果为负数表示在列表末尾追加内容。
      */
-    @MainThread
-    @JvmOverloads
-    fun addItem(data: I, position: Int = -1) {
+    fun addItem(position: Int, data: I) {
         if (debugMode) {
             Log.d(tag, "AddItem. Position:[$position] Data:$data")
         }
 
-        mUpdateTaskSequence++
+        if (position < 0 || position > mDataSource.size) {
+            Log.w(tag, "Position [$position] is out of bounds, ignored!")
+            return
+        }
 
-        if (position < 0) {
-            mDataSource.add(data)
-            notifyItemInserted(mDataSource.size)
-        } else {
-            if (position < mDataSource.size) {
-                mDataSource.add(position, data)
-                notifyItemInserted(position)
+        uiScope.launch {
+            mUpdateTaskSequence++
+
+            mDataSource.add(position, data)
+            notifyItemInserted(position)
+        }
+    }
+
+    /**
+     * 向列表末尾插入表项。
+     *
+     * @param[datas] 新的表项。
+     */
+    fun addItems(datas: List<I>) {
+        if (debugMode) {
+            if (datas.isEmpty()) {
+                Log.d(tag, "AddItems. Data is empty.")
             } else {
-                Log.w(tag, "Position [$position] is out of bounds, ignored!")
+                Log.d(tag, "AddItems. Data size is [${datas.size}], detail info start:")
+                datas.forEachIndexed { i, item ->
+                    Log.d(tag, "[$i] -> $item")
+                }
+                Log.d(tag, "AddItems. Data detail info end.")
             }
+        }
+
+        if (datas.isEmpty()) {
+            Log.w(tag, "Data is empty, ignored!")
+            return
+        }
+
+        uiScope.launch {
+            mUpdateTaskSequence++
+
+            val oldSize = mDataSource.size
+            mDataSource.addAll(datas)
+            notifyItemRangeInserted(oldSize, mDataSource.size)
         }
     }
 
@@ -329,52 +431,38 @@ abstract class BaseAdapter<I : ListItem>
      *
      * 将新的表项插入到指定位置，若该位置已存在表项，则将该表项以及后继表项都后移一位。
      *
-     * @param[data]     新的表项。
-     * @param[position] 待插入的位置，如果为负数表示在列表末尾追加内容。
+     * @param[position] 待插入的位置。
+     * @param[datas]    新的表项。
      */
-    @MainThread
-    @JvmOverloads
-    fun addItems(data: List<I>, position: Int = -1) {
+    fun addItems(position: Int, datas: List<I>) {
         if (debugMode) {
-            Log.d(tag, "AddItems. Position:[$position] Size:[${data.size}]")
-        }
-
-        mUpdateTaskSequence++
-
-        if (position < 0) {
-            val oldSize = mDataSource.size
-            mDataSource.addAll(data)
-            notifyItemRangeInserted(oldSize, mDataSource.size)
-        } else {
-            if (position < mDataSource.size) {
-                mDataSource.addAll(position, data)
-                notifyItemRangeInserted(position, mDataSource.size)
+            if (datas.isEmpty()) {
+                Log.d(tag, "AddItems. Data is empty.")
             } else {
-                Log.w(tag, "Position [$position] is out of bounds, ignored!")
+                Log.d(tag, "AddItems. Data size is [${datas.size}], detail info start:")
+                datas.forEachIndexed { i, item ->
+                    Log.d(tag, "[$i] -> $item")
+                }
+                Log.d(tag, "AddItems. Data detail info end.")
             }
         }
-    }
 
-    /**
-     * 更新指定的表项。
-     *
-     * @param[data]     新的表项。
-     * @param[position] 待更新的位置。
-     */
-    @MainThread
-    fun updateItem(data: I, position: Int) {
-        if (debugMode) {
-            Log.d(tag, "UpdateItem. Position:[$position] Data:$data")
+        if (datas.isEmpty()) {
+            Log.w(tag, "Data is empty, ignored!")
+            return
         }
 
-        if (position < 0 || position >= mDataSource.size) {
+        if (position < 0 || position > mDataSource.size) {
             Log.w(tag, "Position [$position] is out of bounds, ignored!")
             return
         }
 
-        mUpdateTaskSequence++
-        mDataSource[position] = data
-        notifyItemChanged(position)
+        uiScope.launch {
+            mUpdateTaskSequence++
+
+            mDataSource.addAll(position, datas)
+            notifyItemRangeInserted(position, datas.size)
+        }
     }
 
     /**
@@ -384,7 +472,6 @@ abstract class BaseAdapter<I : ListItem>
      *
      * @param[position] 待移除的位置。
      */
-    @MainThread
     fun removeItem(position: Int) {
         if (debugMode) {
             Log.d(tag, "RemoveItem. Position:[$position]")
@@ -395,37 +482,104 @@ abstract class BaseAdapter<I : ListItem>
             return
         }
 
-        mUpdateTaskSequence++
-        mDataSource.removeAt(position)
-        notifyItemRemoved(position)
+        uiScope.launch {
+            mUpdateTaskSequence++
+
+            mDataSource.removeAt(position)
+            notifyItemRemoved(position)
+        }
+    }
+
+    /**
+     * 清空所有表项。
+     */
+    fun clearItems() {
+        if (debugMode) {
+            Log.d(tag, "ClearItems.")
+        }
+
+        if (mDataSource.isEmpty()) {
+            Log.w(tag, "List already empty now, ignored!")
+            return
+        }
+
+        uiScope.launch {
+            mUpdateTaskSequence++
+
+            val oldSize = mDataSource.size
+            mDataSource.clear()
+            notifyItemRangeRemoved(0, oldSize)
+        }
+    }
+
+    /**
+     * 更新指定的表项。
+     *
+     * @param[position] 待更新的位置。
+     * @param[data]     新的表项。
+     * @param[payload]  局部更新标志位，如果为空值或未指定则表示全量刷新。
+     */
+    fun updateItem(position: Int, data: I, payload: Any? = null) {
+        if (debugMode) {
+            Log.d(tag, "UpdateItem. Position:[$position] Data:$data")
+        }
+
+        if (position < 0 || position >= mDataSource.size) {
+            Log.w(tag, "Position [$position] is out of bounds, ignored!")
+            return
+        }
+
+        uiScope.launch {
+            mUpdateTaskSequence++
+
+            mDataSource[position] = data
+            notifyItemChanged(position, payload)
+        }
     }
 
     /**
      * 更新所有表项。
      *
-     * @param[data] 新的数据源。
+     * 使用 `notifyDataSetChanged()` 方法刷新整个列表，性能较低，如非必要请使用异步更新方法 [submit] 。
+     *
+     * @param[datas] 新的数据源。
+     * @see[submit]
      */
     @SuppressLint("NotifyDataSetChanged")
-    @MainThread
-    fun reloadItems(data: List<I>) {
+    fun reloadItems(datas: List<I>) {
         if (debugMode) {
-            Log.d(tag, "ReloadItems. Size:[${data.size}]")
+            if (datas.isEmpty()) {
+                Log.d(tag, "ReloadItems. Data is empty.")
+            } else {
+                Log.d(tag, "ReloadItems. Data size is [${datas.size}], detail info start:")
+                datas.forEachIndexed { i, item ->
+                    Log.d(tag, "[$i] -> $item")
+                }
+                Log.d(tag, "ReloadItems. Data detail info end.")
+            }
         }
 
-        mUpdateTaskSequence++
+        uiScope.launch {
+            mUpdateTaskSequence++
 
-        mDataSource.clear()
-        mDataSource.addAll(data)
-        notifyDataSetChanged()
+            mDataSource.clear()
+            mDataSource.addAll(datas)
+            notifyDataSetChanged()
+        }
     }
 
     /**
      * 使用DiffUtil异步更新表项。
      *
+     * 默认的 [DefaultDiffer] 不支持局部刷新，调用者可以通过 [setDiffCallback] 方法设置自定义的DiffCallback实现，以支持局部刷新；若
+     * 要恢复默认的 [DefaultDiffer] ，请使用 [resetDiffCallback] 方法。
+     *
      * @param[newData] 新的列表。
-     * @param[detectMoves] 表项移动检测功能开关，默认为开启。DiffUtil的算法检测表项是否被移动需要额外消耗性能，如果新旧表项排序规则一致，只是增删表
-     * 项，可以关闭此功能以提升性能。
-     * @param[actionAfterUpdate] 更新成功后需要执行的动作。
+     * @param[detectMoves] 表项移动检测功能开关，默认为开启。DiffUtil的算法检测表项是否被移动需要额外消耗性能，如果新旧表项排序规则一致，
+     * 只是增删表项，可以关闭此功能以提升性能。
+     * @param[actionAfterUpdate] 更新成功后需要执行的动作，将被提交到RecyclerView的事件队列中。
+     * @see[setDiffCallback]
+     * @see[resetDiffCallback]
      */
     @JvmOverloads
     fun submit(
@@ -433,8 +587,17 @@ abstract class BaseAdapter<I : ListItem>
         detectMoves: Boolean = true,
         actionAfterUpdate: (() -> Unit)? = null
     ) {
+
+        // 提交更新成功后需要执行的动作
+        fun postActionAfterUpdate() {
+            mRecyclerView?.post {
+                actionAfterUpdate?.invoke()
+            }
+        }
+
+        val taskStartTime = SystemClock.elapsedRealtime()
         val taskSequence = ++mUpdateTaskSequence
-        val oldData = mDataSource
+        val oldData = mDataSource.toList()
 
         if (debugMode) {
             Log.d(tag, "Submit. Async task Start. TaskID:[$taskSequence]")
@@ -451,39 +614,36 @@ abstract class BaseAdapter<I : ListItem>
                 Log.d(tag, "Submit. Old data is empty.")
             } else {
                 Log.d(tag, "Submit. Old data size is [${oldData.size}], detail info start:")
-                newData.forEachIndexed { i, item ->
+                oldData.forEachIndexed { i, item ->
                     Log.d(tag, "[$i] -> $item")
                 }
                 Log.d(tag, "Submit. Old data detail info end.")
             }
         }
 
+        // 如果两个列表元素相同，则无需执行任何动作。
         if (newData == oldData) {
             Log.i(tag, "Submit. New list is same as old, nothing to do.")
-            mRecyclerView?.post {
-                actionAfterUpdate?.invoke()
-            }
+            postActionAfterUpdate()
             return
         }
 
         // 快速处理某个列表为空的情况，无需执行差异对比。
         if (newData.isEmpty()) {
-            val oldSize = oldData.size
-            mDataSource.clear()
-            notifyItemRangeRemoved(0, oldSize)
-
-            mRecyclerView?.post {
-                actionAfterUpdate?.invoke()
+            uiScope.launch {
+                val oldSize = oldData.size
+                mDataSource.clear()
+                notifyItemRangeRemoved(0, oldSize)
+                postActionAfterUpdate()
             }
             return
         }
 
         if (oldData.isEmpty()) {
-            mDataSource.addAll(newData)
-            notifyItemRangeInserted(0, newData.size)
-
-            mRecyclerView?.post {
-                actionAfterUpdate?.invoke()
+            uiScope.launch {
+                mDataSource.addAll(newData)
+                notifyItemRangeInserted(0, newData.size)
+                postActionAfterUpdate()
             }
             return
         }
@@ -516,16 +676,20 @@ abstract class BaseAdapter<I : ListItem>
                 }
             }, detectMoves)
 
-            if (taskSequence == mUpdateTaskSequence) {
-                uiScope.launch {
+            if (debugMode) {
+                val usedTime = SystemClock.elapsedRealtime() - taskStartTime
+                Log.d(tag, "Submit. Async task end. TaskID:[$taskSequence] Time:[$usedTime]")
+            }
+
+            uiScope.launch {
+                if (taskSequence == mUpdateTaskSequence) {
                     mDataSource.clear()
                     mDataSource.addAll(newData)
                     diffResult.dispatchUpdatesTo(this@BaseAdapter)
-
                     // 更新完毕后执行其他任务
-                    mRecyclerView?.post {
-                        actionAfterUpdate?.invoke()
-                    }
+                    postActionAfterUpdate()
+                } else {
+                    Log.w(tag, "Submit. Task [$taskSequence] is not the newest, ignore!")
                 }
             }
         }
@@ -548,49 +712,99 @@ abstract class BaseAdapter<I : ListItem>
     }
 
     /**
-     * UI交互事件监听器定义。
+     * 设置带有防抖功能的点击监听器。
+     *
+     * @param[tag] 日志Tag。
+     * @param[duration] 防抖时长。默认500毫秒。
+     * @param[l] 监听器实现。
      */
-    interface UIEventListener {
+    private fun View.setDebouncedClickListener(tag: String, duration: Long = 500L, l: View.OnClickListener) {
+        var lastClickTime = 0L
+
+        setOnClickListener {
+            val currentTS = SystemClock.elapsedRealtime()
+            val time = currentTS - lastClickTime
+
+            // 如果当前时间和上次点击时间间隔小于防抖时长，则忽略此次点击。
+            if (time < duration) {
+                Log.w(tag, "Click too fast, ignored.")
+                return@setOnClickListener
+            }
+
+            lastClickTime = currentTS
+            l.onClick(it)
+        }
+    }
+
+    /**
+     * 表项点击事件监听器定义。
+     */
+    interface ItemClickListener {
 
         /**
-         * 表项被点击。
+         * 表项被点击事件。
          *
-         * @param[position] 被点击的表项位置。
-         * @param[item]     被点击的表项数据。
+         * @param[position] 当前表项的索引。
+         * @param[item] 当前表项的数据。
+         * @param[view] 当前表项的视图。
          */
-        fun onItemClick(position: Int, item: ListItem)
+        fun onItemClick(position: Int, item: ListItem, view: View)
 
         /**
-         * 表项被长按。
+         * 表项被长按事件。
          *
-         * @param[position] 被长按的表项位置。
-         * @param[item]     被长按的表项数据。
+         * @param[position] 当前表项的索引。
+         * @param[item] 当前表项的数据。
+         * @param[view] 当前表项的视图。
          * @return `true` 表示事件处理完毕无需分发给子View， `false` 表示事件需要继续分发给子View。
          */
-        fun onItemLongClick(position: Int, item: ListItem): Boolean {
+        fun onItemLongClick(position: Int, item: ListItem, view: View): Boolean {
             // 默认忽略长按事件
             return true
         }
     }
 
-    private fun notifyItemClick(position: Int, item: ListItem) {
-        mUIEventListener?.onItemClick(position, item)
+    /**
+     * 内部方法：通知外部监听器表项被点击。
+     *
+     * @param[position] 当前表项的索引。
+     * @param[item] 当前表项的数据。
+     * @param[view] 当前表项的视图。
+     */
+    private fun notifyItemClick(position: Int, item: ListItem, view: View) {
+        mItemClickListener?.onItemClick(position, item, view)
     }
 
     /**
-     * 设置表项事件监听器。
+     * 内部方法：通知外部监听器表项被长按。
      *
-     * @param[listener] 监听器实现。
+     * @param[position] 当前表项的索引。
+     * @param[item] 当前表项的数据。
+     * @param[view] 当前表项的视图。
+     * @return `true` 表示事件处理完毕无需分发给子View， `false` 表示事件需要继续分发给子View。
      */
-    fun setUIEventListener(listener: UIEventListener?) {
+    private fun notifyItemLongClick(position: Int, item: ListItem, view: View): Boolean {
+        return mItemClickListener?.onItemLongClick(position, item, view) ?: true
+    }
+
+    /**
+     * 设置表项点击事件监听器。
+     *
+     * @param[debounceDuration] 点击事件的防抖时长，默认为500毫秒。
+     * @param[listener] 监听器实现，传入空值表示取消监听。
+     */
+    @MainThread
+    @JvmOverloads
+    fun setItemClickListener(listener: ItemClickListener?, debounceDuration: Long = DEFAULT_DEBOUNCE_DURATION) {
+        mDebounceDuration = debounceDuration
+        mItemClickListener = listener
+
         if (listener == null) {
             /* 参数为空，表示撤销监听器。 */
             notifyItemRangeChanged(0, itemCount, BaseDiffer.FLAG_PRIVATE_CLICK_LISTENER_UNSET)
-        } else if (mUIEventListener == null) {
-            /* 如果当前监听器为空，则需要设置监听器。 */
+        } else {
+            /* 参数非空，表示设置监听器。 */
             notifyItemRangeChanged(0, itemCount, BaseDiffer.FLAG_PRIVATE_CLICK_LISTENER_SET)
         }
-
-        mUIEventListener = listener
     }
 }

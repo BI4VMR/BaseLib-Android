@@ -23,44 +23,54 @@ abstract class BaseDiffer<T : ListItem> {
         /**
          * 内置标志位：设置表项点击事件监听器。
          */
-        const val FLAG_PRIVATE_CLICK_LISTENER_SET: Int = FLAG_START shl 1
+        const val FLAG_PRIVATE_CLICK_LISTENER_SET: Int = FLAG_START
 
         /**
          * 内置标志位：撤销表项点击事件监听器。
          */
-        const val FLAG_PRIVATE_CLICK_LISTENER_UNSET: Int = FLAG_START shl 2
+        const val FLAG_PRIVATE_CLICK_LISTENER_UNSET: Int = FLAG_START shl 1
 
         /**
          * 预设标志位：名称。
          */
-        const val FLAG_NAME: Int = FLAG_START shl 3
+        const val FLAG_NAME: Int = FLAG_START shl 2
 
         /**
          * 预设标志位：标题。
          */
-        const val FLAG_TITLE: Int = FLAG_START shl 4
+        const val FLAG_TITLE: Int = FLAG_START shl 3
 
         /**
          * 预设标志位：内容。
          */
-        const val FLAG_CONTENT: Int = FLAG_START shl 5
+        const val FLAG_CONTENT: Int = FLAG_START shl 4
 
         /**
          * 预设标志位：描述。
          */
-        const val FLAG_DESCRIPTION: Int = FLAG_START shl 6
+        const val FLAG_DESCRIPTION: Int = FLAG_START shl 5
 
         /**
          * 预设标志位：图标。
          */
-        const val FLAG_ICON: Int = FLAG_START shl 7
+        const val FLAG_ICON: Int = FLAG_START shl 6
+
+        /**
+         * 预设标志位：状态。
+         */
+        const val FLAG_STATE: Int = FLAG_START shl 7
+
+        /**
+         * 预设标志位：可用性。
+         */
+        const val FLAG_AVAILABLE: Int = FLAG_START shl 8
 
         /**
          * 自定义标志位的起始值。
          *
          * 自定义标志位从最大的预设标志位数值左移 `1` 位开始，依次递增。
          */
-        const val FLAG_CUSTOM: Int = FLAG_ICON
+        const val FLAG_CUSTOM: Int = FLAG_AVAILABLE
 
         /**
          * 向Payload中添加标志位。
@@ -68,6 +78,7 @@ abstract class BaseDiffer<T : ListItem> {
          * @param[payload] 现有的标志位。
          * @param[flag] 待添加的Flag。
          * @return 组合后的标志位。
+         * @see[BaseViewHolder.hasFlag]
          */
         fun addFlag(payload: Int, flag: Int): Int {
             return payload or flag
@@ -75,19 +86,21 @@ abstract class BaseDiffer<T : ListItem> {
     }
 
     /**
-     * 判断参数所指定的两个位置对应表项是否相同。
-     *
-     * 如果表项具有唯一ID或多种类型，可以加入判断逻辑。
+     * 判断参数所指定的两个位置对应表项类型是否相同。
      *
      * @param[oldItem] 旧数据源中的表项。
      * @param[newItem] 新数据源中的表项。
      * @return 值为 `false` 时，表示两个表项不同；值为 `true` 时表示两个表项是相同的，但内部数据可能有变化，随后会调用
      * `areContentsTheSame()` 方法判断表项中的数据是否需要更新。
      */
-    abstract fun areItemsTheSame(oldItem: T, newItem: T): Boolean
+    open fun areItemsTheSame(oldItem: T, newItem: T): Boolean {
+        // 默认实现：比较ViewType，如果ViewType不同，则两个表项一定是不同的。
+        val viewTypeSame = oldItem.getViewType() == newItem.getViewType()
+        return viewTypeSame
+    }
 
     /**
-     * 判断参数所指定的两个位置对应表项的内容是否相同。
+     * 判断参数所指定的两个位置对应表项内容是否相同。
      *
      * 仅当 `areItemsTheSame()` 返回 `true` 时才会调用本方法。
      *
@@ -104,5 +117,5 @@ abstract class BaseDiffer<T : ListItem> {
      * @param[newItem] 新数据源中的表项。
      * @return 组合标志位，通过 [FLAG_NAME] 等标志位指明需要更新的UI组件。
      */
-    abstract fun getChangePayload(oldItem: T, newItem: T): Int
+    abstract fun getChangePayload(oldItem: T, newItem: T): Any
 }
