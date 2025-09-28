@@ -45,14 +45,16 @@ okdownload-core = "1.0.7"
 
 
 # ----- 工程架构 -----
+kunminx_unpeekLiveData = "7.8.0"
+
 hilt = "2.52"
 
 
 # ----- 测试工具 -----
-androidx-test = "1.2.1"
-androidx-test_espresso = "3.6.1"
+androidx_test_junit = "1.2.1"
+androidx_test_espresso = "3.6.1"
 
-jraska-livedata-test = "1.3.0"
+jraska_livedata-test = "1.3.0"
 
 
 # ----- Gradle插件 -----
@@ -169,7 +171,10 @@ okdownload-core = { group = "com.liulishuo.okdownload", name = "okdownload", ver
 
 
 # ----- 工程架构 -----
-# <Dagger>
+# UnPeekLiveData（被订阅时不会立刻回调当前值的LiveData实现，适用于事件分发等场景。）
+kunminx_unpeekLiveData = { group = "com.kunminx.arch", name = "unpeek-livedata", version.ref = "kunminx_unpeekLiveData" }
+
+# < Dagger >
 # Dagger・Hilt・Android
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 # Dagger・Hilt・注解处理器
@@ -177,17 +182,17 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 
 
 # ----- 测试工具 -----
-# <AndroidX Test>
+# < AndroidX Test >
 # AndroidX Test JUnit扩展（提供AndroidJUnit4，方便与JUnit集成。）
-androidx-test_junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test" }
+androidx_test_junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx_test_junit" }
 # AndroidX Test Espresso运行环境
-androidx-test_espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test_espresso" }
+androidx_test_espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx_test_espresso" }
 
-# <Jraska LiveData 测试工具>
+# < Jraska LiveData 测试工具 >
 # Jraska LiveData 测试工具(Java)
-jraska_liveDataTest-java = { group = "com.jraska.livedata", name = "testing", version.ref = "jraska-livedata-test" }
+jraska_liveDataTest-java = { group = "com.jraska.livedata", name = "testing", version.ref = "jraska_livedata-test" }
 # Jraska LiveData 测试工具(Kotlin)
-jraska_liveDataTest-kotlin = { group = "com.jraska.livedata", name = "testing-ktx", version.ref = "jraska-livedata-test" }
+jraska_liveDataTest-kotlin = { group = "com.jraska.livedata", name = "testing-ktx", version.ref = "jraska_livedata-test" }
 
 
 # 编组

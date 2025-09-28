@@ -85,16 +85,16 @@ abstract class BaseAdapter<I : ListItem>
     private var mRecyclerView: RecyclerView? = null
 
     /**
-     * 表项点击事件监听器实现。
-     */
-    private var mItemClickListener: ItemClickListener? = null
-
-    /**
-     * 点击事件防抖时长。
+     * 表项点击事件防抖时长。
      *
      * 默认值为500毫秒。
      */
     private var mDebounceDuration: Long = DEFAULT_DEBOUNCE_DURATION
+
+    /**
+     * 表项点击事件监听器实现。
+     */
+    private var mItemClickListener: ItemClickListener<I>? = null
 
     /**
      * DiffUtil比较回调。
@@ -191,10 +191,10 @@ abstract class BaseAdapter<I : ListItem>
         // 注册表项点击监听器
         mItemClickListener?.let { outListener ->
             holder.itemView.setDebouncedClickListener(tag, mDebounceDuration) {
-                outListener.onItemClick(holder.adapterPosition, item, it)
+                outListener.onItemClick(holder.bindingAdapterPosition, item, it)
             }
             holder.itemView.setOnLongClickListener {
-                outListener.onItemLongClick(holder.adapterPosition, item, it)
+                outListener.onItemLongClick(holder.bindingAdapterPosition, item, it)
             }
         }
 
@@ -235,10 +235,10 @@ abstract class BaseAdapter<I : ListItem>
             if (BaseViewHolder.hasFlag(payload, BaseDiffer.FLAG_PRIVATE_CLICK_LISTENER_SET)) {
                 holder.itemView.let { rootView ->
                     rootView.setDebouncedClickListener(tag, mDebounceDuration) {
-                        notifyItemClick(holder.adapterPosition, item, rootView)
+                        notifyItemClick(holder.bindingAdapterPosition, item, rootView)
                     }
                     rootView.setOnLongClickListener {
-                        notifyItemLongClick(holder.adapterPosition, item, rootView)
+                        notifyItemLongClick(holder.bindingAdapterPosition, item, rootView)
                     }
                 }
                 return
@@ -734,7 +734,11 @@ abstract class BaseAdapter<I : ListItem>
      * @param[duration] 防抖时长。默认500毫秒。
      * @param[l] 监听器实现。
      */
-    private fun View.setDebouncedClickListener(tag: String, duration: Long = 500L, l: View.OnClickListener) {
+    private fun View.setDebouncedClickListener(
+        tag: String,
+        duration: Long = DEFAULT_DEBOUNCE_DURATION,
+        l: View.OnClickListener
+    ) {
         var lastClickTime = 0L
 
         setOnClickListener {
@@ -743,7 +747,7 @@ abstract class BaseAdapter<I : ListItem>
 
             // 如果当前时间和上次点击时间间隔小于防抖时长，则忽略此次点击。
             if (time < duration) {
-                Log.w(tag, "Click too fast, ignored.")
+                Log.w(tag, "Click too fast, ignored!")
                 return@setOnClickListener
             }
 
@@ -755,26 +759,26 @@ abstract class BaseAdapter<I : ListItem>
     /**
      * 表项点击事件监听器定义。
      */
-    interface ItemClickListener {
+    fun interface ItemClickListener<I> {
 
         /**
-         * 表项被点击事件。
+         * 回调方法：表项被点击事件。
          *
          * @param[position] 当前表项的索引。
          * @param[item] 当前表项的数据。
          * @param[view] 当前表项的视图。
          */
-        fun onItemClick(position: Int, item: ListItem, view: View)
+        fun onItemClick(position: Int, item: I, view: View)
 
         /**
-         * 表项被长按事件。
+         * 回调方法：表项被长按事件。
          *
          * @param[position] 当前表项的索引。
          * @param[item] 当前表项的数据。
          * @param[view] 当前表项的视图。
          * @return `true` 表示事件处理完毕无需分发给子View， `false` 表示事件需要继续分发给子View。
          */
-        fun onItemLongClick(position: Int, item: ListItem, view: View): Boolean {
+        fun onItemLongClick(position: Int, item: I, view: View): Boolean {
             // 默认忽略长按事件
             return true
         }
@@ -787,7 +791,7 @@ abstract class BaseAdapter<I : ListItem>
      * @param[item] 当前表项的数据。
      * @param[view] 当前表项的视图。
      */
-    private fun notifyItemClick(position: Int, item: ListItem, view: View) {
+    private fun notifyItemClick(position: Int, item: I, view: View) {
         mItemClickListener?.onItemClick(position, item, view)
     }
 
@@ -799,19 +803,18 @@ abstract class BaseAdapter<I : ListItem>
      * @param[view] 当前表项的视图。
      * @return `true` 表示事件处理完毕无需分发给子View， `false` 表示事件需要继续分发给子View。
      */
-    private fun notifyItemLongClick(position: Int, item: ListItem, view: View): Boolean {
+    private fun notifyItemLongClick(position: Int, item: I, view: View): Boolean {
         return mItemClickListener?.onItemLongClick(position, item, view) ?: true
     }
 
     /**
      * 设置表项点击事件监听器。
      *
-     * @param[debounceDuration] 点击事件的防抖时长，默认为500毫秒。
+     * @param[debounceDuration] 点击事件的防抖时长。
      * @param[listener] 监听器实现，传入空值表示取消监听。
      */
     @MainThread
-    @JvmOverloads
-    fun setItemClickListener(listener: ItemClickListener?, debounceDuration: Long = DEFAULT_DEBOUNCE_DURATION) {
+    fun setItemClickListener(debounceDuration: Long, listener: ItemClickListener<I>?) {
         mDebounceDuration = debounceDuration
         mItemClickListener = listener
 
@@ -822,5 +825,42 @@ abstract class BaseAdapter<I : ListItem>
             /* 参数非空，表示设置监听器。 */
             notifyItemRangeChanged(0, itemCount, BaseDiffer.FLAG_PRIVATE_CLICK_LISTENER_SET)
         }
+    }
+
+    /**
+     * 设置表项点击事件监听器。
+     *
+     * 使用默认的防抖时长 [DEFAULT_DEBOUNCE_DURATION] 。
+     *
+     * @param[listener] 监听器实现，传入空值表示取消监听。
+     */
+    @MainThread
+    fun setItemClickListener(listener: ItemClickListener<I>?) {
+        setItemClickListener(DEFAULT_DEBOUNCE_DURATION, listener)
+    }
+
+    /**
+     * 设置表项点击事件监听器。
+     *
+     * Java兼容接口，使用场景可参考 [ItemClickListenerJava] 的注释。
+     *
+     * @param[listener] 监听器实现，传入空值表示取消监听。
+     */
+    @MainThread
+    fun setItemClickListenerJava(listener: ItemClickListenerJava<I>?) {
+        setItemClickListener(DEFAULT_DEBOUNCE_DURATION, listener)
+    }
+
+    /**
+     * 设置表项点击事件监听器。
+     *
+     * Java兼容接口，使用场景可参考 [ItemClickListenerJava] 的注释。
+     *
+     * @param[debounceDuration] 点击事件的防抖时长。
+     * @param[listener] 监听器实现，传入空值表示取消监听。
+     */
+    @MainThread
+    fun setItemClickListenerJava(debounceDuration: Long, listener: ItemClickListenerJava<I>?) {
+        setItemClickListener(debounceDuration, listener)
     }
 }
