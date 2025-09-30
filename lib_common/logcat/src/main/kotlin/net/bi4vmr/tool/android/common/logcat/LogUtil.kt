@@ -152,7 +152,7 @@ object LogUtil {
      *
      * 栈首的若干项为本工具类内部调用信息，它们可以被忽略，之后的元素为调用者信息。
      */
-    fun print(level: Level, msg: String, tag: String? = null, stackOffset: Int = 5, e: Throwable? = null) {
+    fun print(level: Level, msg: String, tag: String? = null, e: Throwable? = null) {
         // 如果全局输出开关未开启，则不必输出日志。
         if (!LogConfig.enable) {
             return
@@ -174,13 +174,11 @@ object LogUtil {
         //     Log.d(TAG, "Class:[$className] Method:[$methodName] Line:[$lineNumber]")
         // }
 
-        // 工具调试日志
-        // Log.d(TAG, "Called by JVM static function? [$callByJVMStatic]")
-
         /* 构建输出内容 */
-        val className: String = parseClassName(stack, stackOffset)
-        val methodName: String = parseMethodName(stack, stackOffset)
-        val lineNumber: Int = stack[stackOffset].lineNumber
+        val trace: StackTraceElement = searchUserCall(stack)
+        val className: String = parseClassName(trace)
+        val methodName: String = trace.methodName
+        val lineNumber: Int = trace.lineNumber
 
         val tagPrefix: String = LogConfig.tagPrefix
         val printTag = if (tag == null) {
@@ -207,16 +205,53 @@ object LogUtil {
     }
 
     /**
+     * 查找调用栈数组中的首个用户调用。
+     *
+     * @param[stack] 调用栈数组。
+     * @return 调用栈信息。
+     */
+    private fun searchUserCall(stack: Array<StackTraceElement>): StackTraceElement {
+        // 系统调用列表（全字匹配）
+        val systemCallFull = arrayOf(
+            "dalvik.system.VMStack",
+            "java.lang.Thread",
+            "net.bi4vmr.tool.android.common.logcat.LogUtil"
+        )
+        // 系统调用列表（模糊匹配）
+        val systemCallObscure = arrayOf(
+            "Synthetic"
+        )
+
+        var traceInfo = StackTraceElement("UnKnown", "UnKnown", "-", -1)
+        for (ste: StackTraceElement in stack) {
+            // 跳过系统调用
+            if (ste.className in systemCallFull) {
+                continue
+            }
+
+            for (obscureWord: String in systemCallObscure) {
+                if (ste.className.contains(obscureWord, ignoreCase = true)) {
+                    continue
+                }
+            }
+
+            traceInfo = ste
+            break
+        }
+
+        return traceInfo
+    }
+
+    /**
      * 解析类名。
      *
-     * @param[stack] 调用栈。
-     * @param[offset] 需要解析的元素索引。
+     * @param[trace] 调用栈。
      * @return 类名。
      */
-    private fun parseClassName(stack: Array<StackTraceElement>, offset: Int): String {
+    private fun parseClassName(trace: StackTraceElement): String {
         var className = "UnKnown"
 
-        val fullName: String = stack[offset].className
+        val fullName: String = trace.className
         val classNameIndex: Int = fullName.lastIndexOf('.')
         if (classNameIndex != -1) {
             className = fullName.substring(classNameIndex + 1)
@@ -229,35 +264,6 @@ object LogUtil {
         }
 
         return className
-    }
-
-    /**
-     * 解析方法名称。
-     *
-     * @param[stack] 调用栈。
-     * @param[offset] 需要解析的元素索引。
-     * @return 类名。
-     */
-    private fun parseMethodName(stack: Array<StackTraceElement>, offset: Int): String {
-        var callerMethodName: String = stack[offset].methodName
-
-        /*
-         * 判断本工具是否在Lambda表达式中被调用。
-         *
-         * 在普通方法中调用本工具时，调用方法名称可以在对应的栈元素中获取。
-         * 在Lambda表达式中调用本工具时，需要遍历查找方法名称不含"lambda"的元素。
-         */
-        if (callerMethodName.contains("lambda$")) {
-            for (i in offset + 1 until stack.size) {
-                val name: String = stack[i].methodName
-                if (!name.contains("lambda$")) {
-                    callerMethodName = name
-                    break
-                }
-            }
-        }
-
-        return callerMethodName
     }
 
     /**

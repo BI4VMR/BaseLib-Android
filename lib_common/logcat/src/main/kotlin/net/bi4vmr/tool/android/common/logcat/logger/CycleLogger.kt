@@ -67,7 +67,7 @@ object CycleLogger {
         val job: Job = CoroutineScope(Dispatchers.Default).launch {
             while (isActive) {
                 val log: String = task()
-                LogUtil.print(level, log, tag, 3)
+                LogUtil.print(level, log, tag)
                 delay(interval)
             }
         }
