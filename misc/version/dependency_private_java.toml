@@ -1,7 +1,5 @@
 # 版本号
 [versions]
-all = "1.0.0"
-
 common_base = "1.0.0"
 
 math_base = "1.0.0"
@@ -19,12 +17,11 @@ security_digest = "1.0.0"
 # ----- 插件 -----
 repo_public = "1.0.0"
 repo_private = "1.0.0"
+publish_private = "1.0.0"
 
 
 # 组件
 [libraries]
-all = { group = "net.bi4vmr.tool.java", name = "all", version.ref = "all" }
-
 common_base = { group = "net.bi4vmr.tool.java", name = "common-base", version.ref = "common_base" }
 
 math_base = { group = "net.bi4vmr.tool.java", name = "math-base", version.ref = "math_base" }
@@ -46,3 +43,5 @@ security_digest = { group = "net.bi4vmr.tool.java", name = "security-digest", ve
 repo_public = { id = "net.bi4vmr.gradle.plugin.repo.public", version.ref = "repo_public" }
 # Maven私有仓库
 repo_private = { id = "net.bi4vmr.gradle.plugin.repo.private", version.ref = "repo_private" }
+# Maven Publish私有仓库配置
+publish_private = { id = "net.bi4vmr.gradle.plugin.maven.publish", version.ref = "publish_private" }

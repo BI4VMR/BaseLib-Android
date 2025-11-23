@@ -9,6 +9,8 @@ val versionModuleName: String = agp.versions.moduleName.get()
 plugins {
     alias(libAndroid.plugins.application)
     alias(libAndroid.plugins.kotlin)
+    id(privateLibJava.plugins.repo.public.get().pluginId)
+    id(privateLibJava.plugins.repo.private.get().pluginId)
 }
 
 android {

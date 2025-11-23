@@ -54,6 +54,8 @@ hilt = "2.52"
 androidx_test_junit = "1.2.1"
 androidx_test_espresso = "3.6.1"
 
+robolectric = "4.16"
+
 jraska_livedata-test = "1.3.0"
 
 
@@ -156,7 +158,7 @@ room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 # Kotlin扩展
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
-# 测试工具
+# 测试工具（版本迁移测试工具）
 room-test = { group = "androidx.room", name = "room-testing", version.ref = "room" }
 
 # < 调试工具 >
@@ -187,6 +189,12 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 androidx_test_junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx_test_junit" }
 # AndroidX Test Espresso运行环境
 androidx_test_espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx_test_espresso" }
+
+# < Robolectric >
+# Robolectric（在本地测试中模拟Android环境）
+robolectric-core = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+# Robolectric Shadows of Framework
+robolectric-shadows-framework = { group = "org.robolectric", name = "shadows-framework", version.ref = "robolectric" }
 
 # < Jraska LiveData 测试工具 >
 # Jraska LiveData 测试工具(Java)

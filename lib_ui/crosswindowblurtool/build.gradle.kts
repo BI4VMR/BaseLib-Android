@@ -1,5 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
+// 相关接口自API 31开始提供，因此本库只能用在最低API大于或等于31的项目中。
+val versionMinSDK = 31
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
 val depInTOML: MinimalExternalModuleDependency = privateLibAndroid.ui.crossWindowBlurTool.get()
@@ -10,7 +12,9 @@ val mvnVersion: String = requireNotNull(depInTOML.version)
 plugins {
     alias(libAndroid.plugins.library)
     alias(libAndroid.plugins.kotlin)
-    id("maven-publish")
+    id(privateLibJava.plugins.repo.public.get().pluginId)
+    id(privateLibJava.plugins.repo.private.get().pluginId)
+    id(privateLibJava.plugins.publish.private.get().pluginId)
 }
 
 android {
@@ -18,7 +22,7 @@ android {
     compileSdk = versionCompileSDK
 
     defaultConfig {
-        minSdk = 31
+        minSdk = versionMinSDK
     }
 
     compileOptions {
@@ -29,15 +33,6 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-
-    publishing {
-        multipleVariants {
-            // 指定以下配置对所有Build Variant生效
-            allVariants()
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
 }
 
 dependencies {
@@ -46,45 +41,8 @@ dependencies {
     implementation(libAndroid.ktx.core)
 }
 
-publishing {
-    repositories {
-        // 私有仓库
-        maven {
-            name = "private"
-            isAllowInsecureProtocol = true
-            setUrl("http://172.16.5.1:8081/repository/maven-private/")
-            credentials {
-                username = "uploader"
-                password = "uploader"
-            }
-        }
-    }
-
-    publications {
-        // 创建名为"maven"的发布配置
-        create<MavenPublication>("maven") {
-            // 产物的基本信息
-            groupId = mvnGroupID
-            artifactId = mvnArtifactID
-            version = mvnVersion
-
-            // 在编译完成后，将"release"类型的产物作为程序包发布。
-            afterEvaluate {
-                from(components.getByName("release"))
-            }
-
-            // POM信息
-            pom {
-                name.set(mvnArtifactID)
-                url.set("https://github.com/BI4VMR/BaseLib-Android")
-                packaging = "aar"
-                developers {
-                    developer {
-                        name.set("BI4VMR")
-                        email.set("bi4vmr@outlook.com")
-                    }
-                }
-            }
-        }
-    }
+privatePublishConfig {
+    groupID = mvnGroupID
+    artifactID = mvnArtifactID
+    version = mvnVersion
 }

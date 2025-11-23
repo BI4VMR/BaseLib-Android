@@ -1,0 +1,14 @@
+# 在此处注册各Lib模块的名称，按照依赖顺序排列。
+:lib_common:logcat
+
+:lib_ability:framework
+:lib_ability:framework_fakeimplementation
+:lib_ability:privacymonitor
+
+:lib_storage:room-tool
+
+:lib_ui:universal
+:lib_ui:baservadapter
+:lib_ui:crosswindowblurtool
+:lib_ui:analogclock
+:lib_ui:pieprogressbar

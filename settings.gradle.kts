@@ -61,9 +61,6 @@ rootProject.name = "BaseLib-Android"
 // 加载自定义插件
 includeBuild("plugin")
 
-/* ----- 依赖传递 ----- */
-include(":lib_all")
-
 /* ----- 通用组件 ----- */
 // Logcat扩展
 include(":lib_common:logcat")
