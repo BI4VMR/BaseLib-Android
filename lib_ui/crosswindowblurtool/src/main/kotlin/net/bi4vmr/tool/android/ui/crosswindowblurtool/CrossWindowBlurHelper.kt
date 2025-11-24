@@ -1,6 +1,7 @@
 package net.bi4vmr.tool.android.ui.crosswindowblurtool
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
 import android.util.Log
@@ -23,7 +24,9 @@ import java.util.function.Consumer
  * @since 1.0.0
  */
 @SuppressLint("BlockedPrivateApi, DiscouragedPrivateApi")
-class CrossWindowBlurHelper(private val mView: View) {
+class CrossWindowBlurHelper(
+    private val context: Context
+) {
 
     companion object {
 
@@ -83,11 +86,14 @@ class CrossWindowBlurHelper(private val mView: View) {
         }
     }
 
-    private val mWindowManager: WindowManager = mView.context.getSystemService(WindowManager::class.java)
-    private val mViewAttachListener = ViewAttachListener()
-    private val mWindowBlurListener = WindowBlurListener()
+    private val windowManager: WindowManager by lazy {
+        context.applicationContext.getSystemService(WindowManager::class.java)
+    }
+    private val viewAttachListener by lazy { ViewAttachListener() }
+    private val windowBlurListener by lazy { WindowBlurListener() }
 
-    private var mRawBackgroundDrawable: Drawable? = mView.background
+    private var mView: View? = null
+    private var mRawBackgroundDrawable: Drawable? = mView?.background
     private var mBlurDrawable: Drawable? = null
     private var mBlurRadius: Int = BLUR_RADIUS_DEFAULT
     private var mCornerRadius: Float = CORNER_RADIUS_DEFAULT
@@ -100,35 +106,46 @@ class CrossWindowBlurHelper(private val mView: View) {
         cornerRadius: Float = CORNER_RADIUS_DEFAULT,
         blurColor: Int = -1,
         blurOverlay: Boolean = true
-    ) : this(view) {
+    ) : this(view.context) {
         mBlurRadius = blurRadius
         mCornerRadius = cornerRadius
         mBlurColor = blurColor
         mBlurOverlay = blurOverlay
     }
 
-    fun init() {
-        if (mView.isAttachedToWindow) {
+    fun init(view: View) {
+        release()
+
+        mView = view
+        if (view.isAttachedToWindow) {
             initWhenViewAttached()
         }
 
-        mView.addOnAttachStateChangeListener(mViewAttachListener)
+        view.addOnAttachStateChangeListener(viewAttachListener)
     }
 
     fun release() {
-        mWindowManager.removeCrossWindowBlurEnabledListener(mWindowBlurListener)
-        mView.removeOnAttachStateChangeListener(mViewAttachListener)
-
+        windowManager.removeCrossWindowBlurEnabledListener(windowBlurListener)
+        mView?.removeOnAttachStateChangeListener(viewAttachListener)
         if (mBlurOverlay && mRawBackgroundDrawable != null) {
-            mView.background = mRawBackgroundDrawable
+            mView?.background = mRawBackgroundDrawable
         } else {
-            mView.background = null
+            mView?.background = null
         }
+        mView = null
+
+
     }
 
     private fun getBlurBackground(): Drawable? {
+        val view = mView
+        if (view == null) {
+            Log.w(TAG, "Target view is null!")
+            return null
+        }
+
         // 获取ViewRootImpl
-        val viewRootImpl: ViewRootImpl? = getViewRootImplByReflect(mView)
+        val viewRootImpl: ViewRootImpl? = getViewRootImplByReflect(view)
         if (null == viewRootImpl) {
             Log.e(TAG, "Get ViewRootImpl failed!")
             return null
@@ -151,9 +168,9 @@ class CrossWindowBlurHelper(private val mView: View) {
 
     // 设置模糊效果
     private fun initWhenViewAttached() {
-        mWindowManager.addCrossWindowBlurEnabledListener(mWindowBlurListener)
+        windowManager.addCrossWindowBlurEnabledListener(windowBlurListener)
 
-        val sysEnable: Boolean = mWindowManager.isCrossWindowBlurEnabled
+        val sysEnable: Boolean = windowManager.isCrossWindowBlurEnabled
         Log.d(TAG, "InitWhenViewAttached. BlurEnable:[$sysEnable]")
         switchBlurState(sysEnable)
     }
@@ -165,12 +182,12 @@ class CrossWindowBlurHelper(private val mView: View) {
             // 判断是否需要叠加原始背景
             if (mBlurOverlay && mRawBackgroundDrawable != null) {
                 val layerDrawable = LayerDrawable(arrayOf(mBlurDrawable, mRawBackgroundDrawable))
-                mView.background = layerDrawable
+                mView?.background = layerDrawable
             } else {
-                mView.background = mBlurDrawable
+                mView?.background = mBlurDrawable
             }
         } else {
-            mView.background = null
+            mView?.background = null
         }
     }
 
@@ -186,12 +203,12 @@ class CrossWindowBlurHelper(private val mView: View) {
 
         override fun onViewDetachedFromWindow(v: View) {
             Log.d(TAG, "OnViewDetachedFromWindow.")
-            mWindowManager.removeCrossWindowBlurEnabledListener(mWindowBlurListener)
+            windowManager.removeCrossWindowBlurEnabledListener(windowBlurListener)
 
             if (mBlurOverlay && mRawBackgroundDrawable != null) {
-                mView.background = mRawBackgroundDrawable
+                v.background = mRawBackgroundDrawable
             } else {
-                mView.background = null
+                v.background = null
             }
         }
     }

@@ -95,6 +95,7 @@ include(":demo_common:logcat")
 
 // 用户界面 - 通用工具
 include(":demo_ui:universal")
+include(":demo_ui:crosswindowblurtool")
 
 // 系统能力 - 敏感权限监控工具
 include(":demo_ability:privacymonitor")
