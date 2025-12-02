@@ -22,10 +22,10 @@ object NetUtil {
         val socket = Socket()
         try {
             socket.connect(InetSocketAddress(ip, port), 500)
-            println("TCP connect test success! IP:[$ip] Port:[$port]")
+            LogUtil.info("TCP connect test success! IP:[$ip] Port:[$port]")
             return true
         } catch (e: Exception) {
-            System.err.println("TCP connect test failed! IP:[$ip] Port:[$port] Reason:[${e.message}]")
+            LogUtil.error("TCP connect test failed! IP:[$ip] Port:[$port] Reason:[${e.message}]")
             return false
         } finally {
             socket.close()

@@ -36,5 +36,6 @@ gradlePlugin {
 }
 
 dependencies {
-    compileOnly("com.android.tools.build:gradle:8.1.4")
+    // 此处的依赖仅用于确保自定义插件能够访问相关API，不会影响插件调用者所使用的实际版本。
+    compileOnly("com.android.tools.build:gradle-api:8.13.1")
 }

@@ -3,7 +3,7 @@ package net.bi4vmr.gradle.plugin
 /**
  * 私有Maven发布插件配置项。
  *
- * @author BI4VMR@outlook.com
+ * @author bi4vmr@outlook.com
  * @since 1.0.0
  */
 open class PrivatePublishConfig {

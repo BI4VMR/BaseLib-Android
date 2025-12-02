@@ -9,10 +9,10 @@ package net.bi4vmr.gradle.util
 object LogUtil {
 
     fun info(message: String) {
-        println("PrivateRepoPlugin-$message")
+        println("Plugin: $message")
     }
 
     fun error(message: String) {
-        System.err.println("PrivateRepoPlugin-$message")
+        System.err.println("Plugin: $message")
     }
 }

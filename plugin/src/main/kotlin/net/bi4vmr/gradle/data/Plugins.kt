@@ -26,6 +26,8 @@ object Plugins {
 
     const val ANDROID_APPLICATION = "com.android.application"
 
+    const val ANDROID_KOTLIN = "org.jetbrains.kotlin.android"
+
     const val PUBLIC_REPO: String = PublicRepoPlugin.NAME
 
     const val PRIVATE_REPO: String = PrivateRepoPlugin.NAME

@@ -17,7 +17,7 @@ import org.gradle.kotlin.dsl.register
 /**
  * 私有Maven发布插件。
  *
- * @author BI4VMR@outlook.com
+ * @author bi4vmr@outlook.com
  * @since 1.0.0
  */
 class PrivatePublishPlugin : Plugin<Project> {
@@ -120,11 +120,11 @@ class PrivatePublishPlugin : Plugin<Project> {
                 // 根据模块类型配置是否上传源码包和文档包
                 if (target.isAndroidLib()) {
                     /*
-                     * 自从Gradle 7.0开始，Android Library默认会发布源码与文档，且无法在 `afterEvaluate {}` 阶段修改配置，因此无法
+                     * 自从Gradle 7.0开始，Android Library默认会发布源码，且无法在 `afterEvaluate {}` 阶段修改配置，因此无法
                      * 通过插件的Extensions修改此行为，目前需要用户在 `android {}` 块中手动进行配置。
                      */
                     if (!ext.uploadSources || !ext.uploadJavadoc) {
-                        throw IllegalArgumentException("This version of Gradle will upload sources and docs automatically, plugin can not interrupt this behavior, please use `publishing {}` in `android {}` to config manually!")
+                        throw IllegalArgumentException("This version of Gradle will upload sources automatically, plugin can not interrupt this behavior, please use `publishing {}` in `android {}` to config manually!")
                     }
                 } else {
                     target.extensions.configure<JavaPluginExtension> {
