@@ -35,6 +35,14 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    publishing {
+        multipleVariants {
+            allVariants()
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
