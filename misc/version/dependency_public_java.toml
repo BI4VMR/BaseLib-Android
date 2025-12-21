@@ -141,6 +141,12 @@ java-library = { id = "org.gradle.java-library" }
 # Java・应用程序
 java-application = { id = "org.gradle.application" }
 
+# Maven Publish
+maven-publish = { id = "maven-publish" }
+
+# JaCoCo
+jacoco = { id = "jacoco" }
+
 
 # ----- Spring -----
 # SpringBoot插件（提供构建JAR/WAR包、调试应用等功能，版本号与SpringBoot同步。）

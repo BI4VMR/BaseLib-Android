@@ -10,6 +10,7 @@ ktx_core = "1.10.1"
 ktx_coroutine = "1.8.1"
 ktx_lifecycleRuntime = "2.5.1"
 ktx_lifecycleViewModel = "2.5.1"
+ktx_fragment = "1.5.1"
 
 annotation = "1.9.1"
 desugarLibs = "2.0.4"
@@ -47,7 +48,7 @@ okdownload-core = "1.0.7"
 # ----- 工程架构 -----
 kunminx_unpeekLiveData = "7.8.0"
 
-hilt = "2.52"
+hilt = "2.51.1"
 
 
 # ----- 测试工具 -----
@@ -91,6 +92,8 @@ ktx_coroutine = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-an
 ktx_lifecycleRuntime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "ktx_lifecycleRuntime" }
 # Lifecycle-ViewModel
 ktx_lifecycleViewModel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "ktx_lifecycleViewModel" }
+# Fragment
+ktx_fragment = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "ktx_fragment" }
 
 # < Jetpack Compose >
 # BOM文件（其他组件的版本配置文件）
@@ -210,7 +213,7 @@ jraska_liveDataTest-kotlin = { group = "com.jraska.livedata", name = "testing-kt
 # 核心组件
 appBase = ["appcompat", "material", "constraintLayout"]
 # 核心组件(Kotlin)
-appBaseKT = ["appcompat", "material", "constraintLayout", "ktx_core", "ktx_coroutine", "ktx_lifecycleRuntime", "ktx_lifecycleViewModel"]
+appBaseKT = ["appcompat", "material", "constraintLayout", "ktx_core", "ktx_coroutine", "ktx_lifecycleRuntime", "ktx_lifecycleViewModel", "ktx_fragment"]
 
 # Jetpack Compose
 # 核心组件

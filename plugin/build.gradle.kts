@@ -5,6 +5,14 @@ plugins {
 
 gradlePlugin {
     plugins {
+        /* Java版本配置 */
+        create("JavaVersion") {
+            // 声明插件ID
+            id = "net.bi4vmr.gradle.plugin.java.version"
+            // 声明入口类
+            implementationClass = "net.bi4vmr.gradle.plugin.JavaVersionPlugin"
+        }
+
         /* 公共Maven仓库 */
         create("PublicRepo") {
             // 声明插件ID

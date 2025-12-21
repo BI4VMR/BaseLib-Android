@@ -2,19 +2,22 @@
 [versions]
 common_base = "1.0.0"
 
-math_base = "1.0.0"
+io_base = "1.0.0"
+
+storage_file = "1.0.0"
 
 serial_basecode = "1.0.0"
 serial_gson = "1.0.0"
 
-io_base = "1.0.0"
+math_base = "1.0.0"
 
-storage_file = "1.0.0"
+finance_base = "1.0.0"
 
 security_digest = "1.0.0"
 
 
 # ----- 插件 -----
+java_version = "1.0.0"
 repo_public = "1.0.0"
 repo_private = "1.0.0"
 publish_private = "1.0.0"
@@ -24,14 +27,16 @@ publish_private = "1.0.0"
 [libraries]
 common_base = { group = "net.bi4vmr.tool.java", name = "common-base", version.ref = "common_base" }
 
-math_base = { group = "net.bi4vmr.tool.java", name = "math-base", version.ref = "math_base" }
+io_base = { group = "net.bi4vmr.tool.java", name = "io-base", version.ref = "io_base" }
+
+storage_file = { group = "net.bi4vmr.tool.java", name = "storage-file", version.ref = "storage_file" }
 
 serial_basecode = { group = "net.bi4vmr.tool.java", name = "serialization-basecode", version.ref = "serial_basecode" }
 serial_gson = { group = "net.bi4vmr.tool.java", name = "serialization-gson", version.ref = "serial_gson" }
 
-io_base = { group = "net.bi4vmr.tool.java", name = "io-base", version.ref = "io_base" }
+math_base = { group = "net.bi4vmr.tool.java", name = "math-base", version.ref = "math_base" }
 
-storage_file = { group = "net.bi4vmr.tool.java", name = "storage-file", version.ref = "storage_file" }
+finance_base = { group = "net.bi4vmr.tool.java", name = "finance-base", version.ref = "finance_base" }
 
 security_digest = { group = "net.bi4vmr.tool.java", name = "security-digest", version.ref = "security_digest" }
 
@@ -39,6 +44,8 @@ security_digest = { group = "net.bi4vmr.tool.java", name = "security-digest", ve
 # Gradle插件
 [plugins]
 # ----- Java -----
+# Java版本配置
+java_version = { id = "net.bi4vmr.gradle.plugin.java.version", version.ref = "java_version" }
 # Maven公开仓库
 repo_public = { id = "net.bi4vmr.gradle.plugin.repo.public", version.ref = "repo_public" }
 # Maven私有仓库
