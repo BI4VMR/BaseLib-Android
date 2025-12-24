@@ -60,7 +60,7 @@ abstract class BaseActivity : AppCompatActivity() {
      */
     @JvmOverloads
     fun openActivity(pkgName: String, clsName: String, extras: Bundle? = null, options: Bundle? = null) {
-        val cmp = ComponentName(packageName, clsName)
+        val cmp = ComponentName(pkgName, clsName)
         openActivity(cmp, extras, options)
     }
 
@@ -71,11 +71,11 @@ abstract class BaseActivity : AppCompatActivity() {
      * @param[duration] 显示时长，默认为 [Toast.LENGTH_SHORT] 。
      */
     @JvmOverloads
-    fun showToast(text: Any, duration: Int = Toast.LENGTH_SHORT) {
+    fun showToast(text: Any, duration: ToastDuration = ToastDuration.SHORT) {
         val message = text as? CharSequence ?: text.toString()
 
         runOnUiThread {
-            Toast.makeText(this, message, duration)
+            Toast.makeText(this, message, duration.code)
                 .show()
         }
     }
