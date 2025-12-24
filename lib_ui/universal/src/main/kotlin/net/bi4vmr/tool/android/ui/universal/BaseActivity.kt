@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
  * @author bi4vmr@outlook.com
  * @since 1.0.0
  */
-class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity : AppCompatActivity() {
 
     /**
      * 打开Activity。
