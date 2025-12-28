@@ -22,12 +22,16 @@ object ActivityUtil {
      */
     @JvmOverloads
     fun openActivity(context: Context, clazz: Class<*>, intent: Intent? = null, options: Bundle? = null) {
-        // 复制调用者指定的Intent配置
-        val intent = Intent(intent)
+        val newIntent = if (intent == null) {
+            Intent()
+        } else {
+            // 如果调用者制定了Intent，复制调用者指定的Intent配置。
+            Intent(intent)
+        }
         // 指明目标类
-        intent.setClass(context, clazz)
+        newIntent.setClass(context, clazz)
 
-        context.startActivity(intent, options)
+        context.startActivity(newIntent, options)
     }
 
     /**
