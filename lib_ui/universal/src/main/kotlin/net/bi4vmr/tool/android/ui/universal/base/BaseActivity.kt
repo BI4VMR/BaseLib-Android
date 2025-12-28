@@ -1,36 +1,52 @@
-package net.bi4vmr.tool.android.ui.universal
+package net.bi4vmr.tool.android.ui.universal.base
 
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
+import net.bi4vmr.tool.android.ui.universal.activity.ActivityUtil
+import net.bi4vmr.tool.android.ui.universal.toast.ToastDuration
+import net.bi4vmr.tool.android.ui.universal.toast.ToastUtil
 
 /**
- * 基础Fragment。
+ * 基础Activity。
  *
  * 提供一些常用的方法。
  *
  * @author bi4vmr@outlook.com
  * @since 1.0.0
  */
-abstract class BaseFragment : Fragment() {
+abstract class BaseActivity : AppCompatActivity() {
 
     /**
-     * 打开Activity。
+     * 打开Activity（指明目标类）。
      *
      * @param[clazz] 目标Activity的Class。
-     * @param[extras] 额外数据。可选，默认为空。
+     * @param[intent] 额外数据与标志位等。可选，默认为空。
      * @param[options] 选项。可选，默认为空。
      */
     @JvmOverloads
-    fun openActivity(clazz: Class<*>, extras: Bundle? = null, options: Bundle? = null) {
-        val intent = Intent()
-        intent.setClass(requireActivity(), clazz)
-        extras?.let {
-            intent.putExtras(it)
-        }
-        startActivity(intent, options)
+    fun openActivity(clazz: Class<*>, intent: Intent? = null, options: Bundle? = null) {
+        ActivityUtil.openActivity(this, clazz, intent, options)
+    }
+
+    /**
+     * 打开Activity（指明目标类）。
+     *
+     * 函数式接口，通过Lambda配置Intent和Options。
+     *
+     * @param[clazz] 目标Activity的Class。
+     * @param[configIntent] Lambda表达式， `this` 为 [Intent] ，用于配置额外数据与标志位等。可选，默认不做任何配置。
+     * @param[configOptions] Lambda表达式， `this` 为 [Bundle] ，用于配置选项。可选，默认不做任何配置。
+     */
+    @JvmOverloads
+    fun openActivity(
+        clazz: Class<*>,
+        configIntent: Intent.() -> Unit = {},
+        configOptions: Bundle.() -> Unit = {}
+    ) {
+        ActivityUtil.openActivity(this, clazz, configIntent, configOptions)
     }
 
     /**
@@ -65,25 +81,13 @@ abstract class BaseFragment : Fragment() {
     }
 
     /**
-     * 关闭宿主Activity。
-     */
-    fun finishActivity() {
-        activity?.finish()
-    }
-
-    /**
      * 显示Toast消息。
      *
-     * @param[text] 文本内容。
+     * @param[message] 消息内容。
      * @param[duration] 显示时长，默认为 [Toast.LENGTH_SHORT] 。
      */
     @JvmOverloads
-    fun showToast(text: Any, duration: ToastDuration = ToastDuration.SHORT) {
-        val message = text as? CharSequence ?: text.toString()
-
-        activity?.runOnUiThread {
-            Toast.makeText(requireContext(), message, duration.code)
-                .show()
-        }
+    fun showToast(message: Any, duration: ToastDuration = ToastDuration.SHORT) {
+        ToastUtil.showToast(this, message, duration)
     }
 }
