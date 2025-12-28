@@ -41,13 +41,12 @@ abstract class BaseActivity : AppCompatActivity() {
      * @param[configOptions] Lambda表达式， `this` 为 [Bundle] ，用于配置选项。可选，默认不做任何配置。
      */
     @JvmOverloads
-    @JvmName("openActivityKT")
-    fun openActivity(
+    fun openActivityKT(
         clazz: Class<*>,
         configIntent: Intent.() -> Unit = {},
         configOptions: Bundle.() -> Unit = {}
     ) {
-        ActivityUtil.openActivity(this, clazz, configIntent, configOptions)
+        ActivityUtil.openActivityKT(this, clazz, configIntent, configOptions)
     }
 
     /**
