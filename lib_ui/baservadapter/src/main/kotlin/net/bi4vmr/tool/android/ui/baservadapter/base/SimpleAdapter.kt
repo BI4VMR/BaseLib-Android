@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.AsyncListDiffer
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
 /**
@@ -39,21 +39,21 @@ abstract class SimpleAdapter<I : ListItem>
     dataSource: MutableList<I> = mutableListOf(),
 
     /**
-     * 后台任务的协程环境。
+     * 后台任务的协程调度器。
      *
-     * 用于执行差异对比、异步更新等任务，默认值为 `Default` 调度器构建的作用域。
+     * 用于执行差异对比、异步更新等任务，默认值为 [Dispatchers.Default] 。
      */
-    bgScope: CoroutineScope = CoroutineScope(Dispatchers.Default),
+    bgDispatcher: CoroutineDispatcher = Dispatchers.Default,
 
     /**
-     * 前台任务的协程环境。
+     * 前台任务的协程调度器。
      *
-     * 用于更新界面，默认值为 `Main` 调度器构建的作用域。
+     * 用于更新界面，默认值为 [Dispatchers.Main] 。
      *
      * 此参数仅供单元测试场景使用，其他场景下调用者无需自行传入协程环境。
      */
-    uiScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
-) : BaseAdapter<I>(dataSource, bgScope, uiScope) {
+    uiDispatcher: CoroutineDispatcher = Dispatchers.Main
+) : BaseAdapter<I>(dataSource, bgDispatcher, uiDispatcher) {
 
     /**
      * 默认的ViewHolder创建实现。
