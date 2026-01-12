@@ -1,6 +1,8 @@
 package net.bi4vmr.tool.android.ui.baservadapter.base
 
 import android.annotation.SuppressLint
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,12 +14,13 @@ import androidx.annotation.MainThread
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.withContext
+import net.bi4vmr.tool.android.ui.baservadapter.base.BaseAdapter.Companion.DEFAULT_DEBOUNCE_DURATION
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * RecyclerView适配器的通用封装。
@@ -35,27 +38,28 @@ abstract class BaseAdapter<I : ListItem>
     /**
      * 内部数据源。
      */
-    private val mDataSource: MutableList<I> = CopyOnWriteArrayList(),
+    private val mDataSource: MutableList<I> = ArrayList(),
 
     /**
-     * 后台任务的协程环境。
+     * 后台任务的协程调度器。
      *
-     * 用于执行差异对比、异步更新等任务，默认值为 `Default` 调度器构建的作用域。
+     * 用于执行差异对比、异步更新等任务，默认值为 [Dispatchers.Default] 。
      */
-    private val bgScope: CoroutineScope = CoroutineScope(Dispatchers.Default),
+    bgDispatcher: CoroutineDispatcher = Dispatchers.Default,
 
     /**
-     * 前台任务的协程环境。
+     * 前台任务的协程调度器。
      *
-     * 用于更新界面，默认值为 `Main` 调度器构建的作用域。
+     * 用于更新界面，默认值为 [Dispatchers.Main] 。
      *
      * 此参数仅供单元测试场景使用，其他场景下调用者无需自行传入协程环境。
      */
-    private val uiScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+    uiDispatcher: CoroutineDispatcher = Dispatchers.Main
 ) : RecyclerView.Adapter<BaseViewHolder<I>>() {
 
     companion object {
-        private val DEFAULT_DEBOUNCE_DURATION = 500L
+        // 默认的点击防抖时长，单位：毫秒。
+        private const val DEFAULT_DEBOUNCE_DURATION = 500L
     }
 
     /**
@@ -69,6 +73,16 @@ abstract class BaseAdapter<I : ListItem>
      * 用于控制是否输出详细日志。
      */
     var debugMode: Boolean = false
+
+    /**
+     * 后台任务的协程环境。
+     */
+    private val bgScope: CoroutineScope = CoroutineScope(bgDispatcher)
+
+    /**
+     * 前台任务的协程环境。
+     */
+    private val uiScope: CoroutineScope = CoroutineScope(uiDispatcher)
 
     /**
      * ViewType映射表。
@@ -92,6 +106,11 @@ abstract class BaseAdapter<I : ListItem>
     private var mDebounceDuration: Long = DEFAULT_DEBOUNCE_DURATION
 
     /**
+     * 表项上次被点击的时刻。
+     */
+    private var mLastClickTime = 0L
+
+    /**
      * 表项点击事件监听器实现。
      */
     private var mItemClickListener: ItemClickListener<I>? = null
@@ -109,15 +128,6 @@ abstract class BaseAdapter<I : ListItem>
      * 如果任务序号与全局变量相同，说明任务有效，可以更新列表；否则说明已经有更晚开始的任务更新了列表，当前任务没必要再更新列表。
      */
     private var mUpdateTaskSequence: Int = 0
-
-    /**
-     * 数据更新互斥锁。
-     *
-     * 确保同时只能有一个协程访问数据源。
-     *
-     * 预留，暂不使用，目前更新数据均在主线程调度器执行，不会出现数据竞争问题。
-     */
-    private val updateMutex: Mutex? = null
 
     @CallSuper
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -587,6 +597,8 @@ abstract class BaseAdapter<I : ListItem>
     /**
      * 使用DiffUtil异步更新表项。
      *
+     * 即时执行刷新动作，不能在非主线程调用，如果可以接受任意线程异步提交数据，请使用 [postData] 方法。
+     *
      * 默认的 [DefaultDiffer] 不支持局部刷新，调用者可以通过 [setDiffCallback] 方法设置自定义的DiffCallback实现，以支持局部刷新；若
      * 要恢复默认的 [DefaultDiffer] ，请使用 [resetDiffCallback] 方法。
      *
@@ -594,15 +606,21 @@ abstract class BaseAdapter<I : ListItem>
      * @param[detectMoves] 表项移动检测功能开关，默认为开启。DiffUtil的算法检测表项是否被移动需要额外消耗性能，如果新旧表项排序规则一致，
      * 只是增删表项，可以关闭此功能以提升性能。
      * @param[actionAfterUpdate] 更新成功后需要执行的动作，将被提交到RecyclerView的事件队列中。
+     * @see[postData]
      * @see[setDiffCallback]
      * @see[resetDiffCallback]
      */
+    @MainThread
     @JvmOverloads
     fun submit(
         newData: List<I>,
         detectMoves: Boolean = true,
         actionAfterUpdate: (() -> Unit)? = null
     ) {
+        // 开始异步计算前的准备工作必须在主线程执行，否则List、 `mUpdateTaskSequence` 等变量可能会被并发修改，导致计算结果错误。
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw IllegalStateException("This method must be called from main thread!")
+        }
 
         // 提交更新成功后需要执行的动作
         fun postActionAfterUpdate() {
@@ -646,21 +664,17 @@ abstract class BaseAdapter<I : ListItem>
 
         // 快速处理某个列表为空的情况，无需执行差异对比。
         if (newData.isEmpty()) {
-            uiScope.launch {
-                val oldSize = oldData.size
-                mDataSource.clear()
-                notifyItemRangeRemoved(0, oldSize)
-                postActionAfterUpdate()
-            }
+            val oldSize = oldData.size
+            mDataSource.clear()
+            notifyItemRangeRemoved(0, oldSize)
+            postActionAfterUpdate()
             return
         }
 
         if (oldData.isEmpty()) {
-            uiScope.launch {
-                mDataSource.addAll(newData)
-                notifyItemRangeInserted(0, newData.size)
-                postActionAfterUpdate()
-            }
+            mDataSource.addAll(newData)
+            notifyItemRangeInserted(0, newData.size)
+            postActionAfterUpdate()
             return
         }
 
@@ -697,7 +711,7 @@ abstract class BaseAdapter<I : ListItem>
                 Log.d(tag, "Submit. Async task end. TaskID:[$taskSequence] Time:[$usedTime]")
             }
 
-            uiScope.launch {
+            withContext(uiScope.coroutineContext) {
                 if (taskSequence == mUpdateTaskSequence) {
                     mDataSource.clear()
                     mDataSource.addAll(newData)
@@ -708,6 +722,26 @@ abstract class BaseAdapter<I : ListItem>
                     Log.w(tag, "Submit. Task [$taskSequence] is not the newest, ignore!")
                 }
             }
+        }
+    }
+
+    /**
+     * 使用DiffUtil异步更新表项。
+     *
+     * @param[newData] 新的列表。
+     * @param[detectMoves] 表项移动检测功能开关，默认为开启。DiffUtil的算法检测表项是否被移动需要额外消耗性能，如果新旧表项排序规则一致，
+     * 只是增删表项，可以关闭此功能以提升性能。
+     * @param[actionAfterUpdate] 更新成功后需要执行的动作，将被提交到RecyclerView的事件队列中。
+     * @see[submit]
+     */
+    @JvmOverloads
+    fun postData(
+        newData: List<I>,
+        detectMoves: Boolean = true,
+        actionAfterUpdate: (() -> Unit)? = null
+    ) {
+        Handler(Looper.getMainLooper()).post {
+            submit(newData, detectMoves, actionAfterUpdate)
         }
     }
 
@@ -739,11 +773,9 @@ abstract class BaseAdapter<I : ListItem>
         duration: Long = DEFAULT_DEBOUNCE_DURATION,
         l: View.OnClickListener
     ) {
-        var lastClickTime = 0L
-
         setOnClickListener {
             val currentTS = SystemClock.elapsedRealtime()
-            val time = currentTS - lastClickTime
+            val time = currentTS - mLastClickTime
 
             // 如果当前时间和上次点击时间间隔小于防抖时长，则忽略此次点击。
             if (time < duration) {
@@ -751,7 +783,7 @@ abstract class BaseAdapter<I : ListItem>
                 return@setOnClickListener
             }
 
-            lastClickTime = currentTS
+            mLastClickTime = currentTS
             l.onClick(it)
         }
     }
