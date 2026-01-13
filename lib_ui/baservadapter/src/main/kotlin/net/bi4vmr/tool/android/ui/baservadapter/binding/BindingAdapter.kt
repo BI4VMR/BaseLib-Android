@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
+@Suppress("UNCHECKED_CAST")
 abstract class BindingAdapter<I : ListItem>
 @JvmOverloads constructor(
 
@@ -31,17 +32,8 @@ abstract class BindingAdapter<I : ListItem>
      *
      * 用于执行差异对比、异步更新等任务，默认值为 [Dispatchers.Default] 。
      */
-    bgDispatcher: CoroutineDispatcher = Dispatchers.Default,
-
-    /**
-     * 前台任务的协程调度器。
-     *
-     * 用于更新界面，默认值为 [Dispatchers.Main] 。
-     *
-     * 此参数仅供单元测试场景使用，其他场景下调用者无需自行传入协程环境。
-     */
-    uiDispatcher: CoroutineDispatcher = Dispatchers.Main
-) : BaseAdapter<I>(dataSource, bgDispatcher, uiDispatcher) {
+    bgDispatcher: CoroutineDispatcher = Dispatchers.Default
+) : BaseAdapter<I>(dataSource, bgDispatcher) {
 
     /**
      * ViewType映射表。
@@ -53,7 +45,6 @@ abstract class BindingAdapter<I : ListItem>
     private val bindingMappers: MutableMap<Int, Pair<Class<out ViewBinding>, Class<out BindingViewHolder<*, *>>>> =
         ConcurrentHashMap()
 
-    @Suppress("UNCHECKED_CAST")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BindingViewHolder<*, I> {
         if (debugMode) {
             Log.d(tag, "OnCreateViewHolder. ViewType:[$viewType]")

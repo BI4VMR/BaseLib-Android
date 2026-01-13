@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bi4vmr.tool.android.ui.baservadapter.base.BaseAdapter.Companion.DEFAULT_DEBOUNCE_DURATION
@@ -32,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
+@Suppress("UNCHECKED_CAST")
 abstract class BaseAdapter<I : ListItem>
 @JvmOverloads constructor(
 
@@ -45,16 +47,7 @@ abstract class BaseAdapter<I : ListItem>
      *
      * 用于执行差异对比、异步更新等任务，默认值为 [Dispatchers.Default] 。
      */
-    bgDispatcher: CoroutineDispatcher = Dispatchers.Default,
-
-    /**
-     * 前台任务的协程调度器。
-     *
-     * 用于更新界面，默认值为 [Dispatchers.Main] 。
-     *
-     * 此参数仅供单元测试场景使用，其他场景下调用者无需自行传入协程环境。
-     */
-    uiDispatcher: CoroutineDispatcher = Dispatchers.Main
+    bgDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : RecyclerView.Adapter<BaseViewHolder<I>>() {
 
     companion object {
@@ -82,7 +75,7 @@ abstract class BaseAdapter<I : ListItem>
     /**
      * 前台任务的协程环境。
      */
-    private val uiScope: CoroutineScope = CoroutineScope(uiDispatcher)
+    private val uiScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 
     /**
      * ViewType映射表。
@@ -144,6 +137,10 @@ abstract class BaseAdapter<I : ListItem>
             Log.d(tag, "OnDetachedFromRecyclerView.")
         }
 
+        val msg = "Adapter detached from RecyclerView!"
+        bgScope.cancel(msg)
+        uiScope.cancel(msg)
+
         mRecyclerView = null
     }
 
@@ -154,7 +151,6 @@ abstract class BaseAdapter<I : ListItem>
      * @param[viewType] 表项类型代码。
      * @return ViewHolder实例。
      */
-    @Suppress("UNCHECKED_CAST")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<I> {
         if (debugMode) {
             Log.d(tag, "OnCreateViewHolder. ViewType:[$viewType]")
@@ -222,7 +218,7 @@ abstract class BaseAdapter<I : ListItem>
      * @param[holder] 待绑定的ViewHolder实例。
      * @param[position] 表项索引序号。
      * @param[payloads] Payloads。
-     * @see BaseDiffer
+     * @see[BaseDiffer]
      */
     override fun onBindViewHolder(holder: BaseViewHolder<I>, position: Int, payloads: MutableList<Any>) {
         if (payloads.isEmpty()) {
@@ -336,7 +332,6 @@ abstract class BaseAdapter<I : ListItem>
      * @return 当前数据源的副本。
      * @see [getDataSource]
      */
-    @Suppress("UNCHECKED_CAST")
     fun getCopyOfDataSource(): List<I> {
         return mDataSource.map { it.copy() as I }
     }
@@ -371,7 +366,6 @@ abstract class BaseAdapter<I : ListItem>
      * @return 表项数据的副本。
      * @see[getItem]
      */
-    @Suppress("UNCHECKED_CAST")
     fun getCopyOfItem(position: Int): I? {
         return mDataSource.getOrNull(position)?.copy() as? I
     }

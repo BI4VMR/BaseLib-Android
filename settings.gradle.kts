@@ -95,6 +95,8 @@ include(":demo_common:logcat")
 
 // 用户界面 - 通用工具
 include(":demo_ui:universal")
+// 用户界面 - RecyclerView通用适配器
+include(":demo_ui:baservadapter")
 include(":demo_ui:crosswindowblurtool")
 
 // 系统能力 - 敏感权限监控工具
