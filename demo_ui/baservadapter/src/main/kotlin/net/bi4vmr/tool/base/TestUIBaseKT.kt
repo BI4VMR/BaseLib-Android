@@ -3,6 +3,7 @@ package net.bi4vmr.tool.base
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import net.bi4vmr.tool.android.ui.baservadapter.base.BaseDiffer
 import net.bi4vmr.tool.android.ui.baservadapter.base.ListItem
 import net.bi4vmr.tool.databinding.TestuiViewBinding
 
@@ -26,6 +27,17 @@ class TestUIBaseKT : AppCompatActivity() {
             recyclerview.adapter = adapter
 
             adapter.submit(makeTestData())
+
+            btAdd.setOnClickListener {
+                adapter.updateItem(
+                    1, Type1VO("表项二（已更新）", "这是类型一（已更新）"),
+                    BaseDiffer.FLAG_ICON
+                )
+                adapter.updateItem(
+                    1, Type1VO("表项二（已更新）", "这是类型一（已更新）"),
+                    BaseDiffer.FLAG_NAME
+                )
+            }
         }
     }
 

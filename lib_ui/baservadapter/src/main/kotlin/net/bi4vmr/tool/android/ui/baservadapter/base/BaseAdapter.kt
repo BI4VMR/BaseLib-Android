@@ -224,12 +224,7 @@ abstract class BaseAdapter<I : ListItem>
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
         } else {
-            // 默认选择最新的Payload，忽略旧的Payload。
-            val payload = payloads.last()
-            if (payload !is Int) {
-                Log.w(tag, "Payload type is not a number with flags, ignored!")
-                return
-            }
+            val payload = combineFlags(payloads)
 
             if (debugMode) {
                 Log.d(tag, "OnBindViewHolder. Position:[$position] Payload:[${payload.toString(2)}]")
@@ -888,5 +883,33 @@ abstract class BaseAdapter<I : ListItem>
     @MainThread
     fun setItemClickListenerJava(debounceDuration: Long, listener: ItemClickListenerJava<I>?) {
         setItemClickListener(debounceDuration, listener)
+    }
+
+    /**
+     * 组合Payload列表生成最终Flag。
+     *
+     * 短时间内多次刷新同一表项时，RecyclerView会将Payload合并为一个列表传递给 [onBindViewHolder] 方法，此处将所有元素合并为单一Flag
+     * 以便统一分发更新。
+     *
+     * @param[payloads] 原始Payload列表。
+     * @return 合并后的Flag数值。
+     */
+    private fun combineFlags(payloads: List<Any>): Int {
+        var result = 0
+
+        payloads.forEachIndexed { index, flags ->
+            if (debugMode) {
+                Log.d(tag, "CombineFlags. I:[$index] Value:[$flags]")
+            }
+
+            if (flags !is Int) {
+                Log.w(tag, "Payload type is not a number with flags, ignored!")
+                return@forEachIndexed
+            } else {
+                result = result or flags
+            }
+        }
+
+        return result
     }
 }
