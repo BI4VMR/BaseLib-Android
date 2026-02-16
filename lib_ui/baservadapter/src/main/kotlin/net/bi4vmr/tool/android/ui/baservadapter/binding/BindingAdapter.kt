@@ -25,7 +25,7 @@ abstract class BindingAdapter<I : ListItem>
     /**
      * 初始数据源。
      */
-    dataSource: MutableList<I> = mutableListOf(),
+    initData: List<I> = ArrayList(),
 
     /**
      * 后台任务的协程调度器。
@@ -33,7 +33,7 @@ abstract class BindingAdapter<I : ListItem>
      * 用于执行差异对比、异步更新等任务，默认值为 [Dispatchers.Default] 。
      */
     bgDispatcher: CoroutineDispatcher = Dispatchers.Default
-) : BaseAdapter<I>(dataSource, bgDispatcher) {
+) : BaseAdapter<I>(initData, bgDispatcher) {
 
     /**
      * ViewType映射表。

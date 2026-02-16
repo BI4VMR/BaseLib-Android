@@ -33,7 +33,7 @@ abstract class SimpleBindingAdapter<I : ListItem>
     /**
      * 初始数据源。
      */
-    dataSource: MutableList<I> = mutableListOf(),
+    initData: MutableList<I> = mutableListOf(),
 
     /**
      * 后台任务的协程调度器。
@@ -41,7 +41,7 @@ abstract class SimpleBindingAdapter<I : ListItem>
      * 用于执行差异对比、异步更新等任务，默认值为 [Dispatchers.Default] 。
      */
     bgDispatcher: CoroutineDispatcher = Dispatchers.Default
-) : BaseAdapter<I>(dataSource, bgDispatcher) {
+) : BaseAdapter<I>(initData, bgDispatcher) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BindingViewHolder<*, I> {
         if (debugMode) {

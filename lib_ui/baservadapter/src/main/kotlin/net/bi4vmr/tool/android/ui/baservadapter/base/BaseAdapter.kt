@@ -38,9 +38,9 @@ abstract class BaseAdapter<I : ListItem>
 @JvmOverloads constructor(
 
     /**
-     * 内部数据源。
+     * 初始数据源。
      */
-    private val mDataSource: MutableList<I> = ArrayList(),
+    initData: List<I> = ArrayList(),
 
     /**
      * 后台任务的协程调度器。
@@ -66,6 +66,11 @@ abstract class BaseAdapter<I : ListItem>
      * 用于控制是否输出详细日志。
      */
     var debugMode: Boolean = false
+
+    /**
+     * 内部数据源。
+     */
+    private val dataSource: MutableList<I> = ArrayList()
 
     /**
      * 后台任务的协程环境。
@@ -121,6 +126,12 @@ abstract class BaseAdapter<I : ListItem>
      * 如果任务序号与全局变量相同，说明任务有效，可以更新列表；否则说明已经有更晚开始的任务更新了列表，当前任务没必要再更新列表。
      */
     private var mUpdateTaskSequence: Int = 0
+
+
+    init {
+        // 如果指定了初始数据，则填充到列表中。
+        dataSource.addAll(initData)
+    }
 
     @CallSuper
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -192,7 +203,7 @@ abstract class BaseAdapter<I : ListItem>
             Log.d(tag, "OnBindViewHolder. Position:[$position]")
         }
 
-        val item: I = mDataSource[position]
+        val item: I = dataSource[position]
 
         // 注册表项点击监听器
         mItemClickListener?.let { outListener ->
@@ -230,7 +241,7 @@ abstract class BaseAdapter<I : ListItem>
                 Log.d(tag, "OnBindViewHolder. Position:[$position] Payload:[${payload.toString(2)}]")
             }
 
-            val item: I = mDataSource[position]
+            val item: I = dataSource[position]
 
             // 如果是内置Flag，则执行相应的逻辑，不必通知子类。
             if (BaseViewHolder.hasFlag(payload, BaseDiffer.FLAG_PRIVATE_CLICK_LISTENER_SET)) {
@@ -262,7 +273,7 @@ abstract class BaseAdapter<I : ListItem>
      * @return 表项数量。
      */
     override fun getItemCount(): Int {
-        return mDataSource.size
+        return dataSource.size
     }
 
     /**
@@ -272,7 +283,7 @@ abstract class BaseAdapter<I : ListItem>
      * @return 表项类型代码。
      */
     override fun getItemViewType(position: Int): Int {
-        val item: I = mDataSource[position]
+        val item: I = dataSource[position]
         return item.getViewType()
     }
 
@@ -315,7 +326,7 @@ abstract class BaseAdapter<I : ListItem>
      * @return 当前数据源。
      * @see [getCopyOfDataSource]
      */
-    fun getDataSource(): List<I> = mDataSource
+    fun getDataSource(): List<I> = dataSource
 
     /**
      * 获取数据源的副本。
@@ -328,7 +339,7 @@ abstract class BaseAdapter<I : ListItem>
      * @see [getDataSource]
      */
     fun getCopyOfDataSource(): List<I> {
-        return mDataSource.map { it.copy() as I }
+        return dataSource.map { it.copy() as I }
     }
 
     /**
@@ -345,7 +356,7 @@ abstract class BaseAdapter<I : ListItem>
      * @see[getCopyOfItem]
      */
     fun getItem(position: Int): I? {
-        return mDataSource.getOrNull(position)
+        return dataSource.getOrNull(position)
     }
 
     /**
@@ -362,7 +373,41 @@ abstract class BaseAdapter<I : ListItem>
      * @see[getItem]
      */
     fun getCopyOfItem(position: Int): I? {
-        return mDataSource.getOrNull(position)?.copy() as? I
+        return dataSource.getOrNull(position)?.copy() as? I
+    }
+
+    /**
+     * 获取指定表项（非空断言）。
+     *
+     * 该方法返回的数据源即内置数据源中的表项，因此不可修改表项的属性，防止影响到列表显示。
+     *
+     * 如果希望修改表项而不影响列表显示，请使用 [requireCopyOfItem] 方法获取数据源副本。
+     *
+     * @param[position] 待获取的位置。
+     * @return 表项数据。
+     * @throws[IllegalArgumentException] 如果给定的位置索引超出范围，则抛出该异常。
+     * @see[requireCopyOfItem]
+     */
+    fun requireItem(position: Int): I {
+        val item = dataSource.getOrNull(position)
+        return requireNotNull(item) { "Item at [$position] is not found!" }
+    }
+
+    /**
+     * 获取指定表项的副本（非空断言）。
+     *
+     * 有时我们需要对表项进行一些修改，例如获取原表项修改属性，但我们又不希望影响到列表显示，此时可以使用本方法获取列表。
+     *
+     * 该方法依赖列表项的 [ListItem.copy] 方法实现深拷贝，如果列表项并未正确实现此方法，修改表项仍会影响列表显示。
+     *
+     * @param[position] 待获取的位置。
+     * @return 表项数据的副本。
+     * @throws[IllegalArgumentException] 如果给定的位置索引超出范围，则抛出该异常。
+     * @see[getItem]
+     */
+    fun requireCopyOfItem(position: Int): I {
+        val item = dataSource.getOrNull(position)?.copy() as? I
+        return requireNotNull(item) { "Item at [$position] is not found!" }
     }
 
     /**
@@ -378,8 +423,8 @@ abstract class BaseAdapter<I : ListItem>
         uiScope.launch {
             mUpdateTaskSequence++
 
-            mDataSource.add(data)
-            notifyItemInserted(mDataSource.size - 1)
+            dataSource.add(data)
+            notifyItemInserted(dataSource.size - 1)
         }
     }
 
@@ -396,7 +441,7 @@ abstract class BaseAdapter<I : ListItem>
             Log.d(tag, "AddItem. Position:[$position] Data:$data")
         }
 
-        if (position < 0 || position > mDataSource.size) {
+        if (position < 0 || position > dataSource.size) {
             Log.w(tag, "Position [$position] is out of bounds, ignored!")
             return
         }
@@ -404,7 +449,7 @@ abstract class BaseAdapter<I : ListItem>
         uiScope.launch {
             mUpdateTaskSequence++
 
-            mDataSource.add(position, data)
+            dataSource.add(position, data)
             notifyItemInserted(position)
         }
     }
@@ -435,9 +480,9 @@ abstract class BaseAdapter<I : ListItem>
         uiScope.launch {
             mUpdateTaskSequence++
 
-            val oldSize = mDataSource.size
-            mDataSource.addAll(datas)
-            notifyItemRangeInserted(oldSize, mDataSource.size)
+            val oldSize = dataSource.size
+            dataSource.addAll(datas)
+            notifyItemRangeInserted(oldSize, dataSource.size)
         }
     }
 
@@ -467,7 +512,7 @@ abstract class BaseAdapter<I : ListItem>
             return
         }
 
-        if (position < 0 || position > mDataSource.size) {
+        if (position < 0 || position > dataSource.size) {
             Log.w(tag, "Position [$position] is out of bounds, ignored!")
             return
         }
@@ -475,7 +520,7 @@ abstract class BaseAdapter<I : ListItem>
         uiScope.launch {
             mUpdateTaskSequence++
 
-            mDataSource.addAll(position, datas)
+            dataSource.addAll(position, datas)
             notifyItemRangeInserted(position, datas.size)
         }
     }
@@ -492,7 +537,7 @@ abstract class BaseAdapter<I : ListItem>
             Log.d(tag, "RemoveItem. Position:[$position]")
         }
 
-        if (position < 0 || position >= mDataSource.size) {
+        if (position < 0 || position >= dataSource.size) {
             Log.w(tag, "Position [$position] is out of bounds, ignored!")
             return
         }
@@ -500,7 +545,7 @@ abstract class BaseAdapter<I : ListItem>
         uiScope.launch {
             mUpdateTaskSequence++
 
-            mDataSource.removeAt(position)
+            dataSource.removeAt(position)
             notifyItemRemoved(position)
         }
     }
@@ -513,7 +558,7 @@ abstract class BaseAdapter<I : ListItem>
             Log.d(tag, "ClearItems.")
         }
 
-        if (mDataSource.isEmpty()) {
+        if (dataSource.isEmpty()) {
             Log.w(tag, "List already empty now, ignored!")
             return
         }
@@ -521,8 +566,8 @@ abstract class BaseAdapter<I : ListItem>
         uiScope.launch {
             mUpdateTaskSequence++
 
-            val oldSize = mDataSource.size
-            mDataSource.clear()
+            val oldSize = dataSource.size
+            dataSource.clear()
             notifyItemRangeRemoved(0, oldSize)
         }
     }
@@ -539,7 +584,7 @@ abstract class BaseAdapter<I : ListItem>
             Log.d(tag, "UpdateItem. Position:[$position] Data:$data")
         }
 
-        if (position < 0 || position >= mDataSource.size) {
+        if (position < 0 || position >= dataSource.size) {
             Log.w(tag, "Position [$position] is out of bounds, ignored!")
             return
         }
@@ -547,7 +592,7 @@ abstract class BaseAdapter<I : ListItem>
         uiScope.launch {
             mUpdateTaskSequence++
 
-            mDataSource[position] = data
+            dataSource[position] = data
             notifyItemChanged(position, payload)
         }
     }
@@ -577,8 +622,8 @@ abstract class BaseAdapter<I : ListItem>
         uiScope.launch {
             mUpdateTaskSequence++
 
-            mDataSource.clear()
-            mDataSource.addAll(datas)
+            dataSource.clear()
+            dataSource.addAll(datas)
             notifyDataSetChanged()
         }
     }
@@ -620,7 +665,7 @@ abstract class BaseAdapter<I : ListItem>
 
         val taskStartTime = SystemClock.elapsedRealtime()
         val taskSequence = ++mUpdateTaskSequence
-        val oldData = mDataSource.toList()
+        val oldData = dataSource.toList()
 
         if (debugMode) {
             Log.d(tag, "Submit. Async task Start. TaskID:[$taskSequence]")
@@ -654,14 +699,14 @@ abstract class BaseAdapter<I : ListItem>
         // 快速处理某个列表为空的情况，无需执行差异对比。
         if (newData.isEmpty()) {
             val oldSize = oldData.size
-            mDataSource.clear()
+            dataSource.clear()
             notifyItemRangeRemoved(0, oldSize)
             postActionAfterUpdate()
             return
         }
 
         if (oldData.isEmpty()) {
-            mDataSource.addAll(newData)
+            dataSource.addAll(newData)
             notifyItemRangeInserted(0, newData.size)
             postActionAfterUpdate()
             return
@@ -702,8 +747,8 @@ abstract class BaseAdapter<I : ListItem>
 
             withContext(uiScope.coroutineContext) {
                 if (taskSequence == mUpdateTaskSequence) {
-                    mDataSource.clear()
-                    mDataSource.addAll(newData)
+                    dataSource.clear()
+                    dataSource.addAll(newData)
                     diffResult.dispatchUpdatesTo(this@BaseAdapter)
                     // 更新完毕后执行其他任务
                     postActionAfterUpdate()
