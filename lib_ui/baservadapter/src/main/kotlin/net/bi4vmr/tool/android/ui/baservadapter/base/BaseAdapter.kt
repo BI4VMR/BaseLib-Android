@@ -656,13 +656,6 @@ abstract class BaseAdapter<I : ListItem>
             throw IllegalStateException("This method must be called from main thread!")
         }
 
-        // 提交更新成功后需要执行的动作
-        fun postActionAfterUpdate() {
-            mRecyclerView?.post {
-                actionAfterUpdate?.invoke()
-            }
-        }
-
         val taskStartTime = SystemClock.elapsedRealtime()
         val taskSequence = ++mUpdateTaskSequence
         val oldData = dataSource.toList()
@@ -692,7 +685,7 @@ abstract class BaseAdapter<I : ListItem>
         // 如果两个列表元素相同，则无需执行任何动作。
         if (newData == oldData) {
             Log.i(tag, "Submit. New list is same as old, nothing to do.")
-            postActionAfterUpdate()
+            actionAfterUpdate?.invoke()
             return
         }
 
@@ -701,14 +694,14 @@ abstract class BaseAdapter<I : ListItem>
             val oldSize = oldData.size
             dataSource.clear()
             notifyItemRangeRemoved(0, oldSize)
-            postActionAfterUpdate()
+            actionAfterUpdate?.invoke()
             return
         }
 
         if (oldData.isEmpty()) {
             dataSource.addAll(newData)
             notifyItemRangeInserted(0, newData.size)
-            postActionAfterUpdate()
+            actionAfterUpdate?.invoke()
             return
         }
 
@@ -750,8 +743,9 @@ abstract class BaseAdapter<I : ListItem>
                     dataSource.clear()
                     dataSource.addAll(newData)
                     diffResult.dispatchUpdatesTo(this@BaseAdapter)
+
                     // 更新完毕后执行其他任务
-                    postActionAfterUpdate()
+                    actionAfterUpdate?.invoke()
                 } else {
                     Log.w(tag, "Submit. Task [$taskSequence] is not the newest, ignore!")
                 }
