@@ -33,14 +33,20 @@ class PrivatePublishPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         // 检查仓库是否可用
         if (netTestResult == null) {
-            if (NetUtil.scanByTCP("172.16.5.1", 8081)) {
-                LogUtil.info("Current host is in private network, set publish URL to LAN repositories.")
+            if (NetUtil.scanByTCP(MavenRepos.PRIVATE_LAN.host, MavenRepos.PRIVATE_LAN.port)) {
+                LogUtil.info("Use LAN address to connect private repositories.")
                 netTestResult = MavenRepos.PRIVATE_LAN
-            } else if (NetUtil.scanByTCP("127.0.0.1", 8081)) {
-                LogUtil.info("Current host is not in private network, set publish URL to LOCAL repositories.")
+            } else if (NetUtil.scanByTCP(MavenRepos.PRIVATE_HOSTNAME.host, MavenRepos.PRIVATE_HOSTNAME.port)) {
+                LogUtil.info("Use Hostname to connect private repositories.")
+                netTestResult = MavenRepos.PRIVATE_HOSTNAME
+            } else if (NetUtil.scanByTCP(MavenRepos.PRIVATE_DYNV6.host, MavenRepos.PRIVATE_DYNV6.port)) {
+                LogUtil.info("Use DynV6 domain to connect private repositories.")
+                netTestResult = MavenRepos.PRIVATE_DYNV6
+            } else if (NetUtil.scanByTCP(MavenRepos.PRIVATE_LOCAL.host, MavenRepos.PRIVATE_LOCAL.port)) {
+                LogUtil.info("Private repositories are not reachable, use local repositories.")
                 netTestResult = MavenRepos.PRIVATE_LOCAL
             } else {
-                LogUtil.info("Current host is not in private network, can only publish to MAVEN_LOCAL repository.")
+                LogUtil.info("Both private and local repositories are not reachable, use Maven local repository.")
                 netTestResult = MavenRepos.PRIVATE_MAVEN_LOCAL
             }
         }
@@ -64,13 +70,9 @@ class PrivatePublishPlugin : Plugin<Project> {
 
                 target.extensions.configure<PublishingExtension> {
                     repositories {
-                        val repoURL = if (netTestResult == MavenRepos.PRIVATE_LAN) {
-                            // 内网私有仓库
-                            "http://172.16.5.1:8081/repository/maven-private/"
-                        } else {
-                            // 本机内置仓库
-                            "http://127.0.0.1:8081/repository/maven-private/"
-                        }
+                        val repoURL = requireNotNull(netTestResult).url
+                            // 读取地址为私有仓库与镜像仓库的聚合地址，因此写入地址需要替换为指定的私有仓库。
+                            .replace("maven-union", "maven-private")
 
                         maven {
                             name = "Private"
