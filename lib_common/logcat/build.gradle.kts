@@ -36,6 +36,10 @@ android {
         jvmTarget = "11"
     }
 
+    buildFeatures {
+        buildConfig = false
+    }
+
     publishing {
         multipleVariants {
             allVariants()
@@ -46,7 +50,7 @@ android {
 }
 
 dependencies {
-    implementation(libKotlin.ktx.coroutines.core)
+    api(libKotlin.ktx.coroutines.core)
 }
 
 privatePublishConfig {

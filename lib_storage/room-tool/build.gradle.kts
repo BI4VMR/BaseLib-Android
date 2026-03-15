@@ -40,10 +40,14 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    buildFeatures {
+        buildConfig = false
+    }
 }
 
 dependencies {
-    implementation(libAndroid.room.runtime)
+    api(libAndroid.room.runtime)
 }
 
 privatePublishConfig {

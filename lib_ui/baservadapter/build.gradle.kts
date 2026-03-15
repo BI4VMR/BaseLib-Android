@@ -34,6 +34,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = false
         viewBinding = true
     }
 
@@ -47,9 +48,9 @@ android {
 }
 
 dependencies {
-    implementation(libKotlin.ktx.coroutines.core)
-    implementation(libAndroid.recyclerview)
-    implementation(libAndroid.annotation)
+    api(libKotlin.ktx.coroutines.core)
+    api(libAndroid.recyclerview)
+    api(libAndroid.annotation)
 }
 
 privatePublishConfig {

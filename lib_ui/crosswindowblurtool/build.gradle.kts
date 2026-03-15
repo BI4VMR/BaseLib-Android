@@ -33,12 +33,16 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    buildFeatures {
+        buildConfig = false
+    }
 }
 
 dependencies {
     compileOnly(project(":lib_ability:framework_fakeimplementation"))
 
-    implementation(libAndroid.ktx.core)
+    api(libAndroid.ktx.core)
 }
 
 privatePublishConfig {

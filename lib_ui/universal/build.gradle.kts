@@ -41,6 +41,10 @@ android {
         jvmTarget = "11"
     }
 
+    buildFeatures {
+        buildConfig = false
+    }
+
     publishing {
         multipleVariants {
             allVariants()
@@ -51,9 +55,9 @@ android {
 }
 
 dependencies {
-    implementation(libAndroid.appcompat)
-    implementation(libAndroid.ktx.core)
-    implementation(libAndroid.annotation)
+    api(libAndroid.appcompat)
+    api(libAndroid.ktx.core)
+    api(libAndroid.annotation)
 }
 
 privatePublishConfig {

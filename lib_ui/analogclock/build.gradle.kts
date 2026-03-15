@@ -34,12 +34,13 @@ android {
     }
 
     buildFeatures {
+        buildConfig = false
         viewBinding = true
     }
 }
 
 dependencies {
-    implementation(libKotlin.ktx.coroutines.core)
+    api(libKotlin.ktx.coroutines.core)
 }
 
 privatePublishConfig {
