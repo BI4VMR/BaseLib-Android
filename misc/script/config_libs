@@ -7,6 +7,8 @@
 
 :lib_storage:room-tool
 
+:lib_platform:automotive
+
 :lib_ui:universal
 :lib_ui:baservadapter
 :lib_ui:crosswindowblurtool

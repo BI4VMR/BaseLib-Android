@@ -89,6 +89,11 @@ include(":lib_ability:framework_fakeimplementation")
 // Room工具
 include(":lib_storage:room-tool")
 
+/* ----- 平台扩展 ----- */
+// 车载平台
+include(":lib_platform:automotive")
+
+
 /* ----- 示例程序 ----- */
 // 通用组件 - Logcat扩展
 include(":demo_common:logcat")
