@@ -93,6 +93,10 @@ include(":lib_storage:room-tool")
 // 车载平台
 include(":lib_platform:automotive")
 
+/* ----- 测试工具 ----- */
+// 通用工具
+include(":lib_test:universal")
+
 
 /* ----- 示例程序 ----- */
 // 通用组件 - Logcat扩展

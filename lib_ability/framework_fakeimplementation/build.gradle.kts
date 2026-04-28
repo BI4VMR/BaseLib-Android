@@ -23,14 +23,6 @@ android {
         minSdk = versionMinSDK
     }
 
-    sourceSets {
-        getByName("main") {
-            java {
-                java.srcDirs("src/main/kotlin")
-            }
-        }
-    }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11

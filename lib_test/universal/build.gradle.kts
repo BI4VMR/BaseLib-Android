@@ -3,7 +3,7 @@
 val versionMinSDK: Int = Integer.valueOf(agp.versions.minSdk.get())
 val versionCompileSDK: Int = Integer.valueOf(agp.versions.compileSdk.get())
 
-val depInTOML: MinimalExternalModuleDependency = privateLibAndroid.ui.universal.get()
+val depInTOML: MinimalExternalModuleDependency = privateLibAndroid.test.universal.get()
 val mvnGroupID: String = requireNotNull(depInTOML.group)
 val mvnArtifactID: String = depInTOML.name
 val mvnVersion: String = requireNotNull(depInTOML.version)
@@ -17,7 +17,7 @@ plugins {
 }
 
 android {
-    namespace = "net.bi4vmr.tool.android.ui.universal"
+    namespace = "net.bi4vmr.tool.android.test.universal"
     compileSdk = versionCompileSDK
 
     defaultConfig {
@@ -47,9 +47,12 @@ android {
 }
 
 dependencies {
-    api(libAndroid.appcompat)
-    api(libAndroid.ktx.core)
+    api(libJava.junit4)
+    api(libKotlin.ktx.coroutines.test)
+    api(libKotlin.mockk)
     api(libAndroid.annotation)
+    api(libAndroid.robolectric.core)
+    api(libAndroid.robolectric.shadows.framework)
 }
 
 privatePublishConfig {

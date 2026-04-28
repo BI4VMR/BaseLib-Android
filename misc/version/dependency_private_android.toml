@@ -13,6 +13,8 @@ ability_framework = "1.0.0"
 
 platform_automotive = "1.0.0"
 
+test_universal = "1.0.0"
+
 
 # 组件
 [libraries]
@@ -33,3 +35,5 @@ ability_privacyMonitor = { group = "net.bi4vmr.tool.android", name = "ability-pr
 ability_framework = { group = "net.bi4vmr.tool.android", name = "ability-framework", version.ref = "ability_framework" }
 
 platform_automotive = { group = "net.bi4vmr.tool.android", name = "platform-automotive", version.ref = "platform_automotive" }
+
+test_universal = { group = "net.bi4vmr.tool.android", name = "test-universal", version.ref = "test_universal" }

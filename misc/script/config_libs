@@ -14,3 +14,5 @@
 :lib_ui:crosswindowblurtool
 :lib_ui:analogclock
 :lib_ui:pieprogressbar
+
+:lib_test:universal

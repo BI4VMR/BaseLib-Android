@@ -19,13 +19,6 @@ android {
     namespace = "net.bi4vmr.tool.android.common.logcat"
     compileSdk = versionCompileSDK
 
-    sourceSets {
-        getByName("main") {
-            java {
-                java.srcDirs("src/main/kotlin")
-            }
-        }
-    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
