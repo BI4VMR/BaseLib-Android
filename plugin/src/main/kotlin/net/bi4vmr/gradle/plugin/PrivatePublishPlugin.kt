@@ -37,11 +37,11 @@ class PrivatePublishPlugin : Plugin<Project> {
                 LogUtil.info("Use LAN address to connect private repositories.")
                 netTestResult = MavenRepos.PRIVATE_LAN
             } else if (NetUtil.scanByTCP(MavenRepos.PRIVATE_DYNV6.host, MavenRepos.PRIVATE_DYNV6.port)) {
-                LogUtil.info("Use Hostname to connect private repositories.")
-                netTestResult = MavenRepos.PRIVATE_HOSTNAME
-            } else if (NetUtil.scanByTCP(MavenRepos.PRIVATE_HOSTNAME.host, MavenRepos.PRIVATE_HOSTNAME.port)) {
                 LogUtil.info("Use DynV6 domain to connect private repositories.")
                 netTestResult = MavenRepos.PRIVATE_DYNV6
+            } else if (NetUtil.scanByTCP(MavenRepos.PRIVATE_HOSTNAME.host, MavenRepos.PRIVATE_HOSTNAME.port)) {
+                LogUtil.info("Use Hostname to connect private repositories.")
+                netTestResult = MavenRepos.PRIVATE_HOSTNAME
             } else if (NetUtil.scanByTCP(MavenRepos.PRIVATE_LOCAL.host, MavenRepos.PRIVATE_LOCAL.port)) {
                 LogUtil.info("Private repositories are not reachable, use local repositories.")
                 netTestResult = MavenRepos.PRIVATE_LOCAL
