@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 饼状进度条 -->
+    <declare-styleable name="PieProgressBar">
+
+        <!-- 初始进度 -->
+        <attr name="progress" format="float" />
+
+        <!-- 最小进度 -->
+        <attr name="minProgress" format="float" />
+
+        <!-- 最大进度 -->
+        <attr name="maxProgress" format="float" />
+
+        <!-- 圆的半径 -->
+        <attr name="radius" format="dimension" />
+
+        <!-- 起始绘制角度 -->
+        <attr name="startDegree" format="integer" />
+
+        <!-- 是否逆时针绘制 -->
+        <attr name="reverseDraw" format="boolean" />
+
+        <!-- 饼图颜色 -->
+        <attr name="pieColor" format="color" />
+
+        <!-- 圆环颜色 -->
+        <attr name="ringColor" format="color" />
+
+        <!-- 圆环宽度 -->
+        <attr name="ringWidth" format="dimension" />
+
+        <!-- 是否显示圆环 -->
+        <attr name="ringDisplay" format="boolean" />
+    </declare-styleable>
+</resources>

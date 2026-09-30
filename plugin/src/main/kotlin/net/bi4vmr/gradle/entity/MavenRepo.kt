@@ -1,0 +1,17 @@
+package net.bi4vmr.gradle.entity
+
+/**
+ * Maven 仓库。
+ *
+ * @author bi4vmr@outlook.com
+ * @since 1.0.0
+ */
+data class MavenRepo(
+    val name: String,
+    val host: String,
+    val port: Int,
+    val url: String,
+    val description: String? = null,
+    val username: String? = null,
+    val password: String? = null
+)
