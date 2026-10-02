@@ -9,7 +9,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 
 /**
- * Maven私有仓库插件。
+ * Maven 私有仓库插件。
  *
  * 自动为子模块添加常用的私有仓库。
  *
@@ -32,12 +32,12 @@ class PrivateRepoPlugin : Plugin<Project> {
             if (NetUtil.scanByTCP(MavenRepos.PRIVATE_LAN.host, MavenRepos.PRIVATE_LAN.port)) {
                 LogUtil.info("Use LAN address to connect private repositories.")
                 netTestResult = MavenRepos.PRIVATE_LAN
-            } else if (NetUtil.scanByTCP(MavenRepos.PRIVATE_DYNV6.host, MavenRepos.PRIVATE_DYNV6.port)) {
-                LogUtil.info("Use DynV6 domain to connect private repositories.")
-                netTestResult = MavenRepos.PRIVATE_DYNV6
             } else if (NetUtil.scanByTCP(MavenRepos.PRIVATE_HOSTNAME.host, MavenRepos.PRIVATE_HOSTNAME.port)) {
                 LogUtil.info("Use Hostname to connect private repositories.")
                 netTestResult = MavenRepos.PRIVATE_HOSTNAME
+            } else if (NetUtil.scanByTCP(MavenRepos.PRIVATE_DYNV6.host, MavenRepos.PRIVATE_DYNV6.port)) {
+                LogUtil.info("Use DynV6 domain to connect private repositories.")
+                netTestResult = MavenRepos.PRIVATE_DYNV6
             } else if (NetUtil.scanByTCP(MavenRepos.PRIVATE_LOCAL.host, MavenRepos.PRIVATE_LOCAL.port)) {
                 LogUtil.info("Private repositories are not reachable, use local repositories.")
                 netTestResult = MavenRepos.PRIVATE_LOCAL
@@ -52,7 +52,7 @@ class PrivateRepoPlugin : Plugin<Project> {
     }
 
     private fun addRepo(handler: RepositoryHandler, repo: MavenRepo) {
-        // 特殊处理Maven本地仓库。
+        // 特殊处理 Maven 本地仓库。
         if (repo == MavenRepos.PRIVATE_MAVEN_LOCAL) {
             handler.mavenLocal()
             return

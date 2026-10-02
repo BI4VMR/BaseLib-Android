@@ -1,10 +1,10 @@
 # 版本号
 [versions]
-# SDK版本
+# SDK 版本
 minSdk = "26"
-targetSdk = "33"
-compileSdk = "33"
+targetSdk = "36"
+compileSdk = "36"
 
-# APP版本（全局默认）
-moduleCode = "1"
-moduleName = "0.0.1"
+# APP 版本（全局默认）
+versionCode = "1"
+versionName = "0.0.1"

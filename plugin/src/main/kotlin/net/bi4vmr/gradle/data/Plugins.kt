@@ -1,6 +1,7 @@
 package net.bi4vmr.gradle.data
 
 import net.bi4vmr.gradle.plugin.JavaVersionPlugin
+import net.bi4vmr.gradle.plugin.PrivatePublishKMPPlugin
 import net.bi4vmr.gradle.plugin.PrivatePublishPlugin
 import net.bi4vmr.gradle.plugin.PrivateRepoPlugin
 import net.bi4vmr.gradle.plugin.PublicRepoPlugin
@@ -15,6 +16,12 @@ import net.bi4vmr.gradle.plugin.PublicRepoPlugin
  */
 object Plugins {
 
+    /*
+     * ----- Gradle 内置插件 -----
+     */
+
+    const val JAVA: String = "java"
+
     const val JAVA_LIBRARY: String = "java-library"
 
     const val JAVA_APPLICATION: String = "java-application"
@@ -23,11 +30,27 @@ object Plugins {
 
     const val JACOCO: String = "jacoco"
 
+
+    /*
+     * ----- 第三方插件 -----
+     */
+
+    const val KOTLIN_JVM: String = "org.jetbrains.kotlin.jvm"
+
+    const val KOTLIN_MULTIPLATFORM: String = "org.jetbrains.kotlin.multiplatform"
+
     const val ANDROID_LIBRARY = "com.android.library"
 
     const val ANDROID_APPLICATION = "com.android.application"
 
     const val ANDROID_KOTLIN = "org.jetbrains.kotlin.android"
+
+    const val DOKKA = "org.jetbrains.dokka"
+
+
+    /*
+     * ----- 自定义插件 -----
+     */
 
     const val JAVA_VERSION: String = JavaVersionPlugin.NAME
 
@@ -36,4 +59,6 @@ object Plugins {
     const val PRIVATE_REPO: String = PrivateRepoPlugin.NAME
 
     const val PRIVATE_PUBLISH: String = PrivatePublishPlugin.NAME
+
+    const val PRIVATE_PUBLISH_KMP: String = PrivatePublishKMPPlugin.NAME
 }

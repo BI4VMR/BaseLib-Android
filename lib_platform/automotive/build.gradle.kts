@@ -10,10 +10,9 @@ val mvnVersion: String = requireNotNull(depInTOML.version)
 
 plugins {
     alias(libAndroid.plugins.library)
-    alias(libAndroid.plugins.kotlin)
-    id(privateLibJava.plugins.repo.public.get().pluginId)
-    id(privateLibJava.plugins.repo.private.get().pluginId)
-    id(privateLibJava.plugins.publish.private.get().pluginId)
+
+    alias(privateLibJava.plugins.java.version)
+    alias(privateLibJava.plugins.publish.private)
 }
 
 android {
@@ -22,15 +21,6 @@ android {
 
     defaultConfig {
         minSdk = versionMinSDK
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = "11"
     }
 
     buildFeatures {

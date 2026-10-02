@@ -4,14 +4,13 @@
 val versionMinSDK = 30
 val versionCompileSDK: Int = agp.versions.compileSdk.get().toInt()
 val versionTargetSDK: Int = agp.versions.targetSdk.get().toInt()
-val versionModuleCode: Int = agp.versions.moduleCode.get().toInt()
-val versionModuleName: String = agp.versions.moduleName.get()
+val versionCode: Int = agp.versions.versionCode.get().toInt()
+val versionName: String = agp.versions.versionName.get()
 
 plugins {
     alias(libAndroid.plugins.application)
-    alias(libAndroid.plugins.kotlin)
-    id(privateLibJava.plugins.repo.public.get().pluginId)
-    id(privateLibJava.plugins.repo.private.get().pluginId)
+
+    alias(privateLibJava.plugins.java.version)
 }
 
 android {
@@ -22,8 +21,8 @@ android {
         applicationId = "net.bi4vmr.tool.android.ability.privacymonitor"
         minSdk = versionMinSDK
         targetSdk = versionTargetSDK
-        versionCode = versionModuleCode
-        versionName = versionModuleName
+        versionCode = versionCode
+        versionName = versionName
     }
 
     signingConfigs {
@@ -43,25 +42,6 @@ android {
         getByName("release") {
             signingConfig = signingConfigs.getByName("AOSP")
         }
-    }
-
-    sourceSets {
-        getByName("main") {
-            java {
-                java.srcDir("src/main/kotlin")
-            }
-        }
-    }
-
-    compileOptions {
-        // 指定Java源码编译目标版本
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        // 指定Kotlin源码编译目标版本
-        jvmTarget = "11"
     }
 
     viewBinding {
