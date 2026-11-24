@@ -62,7 +62,7 @@ jraska_livedata-test = "1.3.0"
 
 # ----- Gradle 插件 -----
 plugin_agp = "9.0.1"
-plugin_kotlin = "2.4.20"
+plugin_kotlin = "2.2.21"
 
 
 # 组件

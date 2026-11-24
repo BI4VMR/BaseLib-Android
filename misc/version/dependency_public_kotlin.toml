@@ -1,7 +1,9 @@
 # 版本号
 [versions]
 # ----- 核心组件 -----
-kotlin = "2.4.20"
+# 该版本编译产物能够被标准库版本最低为 v1.8.0 的工程引用，兼容性较为广泛。
+# 本工程作为基础库，目标为保证良好的兼容性，不应随意提升版本。
+kotlin = "2.2.21"
 ktx_coroutines = "1.11.0"
 ktx_serial-json = "1.11.0"
 ktx_io-core = "0.9.1"
@@ -32,7 +34,7 @@ mockk = "1.13.17"
 
 
 # ----- Gradle 插件 -----
-plugin_ksp = "2.2.21-2.0.5"
+plugin_ksp = "2.3.6"
 plugin_compose = "1.11.1"
 plugin_agp = "9.0.1"
 plugin_dokka = "2.2.0"

@@ -15,6 +15,12 @@ plugins {
     alias(privateLibJava.plugins.publish.private)
 }
 
+// 当前使用 AGP 9，已内置 KGP 插件，无法通过插件版本指明 Kotlin 版本，需要通过以下配置明确声明。
+kotlin {
+    val kotlinVersion = libAndroid.versions.plugin.kotlin.get()
+    coreLibrariesVersion = kotlinVersion
+}
+
 android {
     namespace = "net.bi4vmr.tool.android.ability.privacymonitor"
     compileSdk = versionCompileSDK
@@ -29,7 +35,7 @@ android {
 }
 
 dependencies {
-    // 内部组件依赖
+    /* 工程组件 */
     compileOnly(project(":lib_ability:framework"))
     runtimeOnly(privateLibAndroid.ability.framework)
 }

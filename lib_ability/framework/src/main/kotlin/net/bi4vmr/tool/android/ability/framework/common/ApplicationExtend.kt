@@ -6,7 +6,7 @@ import android.content.Context
 import java.lang.reflect.Method
 
 /**
- * [Application]的功能扩展类。
+ * [Application] 功能扩展。
  *
  * @author bi4vmr@outlook.com
  * @since 1.0.0
@@ -14,8 +14,14 @@ import java.lang.reflect.Method
 @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
 object ApplicationExtend {
 
-    private const val TAG: String = "BaseLib-ApplicationExtend"
+    private const val TAG: String = "ApplicationExtend"
 
+
+    /**
+     * 获取 [Application] 实例。
+     *
+     * @return [Application] 实例。
+     */
     @JvmStatic
     fun getApplication(): Application {
         val activityThreadClass: Class<*> = Class.forName("android.app.ActivityThread")
@@ -24,6 +30,11 @@ object ApplicationExtend {
         return method.invoke(null) as Application
     }
 
+    /**
+     * 获取应用级 Context 实例。
+     *
+     * @return Context 实例。
+     */
     @JvmStatic
     fun getAppContext(): Context {
         return getApplication().applicationContext

@@ -6,21 +6,32 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import android.os.UserHandle
-import java.lang.reflect.Method
+import net.bi4vmr.tool.kotlin.common.reflect.callFor
+import net.bi4vmr.tool.kotlin.common.reflect.requireMethod
 
 /**
- * [Context]的功能扩展类。
+ * [Context] 功能扩展。
  *
  * @author bi4vmr@outlook.com
  * @since 1.0.0
  */
 object ContextExtend {
 
-    private const val TAG: String = "BaseLib-ContextExtend"
+    private const val TAG: String = "ContextExtend"
 
     private val appContext: Context = ApplicationExtend.getAppContext()
-    private val contextClass: Class<Context> = Context::class.java
 
+
+    /**
+     * 注册广播接收器（指定用户）。
+     *
+     * @param[receiver] 广播接收器。
+     * @param[filter] IntentFilter。
+     * @param[userHandle] UserHandle。
+     * @param[broadcastPermission] 广播权限。默认为空值。
+     * @param[handler] Handler。默认为空值。
+     * @param[flags] 标志。默认为 `0`。
+     */
     @JvmStatic
     @JvmOverloads
     fun registerReceiverAsUser(
@@ -30,16 +41,19 @@ object ContextExtend {
         broadcastPermission: String? = null,
         handler: Handler? = null,
         flags: Int = 0
-    ): Intent? {
-        val method: Method = contextClass.getDeclaredMethod(
-            "registerReceiverAsUser",
-            BroadcastReceiver::class.java,
-            UserHandle::class.java,
-            IntentFilter::class.java,
-            String::class.java,
-            Handler::class.java,
-            Int::class.java
-        )
-        return method.invoke(appContext, receiver, userHandle, filter, broadcastPermission, handler, flags) as? Intent
-    }
+    ): Intent? =
+        appContext
+            .requireMethod(
+                "registerReceiverAsUser",
+                BroadcastReceiver::class.java,
+                UserHandle::class.java,
+                IntentFilter::class.java,
+                String::class.java,
+                Handler::class.java,
+                Int::class.java
+            )
+            .callFor(
+                appContext,
+                receiver, userHandle, filter, broadcastPermission, handler, flags
+            )
 }

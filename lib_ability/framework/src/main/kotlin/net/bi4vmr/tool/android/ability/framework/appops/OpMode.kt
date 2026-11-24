@@ -1,9 +1,9 @@
 package net.bi4vmr.tool.android.ability.framework.appops
 
 /**
- * OP Mode枚举。
+ * OP Mode 枚举。
  *
- * AppOpsManager中OP Mode的映射。
+ * AppOpsManager 中 OP Mode 的映射。
  *
  * @since 1.0.0
  * @author bi4vmr@outlook.com
@@ -25,10 +25,10 @@ enum class OpMode(
     companion object {
 
         /**
-         * 根据编码查找对应的Mode枚举。
+         * 根据编码查找对应的 Mode 枚举。
          *
-         * @param[code] Mode编码。
-         * @return Mode枚举。
+         * @param[code] Mode 编码。
+         * @return Mode 枚举。
          */
         @JvmStatic
         fun valueOf(code: Int): OpMode? {

@@ -1,4 +1,4 @@
-# 在此处注册各Lib模块的名称，按照依赖顺序排列。
+# 在此处注册各模块的名称，编译时将按照顺序执行，被多个模块依赖的基础模块应写在顶部。
 :lib_common:logcat
 
 :lib_ability:framework

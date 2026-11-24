@@ -1,9 +1,9 @@
 package net.bi4vmr.tool.android.ability.framework.appops
 
 /**
- * AppOp枚举。
+ * AppOp。
  *
- * 本类的内容来自AOSP的"android/app/AppProtoEnums.java"。
+ * 本类的内容来自 AOSP 的 `android/app/AppProtoEnums.java`。
  *
  * @since 1.0.0
  * @author bi4vmr@outlook.com
@@ -11,7 +11,7 @@ package net.bi4vmr.tool.android.ability.framework.appops
 enum class AppOps(
 
     /**
-     * OP代码
+     * OP 代码。
      */
     val code: Int
 ) {
@@ -164,7 +164,7 @@ enum class AppOps(
     companion object {
 
         /**
-         * 根据编码查找对应的AppOp。
+         * 根据编码查找对应的 AppOp。
          *
          * @param[code] 枚举编码。
          * @return OP。

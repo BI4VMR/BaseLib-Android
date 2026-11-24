@@ -2,30 +2,35 @@ package net.bi4vmr.tool.android.ability.framework.appops
 
 import android.app.AppOpsManager
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import net.bi4vmr.tool.android.ability.framework.common.ApplicationExtend
 import net.bi4vmr.tool.android.ability.framework.util.FrameworkLog
 import java.lang.reflect.Method
 import java.util.concurrent.Executor
 
 /**
- * AppOpsManager功能扩展。
+ * AppOpsManager 功能扩展。
  *
  * @since 1.0.0
  * @author bi4vmr@outlook.com
  */
 object AppOpsManagerExtend {
 
-    private const val TAG: String = "BaseLib-AppOpsManagerExtend"
+    private const val TAG: String = "AppOpsManagerExtend"
 
     private val appContext: Context = ApplicationExtend.getAppContext()
+
     private val opsManagerClass: Class<AppOpsManager> = AppOpsManager::class.java
+
     private val opsManager: AppOpsManager = appContext.getSystemService(opsManagerClass)
 
+
     /**
-     * 获取OP名称对应的编码。
+     * 获取 OP 名称对应的编码。
      *
-     * @param[name] OP名称。
-     * @return OP编码。如果无法识别，则返回 `-1` 。
+     * @param[name] OP 名称。
+     * @return OP 编码。如果无法识别，则返回 `-1`。
      */
     fun opNameToCode(name: String): Int {
         try {
@@ -38,9 +43,9 @@ object AppOpsManagerExtend {
     }
 
     /**
-     * 获取OP编码对应的字符串名称。
+     * 获取 OP 编码对应的字符串名称。
      *
-     * @param[code] OP编码。
+     * @param[code] OP 编码。
      * @return 名称。如果数值超出范围则返回 `Unknown(<编号>)` 。
      */
     fun opCodeToName(code: Int): String {
@@ -56,8 +61,8 @@ object AppOpsManagerExtend {
     /**
      * 将编码数组转为名称数组。
      *
-     * @param[codes] OP编码数组。
-     * @return OP名称数组。
+     * @param[codes] OP 编码数组。
+     * @return OP 名称数组。
      */
     fun opCodeArrayToNameArray(codes: IntArray): Array<String> {
         val result: Array<String> = Array(codes.size) { "" }
@@ -69,11 +74,11 @@ object AppOpsManagerExtend {
     }
 
     /**
-     * 查询近期的OP事件。
+     * 查询近期的 OP 事件。
      *
      * 如果调用者没有被授予 `GET_APP_OPS_STATS` 权限，只能查到自身产生的事件。
      *
-     * @param[ops] OP类型数组。传入空值时表示不限制类型，将返回所有OP信息。
+     * @param[ops] OP 类型数组。传入空值时表示不限制类型，将返回所有 OP 信息。
      * @return 列表，元素为[OpEntity]对象。
      */
     fun getPackagesOps(ops: IntArray? = null): List<OpEntity> {
@@ -125,14 +130,15 @@ object AppOpsManagerExtend {
     }
 
     /**
-     * 开始监听OP的运行状态变化。
+     * 开始监听 OP 的运行状态变化。
      *
-     * 监听各应用OP的 `isRunning` 状态变化事件。
+     * 监听各应用 OP 的 `isRunning` 状态变化事件。
      *
-     * @param[ops] 感兴趣的OP名称数组。
+     * @param[ops] 感兴趣的 OP 名称数组。
      * @param[callback] 监听器具体实现。
      * @param[executor] 事件回调线程。若不特别指定，默认使用主线程执行回调。
      */
+    @RequiresApi(Build.VERSION_CODES.R)
     @JvmOverloads
     fun startWatchingActive(
         ops: Array<String>,
@@ -144,14 +150,15 @@ object AppOpsManagerExtend {
     }
 
     /**
-     * 开始监听OP的运行状态变化。
+     * 开始监听 OP 的运行状态变化。
      *
-     * 监听各应用OP的 `isRunning` 状态变化事件。
+     * 监听各应用 OP 的 `isRunning` 状态变化事件。
      *
-     * @param[ops] 感兴趣的OP编码数组。
+     * @param[ops] 感兴趣的 OP 编码数组。
      * @param[callback] 监听器具体实现。
      * @param[executor] 事件回调线程。若不特别指定，默认使用主线程执行回调。
      */
+    @RequiresApi(Build.VERSION_CODES.R)
     @JvmOverloads
     fun startWatchingActive(
         ops: IntArray,
@@ -163,10 +170,11 @@ object AppOpsManagerExtend {
     }
 
     /**
-     * 停止监听OP的运行状态变化。
+     * 停止监听 OP 的运行状态变化。
      *
      * @param[callback] 监听器具体实现。
      */
+    @RequiresApi(Build.VERSION_CODES.R)
     fun stopWatchingActive(callback: AppOpsManager.OnOpActiveChangedListener) {
         FrameworkLog.logD(TAG, "StopWatchingActive.")
         opsManager.stopWatchingActive(callback)
